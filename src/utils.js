@@ -1,11 +1,14 @@
-export async function request(url, options = { method: 'POST' }) {
+export async function request(url, body = {}, method = 'POST') {
     try {
-        if (!options.headers) {
-            options.headers = {
+        let options = {
+            method: method,
+            headers: {
                 'Content-Type': 'application/json',
                 Authorization: 'Token ',
-            };
-        }
+            },
+            body: JSON.stringify(body),
+        };
+
         url = 'http://127.0.0.1:6806' + url;
         const response = await fetch(url, options);
         if (!response.ok || response.status !== 200) {
