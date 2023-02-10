@@ -72,13 +72,10 @@ export default {
             switch (themeMode) {
                 case 1:
                     document.body.setAttribute('arco-theme', 'dark');
-                    document.body.style.backgroundColor = 'var(--color-bg-1)';
-                    document.body.style.color = 'var(--color-text-1)';
                     break;
                 case 0:
                 default:
                     document.body.removeAttribute('arco-theme');
-                    document.body.removeAttribute('style');
                     break;
             }
         },
@@ -146,5 +143,11 @@ export default {
         setInterval(this.polling, 2000);
     },
 };
+
 </script>
-<style></style>
+<style>
+body {
+    color: var(--color-text-1);
+    background-color: var(--color-bg-1);
+}
+</style>
