@@ -15,8 +15,6 @@
             <Calendar :notebook="currentNotebook" />
         </a-tab-pane>
         <!-- <a-tab-pane key="2">
-            <template #title> 测试 </template>
-            {{ currentNotebook }}
         </a-tab-pane> -->
     </a-tabs>
 </template>
@@ -24,6 +22,7 @@
 <script>
 import Calendar from './Calendar.vue';
 import { request } from './utils';
+import { Socket } from './socket';
 
 export default {
     components: {
@@ -35,35 +34,16 @@ export default {
             notebooks: [],
             // 选中笔记本
             currentNotebook: null,
-            // 当前笔记本ID缓存
-            localDailyNoteId: null,
         };
     },
     computed: {
-        // 笔记本列表ID缓存
-        notebooksIdsCache() {
-            return this.notebooks?.map((book) => {
+        notebooksID() {
+            return this.notebooks.map((book) => {
                 return book.value;
             });
         },
     },
-    watch: {
-        // 监听当前笔记本ID缓存是否改变
-        localDailyNoteId(newValue) {
-            this.currentNotebook = this.notebooks?.filter((book) => {
-                return book.value === newValue;
-            })[0];
-        },
-    },
     methods: {
-        // 转换格式
-        convertNotebook(book) {
-            return {
-                value: book.id,
-                label: book.name,
-                other: 'other',
-            };
-        },
         // 设置明暗切换
         async setDarkTheme() {
             const data = await request('/api/system/getConf');
@@ -82,68 +62,49 @@ export default {
         // 获取笔记本列表
         async getNotebooks() {
             const data = await request('/api/notebook/lsNotebooks');
-            const storage = await request('/api/storage/getLocalStorage');
 
-            data.notebooks
-                .filter((book) => {
-                    return !book.closed;
-                })
-                .forEach((book) => {
-                    this.notebooks.push(this.convertNotebook(book));
-                    if (book.id === storage['local-dailynoteid']) {
-                        this.currentNotebook = this.convertNotebook(book);
-                        this.localDailyNoteId = book.id;
-                    }
-                });
-        },
-        // 轮询
-        async polling() {
-            const data = await request('/api/notebook/lsNotebooks');
-            const notebooks = data.notebooks.filter((book) => {
-                return !book.closed;
-            });
-            // 笔记本组更改
-            // 笔记本数量更改
-            if (notebooks.length !== this.notebooks.length) {
-                this.notebooks = notebooks.map((book) => {
-                    return this.convertNotebook(book);
-                });
-            } else {
-                // 笔记本数量相同，但成员更改
-                let tempNotebookIds = notebooks.map((book) => {
-                    return book.id;
-                });
-                if (
-                    tempNotebookIds.sort().toString() !== this.notebooksIdsCache.sort().toString()
-                ) {
-                    this.notebooks = notebooks.map((book) => {
-                        return this.convertNotebook(book);
+            let tempNotebooks = [];
+            data.notebooks.forEach((book) => {
+                if (!book.closed) {
+                    tempNotebooks.push({
+                        value: book.id,
+                        label: book.name,
+                        other: 'other',
                     });
                 }
-            }
+            });
 
-            const storage = await request('/api/storage/getLocalStorage');
-            // 当前笔记本更改
-            if (this.localDailyNoteId !== storage['local-dailynoteid']) {
-                this.localDailyNoteId = storage['local-dailynoteid'];
-            }
-            // 当前笔记本已关闭或已删除
-            if (!this.notebooksIdsCache.includes(this.localDailyNoteId)) {
+            this.notebooks = tempNotebooks;
+        },
+        async getCurrentBook() {
+            if (!this.currentNotebook) {
+                const storage = await request('/api/storage/getLocalStorage');
+                if (this.notebooksID.includes(storage['local-dailynoteid'])) {
+                    this.currentNotebook = this.notebooks.filter((book) => {
+                        return book.value === storage['local-dailynoteid'];
+                    })[0];
+                }
+            } else if (!this.notebooksID.includes(this.currentNotebook.value)) {
                 this.currentNotebook = null;
             }
-            if (!this.currentNotebook) {
-                // 恢复关闭的当前笔记本
-                this.localDailyNoteId = storage['local-dailynoteid'];
-            }
+        },
+        async getAll() {
+            await this.getNotebooks();
+            await this.getCurrentBook();
         },
     },
     mounted() {
-        this.getNotebooks();
         this.setDarkTheme();
-        setInterval(this.polling, 2000);
+        this.getAll();
+        const ws = new Socket();
+        ws.on('mount', this.getAll);
+        ws.on('unmount', this.getAll);
+        ws.on('createnotebook', this.getNotebooks);
+        ws.on('createdailynote', this.getAll);
+        ws.on('renamenotebook', this.getAll);
+        ws.on('transactions', this.getCurrentBook);
     },
 };
-
 </script>
 <style>
 body {

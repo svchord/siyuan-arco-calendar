@@ -3,7 +3,7 @@
         <a-date-picker
             v-model:pickerValue="pickerValue"
             hide-trigger
-            style="width: 268px; margin: auto"
+            style="width: 268px; margin: auto; box-shadow: none"
         >
             <template #cell="{ date }">
                 <div class="arco-picker-date" @click="createDailyNote(date)">
@@ -18,6 +18,7 @@
 
 <script>
 import { request } from './utils';
+import { Socket } from './socket';
 export default {
     props: ['notebook'],
     data() {
@@ -35,9 +36,10 @@ export default {
     },
     watch: {
         notebook: {
-            handler(newValue) {
+            async handler(newValue) {
                 if (newValue) {
-                    this.getExistDailyNote(newValue);
+                    await this.getDailyNotePath(newValue);
+                    await this.getExistDailyNote(newValue);
                 } else {
                     this.notebookError();
                 }
@@ -103,8 +105,8 @@ export default {
                 .replaceAll('[[month]]', this.padTo2Digit(date.getMonth() + 1))
                 .replaceAll('[[day]]', this.padTo2Digit(date.getDate()));
         },
-        // 获取已存在的日记
-        async getExistDailyNote(book) {
+        // 获取日记设置路径
+        async getDailyNotePath(book) {
             // 获取含变量的日记存放路径
             const bookId = book.value;
             const data = await request('/api/notebook/getNotebookConf', { notebook: bookId });
@@ -114,7 +116,11 @@ export default {
             );
             this.dailyNoteSavePath = this.parsePath(this.dailyNoteSavePath);
             this.dailyNoteTemplatePath = data.conf.dailyNoteTemplatePath.replaceAll('/', '\\');
+        },
+        // 获取已存在的日记
+        async getExistDailyNote(book) {
             // 从当前面板的最后一天开始，循环请求判断是否存在日记文档
+            const bookId = book.value;
             let lastTime = this.lastDate.getTime();
             let tempExistDailyNotes = [];
             for (let i = 0; i < 42; i++) {
@@ -139,6 +145,7 @@ export default {
                     markdown: '',
                 });
                 this.existDailyNotes.push(date.getTime());
+                window.open(`siyuan://blocks/${docID}`);
 
                 // 根据模板渲染笔记
                 if (this.dailyNoteTemplatePath.length) {
@@ -159,6 +166,10 @@ export default {
                 this.notebookError();
             }
         },
+    },
+    mounted() {
+        const ws = new Socket();
+        ws.on('removeDoc', this.getExistDailyNote);
     },
 };
 </script>
