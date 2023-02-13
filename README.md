@@ -1,29 +1,16 @@
 # arco-calendar
 
-This template should help get you started developing with Vue 3 in Vite.
+依赖arco design组件库开发的思源笔记日历插件
 
-## Recommended IDE Setup
+![预览图](preview.png)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## 手动安装
 
-## Customize configuration
+- 复制 `calendar` 目录下的文件到你当前使用的思源主题目录下
+- 在 `theme.js` 中引用入口文件 `calendar/main.js` 并运行 `calendarMain()` 函数
+- 修改 `calendar/main.js` 第36行，改为你当前 `calendar` 文件夹所在路径
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## 参考项目
 
-## Project Setup
-
-```sh
-pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-pnpm dev
-```
-
-### Compile and Minify for Production
-
-```sh
-pnpm build
-```
+- [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
+- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
