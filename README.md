@@ -10,7 +10,8 @@
 - 在 `theme.js` 中引用入口文件 `calendar/main.js` 并运行 `calendarMain()` 函数
 - 修改 `calendar/main.js` 第36行，改为你当前 `calendar` 文件夹所在路径
 
-## 参考项目
+## 参考与感谢
 
 - [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
 - [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
+- [九炎](https://github.com/leolee9086)大佬提供的 WebSocket 封装模板
