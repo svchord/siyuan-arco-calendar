@@ -25,8 +25,6 @@ const props = defineProps(['notebook']);
 const { notebook } = toRefs(props);
 
 const pickerValue = ref(null);
-// 当前面板的最后一天
-const lastDate = ref(null);
 // 当前面板已存在日记的日期
 const existDailyNotes = ref([]);
 // 含变量的日记存放路径
@@ -34,37 +32,11 @@ const dailyNoteSavePath = ref(null);
 // 日记模板存放路径
 const dailyNoteTemplatePath = ref(null);
 
-const existDailyNotesDay = computed(() => {
+const existDailyNotesHpath = computed(() => {
     return existDailyNotes.value.map((dailyNote) => {
-        return dailyNote.time;
+        return dailyNote.hpath;
     });
 });
-
-watch(
-    notebook,
-    async (newValue) => {
-        if (newValue) {
-            await getDailyNotePath(newValue);
-            await getExistDailyNote(newValue);
-        } else {
-            existDailyNotesDay.value = [];
-            notebookError();
-        }
-    },
-    { deep: true }
-);
-
-const ws = new Socket();
-ws.on('removeDoc', resetExistDailyNote);
-
-// 获取当前面板最后一天，并设置cell样式
-function getCell(date) {
-    const highlightStyle = {
-        borderColor: 'rgb(var(--arcoblue-6))',
-    };
-    lastDate.value = date;
-    return existDailyNotesDay.value.includes(date.getTime()) ? highlightStyle : {};
-}
 
 // 当前笔记本为空报错
 function notebookError() {
@@ -81,43 +53,54 @@ function padTo2Digit(num) {
 // 递归解析日记存放路径
 function parsePath(path) {
     // 年
-    if (path.match(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g)) {
+    if (path?.match(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g)) {
         path = path.replaceAll(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g, `{{$<str1>[[year]]$<str2>}}`);
         if (path.match(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g)) {
             path = parsePath(path);
         }
     }
     // 月
-    if (path.match(/{{(?<str1>.*?)01(?<str2>.*?)}}/g)) {
+    if (path?.match(/{{(?<str1>.*?)01(?<str2>.*?)}}/g)) {
         path = path.replaceAll(/{{(?<str1>.*?)01(?<str2>.*?)}}/g, `{{$<str1>[[month]]$<str2>}}`);
         if (path.match(/{{(?<str1>.*?)01(?<str2>.*?)}}/g)) {
             path = parsePath(path);
         }
     }
     // 日
-    if (path.match(/{{(?<str1>.*?)02(?<str2>.*?)}}/g)) {
+    if (path?.match(/{{(?<str1>.*?)02(?<str2>.*?)}}/g)) {
         path = path.replaceAll(/{{(?<str1>.*?)02(?<str2>.*?)}}/g, `{{$<str1>[[day]]$<str2>}}`);
         if (path.match(/{{(?<str1>.*?)02(?<str2>.*?)}}/g)) {
             path = parsePath(path);
         }
     }
     // 去除双括号{{}}包裹
-    if (path.match(/{{(?<str>.*?)}}/g)) {
+    if (path?.match(/{{(?<str>.*?)}}/g)) {
         path = path.replaceAll(/{{(?<str>.*?)}}/g, `$<str>`);
     }
     return path;
 }
 
-// 根据含变量的日记存放路径及特定日期返回人类可读路径
-function getHPath(path, date) {
-    return path
-        .replaceAll('[[year]]', date.getFullYear())
-        .replaceAll('[[month]]', padTo2Digit(date.getMonth() + 1))
-        .replaceAll('[[day]]', padTo2Digit(date.getDate()));
+function deconstructDate(date) {
+    return [date.getFullYear(), padTo2Digit(date.getMonth() + 1), padTo2Digit(date.getDate())];
 }
 
-// 获取日记设置路径
-async function getDailyNotePath(book) {
+// 根据含变量的日记存放路径及特定日期返回人类可读路径
+function getHpath(path, date = [year, month, day]) {
+    const [year, month, day] = date;
+    return path
+        ?.replaceAll('[[year]]', year)
+        ?.replaceAll('[[month]]', month)
+        ?.replaceAll('[[day]]', day);
+}
+
+watch(notebook, (newValue) => setCalendar(newValue), { deep: true });
+
+async function setCalendar(book) {
+    if (!book) {
+        existDailyNotes.value = [];
+        notebookError();
+        return;
+    }
     // 获取含变量的日记存放路径
     const bookId = book.value;
     const data = await request('/api/notebook/getNotebookConf', { notebook: bookId });
@@ -127,25 +110,28 @@ async function getDailyNotePath(book) {
     );
     dailyNoteSavePath.value = parsePath(dailyNoteSavePath.value);
     dailyNoteTemplatePath.value = data.conf.dailyNoteTemplatePath.replaceAll('/', '\\');
-}
 
-// 获取已存在的日记
-async function getExistDailyNote(book) {
-    const bookId = book.value;
-    let lastTime = lastDate.value.getTime();
+    // 获取已存在的日记
+    let hpath = getHpath(dailyNoteSavePath.value, ['%', '%', '%']);
+    const dailyNotes = await request('/api/query/sql', {
+        stmt: `select * from blocks where type='d' and box = '${book.value}' and hpath like '${hpath}'`,
+    });
     let tempExistDailyNotes = [];
-    // 从当前面板的最后一天开始，循环请求判断是否存在日记文档
-    for (let i = 0; i < 42; i++) {
-        let timeStamp = lastTime - i * 86400000;
-        let hPath = getHPath(dailyNoteSavePath.value, new Date(timeStamp));
-        const data = await request('/api/query/sql', {
-            stmt: `select * from blocks where type='d' and box = '${bookId}' and hpath = '${hPath}'`,
-        });
-        if (data.length) {
-            tempExistDailyNotes.push({ id: data[0].id, time: timeStamp });
+    if (dailyNotes.length) {
+        for (const dailyNote of dailyNotes) {
+            tempExistDailyNotes.push({ id: dailyNote.id, hpath: dailyNote.hpath });
         }
     }
     existDailyNotes.value = tempExistDailyNotes;
+}
+
+// 设置cell样式
+function getCell(date) {
+    const highlightStyle = {
+        borderColor: 'rgb(var(--arcoblue-6))',
+    };
+    let hpath = getHpath(dailyNoteSavePath.value, deconstructDate(date));
+    return existDailyNotesHpath.value.includes(hpath) ? highlightStyle : {};
 }
 
 // 创建日记
@@ -155,22 +141,22 @@ async function createDailyNote(date) {
         return;
     }
     let bookId = notebook.value.value;
-    let hPath = getHPath(dailyNoteSavePath.value, date);
+    let hpath = getHpath(dailyNoteSavePath.value, deconstructDate(date));
 
-    if (existDailyNotesDay.value.includes(date.getTime())) {
+    if (existDailyNotesHpath.value.includes(hpath)) {
         // 打开日记
         let docID = existDailyNotes.value.find((dailyNote) => {
-            return dailyNote.time === date.getTime();
+            return dailyNote.hpath === hpath;
         }).id;
         window.open(`siyuan://blocks/${docID}`);
     } else {
         // 创建日记
         const docID = await request('/api/filetree/createDocWithMd', {
             notebook: bookId,
-            path: hPath,
+            path: hpath,
             markdown: '',
         });
-        existDailyNotes.value.push({ id: docID, time: date.getTime() });
+        existDailyNotes.value.push({ id: docID, hpath: hpath });
         window.open(`siyuan://blocks/${docID}`);
 
         // 根据模板渲染笔记
@@ -190,6 +176,9 @@ async function createDailyNote(date) {
         }
     }
 }
+
+const ws = new Socket();
+ws.on('removeDoc', resetExistDailyNote);
 
 // 重置日记数据
 async function resetExistDailyNote() {

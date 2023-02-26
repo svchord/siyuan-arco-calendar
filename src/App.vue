@@ -34,32 +34,21 @@ const notebooksID = computed(() => {
     });
 });
 
-watch(
-    currentNotebook,
-    async (newValue) => {
-        if (newValue) {
-            const storage = await request('/api/storage/getLocalStorage');
-            if (currentNotebook.value.value !== storage['local-dailynoteid']) {
-                request('/api/storage/setLocalStorageVal', {
-                    app: getAppID(),
-                    key: 'local-dailynoteid',
-                    val: currentNotebook.value.value,
-                });
-            }
-        }
-    },
-    { deep: true }
-);
+watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true });
 
-setDarkTheme();
-getAll();
-const ws = new Socket();
-ws.on('mount', getAll);
-ws.on('unmount', getAll);
-ws.on('createnotebook', getNotebooks);
-ws.on('createdailynote', getAll);
-ws.on('renamenotebook', getAll);
-ws.on('transactions', getCurrentBook);
+async function changeStorage(book) {
+    if (!book) {
+        return;
+    }
+    const storage = await request('/api/storage/getLocalStorage');
+    if (currentNotebook.value.value !== storage['local-dailynoteid']) {
+        request('/api/storage/setLocalStorageVal', {
+            app: getAppID(),
+            key: 'local-dailynoteid',
+            val: currentNotebook.value.value,
+        });
+    }
+}
 
 // 设置明暗切换
 async function setDarkTheme() {
@@ -76,6 +65,7 @@ async function setDarkTheme() {
             break;
     }
 }
+setDarkTheme();
 
 // 获取笔记本列表
 async function getNotebooks() {
@@ -111,6 +101,15 @@ async function getAll() {
     await getNotebooks();
     await getCurrentBook();
 }
+
+getAll();
+const ws = new Socket();
+ws.on('mount', getAll);
+ws.on('unmount', getAll);
+ws.on('createnotebook', getNotebooks);
+ws.on('createdailynote', getAll);
+ws.on('renamenotebook', getAll);
+ws.on('transactions', getCurrentBook);
 </script>
 <style>
 body {
