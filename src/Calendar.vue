@@ -191,6 +191,7 @@ async function createDailyNote(date) {
     }
 }
 
+// 重置日记数据
 async function resetExistDailyNote() {
     let temp = [];
     for (const dailyNote of existDailyNotes.value) {
