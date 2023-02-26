@@ -19,7 +19,7 @@
 <script setup>
 import { request } from './utils';
 import { Socket } from './socket';
-import { watch, ref, toRefs } from 'vue';
+import { watch, computed, ref, toRefs } from 'vue';
 
 const props = defineProps(['notebook']);
 const { notebook } = toRefs(props);
@@ -34,6 +34,12 @@ const dailyNoteSavePath = ref(null);
 // 日记模板存放路径
 const dailyNoteTemplatePath = ref(null);
 
+const existDailyNotesDay = computed(() => {
+    return existDailyNotes.value.map((dailyNote) => {
+        return dailyNote.time;
+    });
+});
+
 watch(
     notebook,
     async (newValue) => {
@@ -41,6 +47,7 @@ watch(
             await getDailyNotePath(newValue);
             await getExistDailyNote(newValue);
         } else {
+            existDailyNotesDay.value = [];
             notebookError();
         }
     },
@@ -48,7 +55,7 @@ watch(
 );
 
 const ws = new Socket();
-ws.on('removeDoc', getExistDailyNote);
+ws.on('removeDoc', resetExistDailyNote);
 
 // 获取当前面板最后一天，并设置cell样式
 function getCell(date) {
@@ -56,7 +63,7 @@ function getCell(date) {
         borderColor: 'rgb(var(--arcoblue-6))',
     };
     lastDate.value = date;
-    return existDailyNotes.value.includes(date.getTime()) ? highlightStyle : {};
+    return existDailyNotesDay.value.includes(date.getTime()) ? highlightStyle : {};
 }
 
 // 当前笔记本为空报错
@@ -124,10 +131,10 @@ async function getDailyNotePath(book) {
 
 // 获取已存在的日记
 async function getExistDailyNote(book) {
-    // 从当前面板的最后一天开始，循环请求判断是否存在日记文档
     const bookId = book.value;
     let lastTime = lastDate.value.getTime();
     let tempExistDailyNotes = [];
+    // 从当前面板的最后一天开始，循环请求判断是否存在日记文档
     for (let i = 0; i < 42; i++) {
         let timeStamp = lastTime - i * 86400000;
         let hPath = getHPath(dailyNoteSavePath.value, new Date(timeStamp));
@@ -135,7 +142,7 @@ async function getExistDailyNote(book) {
             stmt: `select * from blocks where type='d' and box = '${bookId}' and hpath = '${hPath}'`,
         });
         if (data.length) {
-            tempExistDailyNotes.push(timeStamp);
+            tempExistDailyNotes.push({ id: data[0].id, time: timeStamp });
         }
     }
     existDailyNotes.value = tempExistDailyNotes;
@@ -143,48 +150,56 @@ async function getExistDailyNote(book) {
 
 // 创建日记
 async function createDailyNote(date) {
-    if (notebook.value) {
-        let bookId = notebook.value.value;
-        let hPath = getHPath(dailyNoteSavePath.value, date);
-
-        if (existDailyNotes.value.includes(date.getTime())) {
-            // 打开日记
-            const data = await request('/api/query/sql', {
-                stmt: `select * from blocks where type='d' and box = '${bookId}' and hpath = '${hPath}'`,
-            });
-            if (data.length) {
-                let docID = data[0].id;
-                window.open(`siyuan://blocks/${docID}`);
-            }
-        } else {
-            // 创建日记
-            const docID = await request('/api/filetree/createDocWithMd', {
-                notebook: bookId,
-                path: hPath,
-                markdown: '',
-            });
-            existDailyNotes.value.push(date.getTime());
-            window.open(`siyuan://blocks/${docID}`);
-
-            // 根据模板渲染笔记
-            if (dailyNoteTemplatePath.value.length) {
-                const system = await request('/api/system/getConf');
-                let templateDir =
-                    system.conf.system.dataDir + '\\templates' + dailyNoteTemplatePath.value;
-                const render = await request('/api/template/render', {
-                    id: docID,
-                    path: templateDir,
-                });
-                request('/api/block/prependBlock', {
-                    data: render.content,
-                    dataType: 'dom',
-                    parentID: docID,
-                });
-            }
-        }
-    } else {
+    if (!notebook.value) {
         notebookError();
+        return;
     }
+    let bookId = notebook.value.value;
+    let hPath = getHPath(dailyNoteSavePath.value, date);
+
+    if (existDailyNotesDay.value.includes(date.getTime())) {
+        // 打开日记
+        let docID = existDailyNotes.value.find((dailyNote) => {
+            return dailyNote.time === date.getTime();
+        }).id;
+        window.open(`siyuan://blocks/${docID}`);
+    } else {
+        // 创建日记
+        const docID = await request('/api/filetree/createDocWithMd', {
+            notebook: bookId,
+            path: hPath,
+            markdown: '',
+        });
+        existDailyNotes.value.push({ id: docID, time: date.getTime() });
+        window.open(`siyuan://blocks/${docID}`);
+
+        // 根据模板渲染笔记
+        if (dailyNoteTemplatePath.value.length) {
+            const system = await request('/api/system/getConf');
+            let templateDir =
+                system.conf.system.dataDir + '\\templates' + dailyNoteTemplatePath.value;
+            const render = await request('/api/template/render', {
+                id: docID,
+                path: templateDir,
+            });
+            request('/api/block/prependBlock', {
+                data: render.content,
+                dataType: 'dom',
+                parentID: docID,
+            });
+        }
+    }
+}
+
+async function resetExistDailyNote() {
+    let temp = [];
+    for (const dailyNote of existDailyNotes.value) {
+        const data = await request('/api/filetree/getHPathByID', { id: dailyNote.id });
+        if (data) {
+            temp.push(dailyNote);
+        }
+    }
+    existDailyNotes.value = temp;
 }
 </script>
 <style>

@@ -19,6 +19,7 @@ export class Socket {
         ws.onmessage = (event) => {
             const _data = JSON.parse(event.data);
             let { cmd, data } = _data;
+            // console.log(_data);
             this.emit(cmd, data);
             // this.emit('all', data);
         };

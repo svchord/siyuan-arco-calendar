@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
-import AutoImport from 'unplugin-auto-import/vite'
+import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ArcoResolver } from 'unplugin-vue-components/resolvers';
 
@@ -38,4 +38,8 @@ export default defineConfig({
     },
     // 打包后的公共路径（用于嵌入形式的开发）
     base: './',
+    // 打包文件所在目录
+    build: {
+        outDir: 'calendar/dist',
+    },
 });

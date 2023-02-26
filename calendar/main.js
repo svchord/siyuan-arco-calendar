@@ -33,7 +33,7 @@ function initCalendar() {
                 border-radius: 5px; 
                 box-shadow: var(--b3-dialog-shadow); 
             "
-            src="/appearance/themes/Rem Craft/app/calendar"
+            src="/appearance/themes/Rem Craft/app/calendar/dist"
         />
         `
     );
