@@ -19,92 +19,98 @@
     </a-tabs>
 </template>
 
-<script>
+<script setup>
 import Calendar from './Calendar.vue';
-import { request } from './utils';
+import { request, getAppID } from './utils';
 import { Socket } from './socket';
+import { computed, ref, watch } from 'vue';
 
-export default {
-    components: {
-        Calendar,
-    },
-    data() {
-        return {
-            // 笔记本列表
-            notebooks: [],
-            // 选中笔记本
-            currentNotebook: null,
-        };
-    },
-    computed: {
-        notebooksID() {
-            return this.notebooks.map((book) => {
-                return book.value;
-            });
-        },
-    },
-    methods: {
-        // 设置明暗切换
-        async setDarkTheme() {
-            const data = await request('/api/system/getConf');
-            const themeMode = data.conf.appearance.mode;
+const notebooks = ref([]);
+const currentNotebook = ref(null);
 
-            switch (themeMode) {
-                case 1:
-                    document.body.setAttribute('arco-theme', 'dark');
-                    break;
-                case 0:
-                default:
-                    document.body.removeAttribute('arco-theme');
-                    break;
+const notebooksID = computed(() => {
+    return notebooks.value.map((book) => {
+        return book.value;
+    });
+});
+
+watch(
+    currentNotebook,
+    async (newValue) => {
+        if (newValue) {
+            const storage = await request('/api/storage/getLocalStorage');
+            if (currentNotebook.value.value !== storage['local-dailynoteid']) {
+                request('/api/storage/setLocalStorageVal', {
+                    app: getAppID(),
+                    key: 'local-dailynoteid',
+                    val: currentNotebook.value.value,
+                });
             }
-        },
-        // 获取笔记本列表
-        async getNotebooks() {
-            const data = await request('/api/notebook/lsNotebooks');
+        }
+    },
+    { deep: true }
+);
 
-            let tempNotebooks = [];
-            data.notebooks.forEach((book) => {
-                if (!book.closed) {
-                    tempNotebooks.push({
-                        value: book.id,
-                        label: book.name,
-                        other: 'other',
-                    });
-                }
+setDarkTheme();
+getAll();
+const ws = new Socket();
+ws.on('mount', getAll);
+ws.on('unmount', getAll);
+ws.on('createnotebook', getNotebooks);
+ws.on('createdailynote', getAll);
+ws.on('renamenotebook', getAll);
+ws.on('transactions', getCurrentBook);
+
+// 设置明暗切换
+async function setDarkTheme() {
+    const data = await request('/api/system/getConf');
+    const themeMode = data.conf.appearance.mode;
+
+    switch (themeMode) {
+        case 1:
+            document.body.setAttribute('arco-theme', 'dark');
+            break;
+        case 0:
+        default:
+            document.body.removeAttribute('arco-theme');
+            break;
+    }
+}
+
+// 获取笔记本列表
+async function getNotebooks() {
+    const data = await request('/api/notebook/lsNotebooks');
+
+    let tempNotebooks = [];
+    data.notebooks.forEach((book) => {
+        if (!book.closed) {
+            tempNotebooks.push({
+                value: book.id,
+                label: book.name,
+                other: 'other',
             });
+        }
+    });
+    notebooks.value = tempNotebooks;
+}
 
-            this.notebooks = tempNotebooks;
-        },
-        async getCurrentBook() {
-            if (!this.currentNotebook) {
-                const storage = await request('/api/storage/getLocalStorage');
-                if (this.notebooksID.includes(storage['local-dailynoteid'])) {
-                    this.currentNotebook = this.notebooks.filter((book) => {
-                        return book.value === storage['local-dailynoteid'];
-                    })[0];
-                }
-            } else if (!this.notebooksID.includes(this.currentNotebook.value)) {
-                this.currentNotebook = null;
-            }
-        },
-        async getAll() {
-            await this.getNotebooks();
-            await this.getCurrentBook();
-        },
-    },
-    mounted() {
-        this.setDarkTheme();
-        this.getAll();
-        const ws = new Socket();
-        ws.on('mount', this.getAll);
-        ws.on('unmount', this.getAll);
-        ws.on('createnotebook', this.getNotebooks);
-        ws.on('createdailynote', this.getAll);
-        ws.on('renamenotebook', this.getAll);
-        ws.on('transactions', this.getCurrentBook);
-    },
-};
+async function getCurrentBook() {
+    if (!currentNotebook.value) {
+        const storage = await request('/api/storage/getLocalStorage');
+        if (notebooksID.value.includes(storage['local-dailynoteid'])) {
+            currentNotebook.value = notebooks.value.find((book) => {
+                return book.value === storage['local-dailynoteid'];
+            });
+        }
+    } else if (!notebooksID.value.includes(currentNotebook.value.value)) {
+        currentNotebook.value = null;
+    }
+}
+
+async function getAll() {
+    await getNotebooks();
+    await getCurrentBook();
+}
 </script>
 <style>
 body {

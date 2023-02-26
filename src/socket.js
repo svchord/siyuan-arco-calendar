@@ -1,10 +1,4 @@
-export const genUUID = () =>
-    ([1e7].toString() + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-        (
-            parseInt(c, 10) ^
-            (window.crypto.getRandomValues(new Uint32Array(1))[0] & (15 >> (parseInt(c, 10) / 4)))
-        ).toString(16)
-    );
+import { getAppID, genUUID } from './utils';
 
 //https://github.com/siyuan-note/siyuan/blob/master/app/src/layout/Model.ts
 
@@ -16,9 +10,7 @@ export class Socket {
     }
     connect() {
         const url = 'ws://127.0.0.1:6806/ws';
-        const ws = new WebSocket(
-            `${url}?app=${Math.random().toString(36).substring(8)}&id=${genUUID()}`
-        );
+        const ws = new WebSocket(`${url}?app=${getAppID()}&id=${genUUID()}`);
         ws.onopen = () => {
             if (this.onopen) {
                 this.onopen;
