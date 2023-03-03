@@ -7,7 +7,7 @@
         >
             <template #cell="{ date }">
                 <div class="arco-picker-date" @click="createDailyNote(date)">
-                    <div class="arco-picker-date-value" :style="getCell(date)">
+                    <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
                         {{ date.getDate() }}
                     </div>
                 </div>
@@ -15,6 +15,42 @@
         </a-date-picker>
     </div>
 </template>
+<style lang="scss">
+.arco-picker-cell {
+    .arco-picker-date-value {
+        border: 1.4px solid transparent;
+        border-radius: var(--border-radius-medium);
+    }
+    &:not(.arco-picker-cell-selected) {
+        .arco-picker-date-value:hover {
+            background-color: transparent !important;
+        }
+        &.arco-picker-cell-in-view {
+            .arco-picker-date-value:hover {
+                border-color: rgb(var(--arcoblue-6));
+            }
+            .exist {
+                color: rgb(var(--arcoblue-6)) !important;
+                background-color: rgb(var(--arcoblue-1));
+                &:hover {
+                    background-color: rgb(var(--arcoblue-1)) !important;
+                }
+            }
+        }
+        &:not(.arco-picker-cell-in-view) {
+            .arco-picker-date-value:hover {
+                border-color: rgb(var(--gray-4));
+            }
+            .exist {
+                background-color: rgb(var(--gray-1));
+                &:hover {
+                    background-color: rgb(var(--gray-1)) !important;
+                }
+            }
+        }
+    }
+}
+</style>
 
 <script setup>
 import { request } from './utils';
@@ -25,18 +61,18 @@ const props = defineProps(['notebook']);
 const { notebook } = toRefs(props);
 
 const pickerValue = ref(null);
-// 当前面板已存在日记的日期
+// 当前面板已存在日记
 const existDailyNotes = ref([]);
 // 含变量的日记存放路径
 const dailyNoteSavePath = ref(null);
 // 日记模板存放路径
 const dailyNoteTemplatePath = ref(null);
-
-const existDailyNotesHpath = computed(() => {
-    return existDailyNotes.value.map((dailyNote) => {
+// 当前面板已存在日记的路径
+const existDailyNotesHpath = computed(() =>
+    existDailyNotes.value.map((dailyNote) => {
         return dailyNote.hpath;
-    });
-});
+    })
+);
 
 // 当前笔记本为空报错
 function notebookError() {
@@ -127,11 +163,8 @@ async function setCalendar(book) {
 
 // 设置cell样式
 function getCell(date) {
-    const highlightStyle = {
-        borderColor: 'rgb(var(--arcoblue-6))',
-    };
     let hpath = getHpath(dailyNoteSavePath.value, deconstructDate(date));
-    return existDailyNotesHpath.value.includes(hpath) ? highlightStyle : {};
+    return existDailyNotesHpath.value.includes(hpath);
 }
 
 // 创建日记
@@ -192,8 +225,3 @@ async function resetExistDailyNote() {
     existDailyNotes.value = temp;
 }
 </script>
-<style>
-.arco-picker-date-value {
-    border: 1px solid transparent;
-}
-</style>
