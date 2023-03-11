@@ -15,21 +15,23 @@
         </a-date-picker>
     </div>
 </template>
-<script setup>
-import { request } from './utils';
-import { Socket } from './socket';
+<script lang="ts" setup>
+import { request } from '../utils/request';
+import { Socket } from '../utils/socket';
 import { watch, computed, ref, toRefs } from 'vue';
+import type { ArcoOption } from '../interface/notebook';
+import type { DailyNote, DeconstructDate } from '../interface/dailynote';
 
-const props = defineProps(['notebook']);
+const props = defineProps<{ notebook: ArcoOption | undefined }>();
 const { notebook } = toRefs(props);
 
 const pickerValue = ref(null);
 // 当前面板已存在日记
-const existDailyNotes = ref([]);
+const existDailyNotes = ref<DailyNote[]>([]);
 // 含变量的日记存放路径
-const dailyNoteSavePath = ref(null);
+const dailyNoteSavePath = ref<string>('');
 // 日记模板存放路径
-const dailyNoteTemplatePath = ref(null);
+const dailyNoteTemplatePath = ref<string>('');
 // 当前面板已存在日记的ID
 const existDailyNotesID = computed(() =>
     existDailyNotes.value.map((dailyNote) => {
@@ -44,24 +46,20 @@ const existDailyNotesHpath = computed(() =>
 );
 
 // 当前笔记本为空报错
-function notebookIsNull() {
-    if (notebook.value) {
-        return false;
-    }
+function notebookError() {
     existDailyNotes.value = [];
     request('/api/notification/pushErrMsg', {
-        msg: '[日历插件] 获取当前笔记本失败，请手动设置',
+        msg: '[日历插件] 获取当前笔记本失败，请手动设置'
     });
-    return true;
 }
 
 // 月/日数字格式化
-function padTo2Digit(num) {
+function padTo2Digit(num: number) {
     return num.toString().padStart(2, '0');
 }
 
 // 递归解析日记存放路径
-function parsePath(path) {
+function parsePath(path: string) {
     // 年
     if (path?.match(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g)) {
         path = path.replaceAll(/{{(?<str1>.*?)2006(?<str2>.*?)}}/g, `{{$<str1>[[year]]$<str2>}}`);
@@ -90,12 +88,16 @@ function parsePath(path) {
     return path;
 }
 
-function deconstructDate(date) {
-    return [date.getFullYear(), padTo2Digit(date.getMonth() + 1), padTo2Digit(date.getDate())];
+function deconstructDate(date: Date): DeconstructDate {
+    return [
+        date.getFullYear().toString(),
+        padTo2Digit(date.getMonth() + 1),
+        padTo2Digit(date.getDate())
+    ];
 }
 
 // 根据含变量的日记存放路径及特定日期返回人类可读路径
-function getHpath(path, date = [year, month, day]) {
+function getHpath(path: String, date: DeconstructDate) {
     const [year, month, day] = date;
     return path
         ?.replaceAll('[[year]]', year)
@@ -103,10 +105,10 @@ function getHpath(path, date = [year, month, day]) {
         ?.replaceAll('[[day]]', day);
 }
 
-async function getExistDailyNotes(book) {
+async function getExistDailyNotes(book: ArcoOption) {
     let hpath = getHpath(dailyNoteSavePath.value, ['%', '%', '%']);
     const dailyNotes = await request('/api/query/sql', {
-        stmt: `select * from blocks where type='d' and box = '${book.value}' and hpath like '${hpath}'`,
+        stmt: `select * from blocks where type='d' and box = '${book.value}' and hpath like '${hpath}'`
     });
     let tempExistDailyNotes = [];
     if (dailyNotes.length) {
@@ -118,8 +120,9 @@ async function getExistDailyNotes(book) {
 }
 
 watch(notebook, (newValue) => setCalendar(newValue), { deep: true });
-async function setCalendar(book) {
-    if (notebookIsNull()) {
+async function setCalendar(book: ArcoOption | undefined) {
+    if (!book) {
+        notebookError();
         return;
     }
     // 获取含变量的日记存放路径
@@ -140,8 +143,10 @@ async function setCalendar(book) {
 const ws = new Socket();
 ws.on('removeDoc', resetExistDailyNote);
 
-function resetExistDailyNote(data) {
-    if (notebookIsNull()) {
+function resetExistDailyNote(data: { ids: string[] }) {
+    const book = notebook.value;
+    if (!book) {
+        notebookError();
         return;
     }
     // 删除日记
@@ -154,13 +159,14 @@ function resetExistDailyNote(data) {
     }
     // 删除日记祖先文档
     setTimeout(() => {
-        getExistDailyNotes(notebook.value);
+        getExistDailyNotes(book);
     }, 3000);
 }
 
 // 创建日记
-async function createDailyNote(date) {
-    if (notebookIsNull()) {
+async function createDailyNote(date: Date) {
+    if (!notebook.value) {
+        notebookError();
         return;
     }
     let bookID = notebook.value.value;
@@ -170,7 +176,7 @@ async function createDailyNote(date) {
     if (existDailyNotesHpath.value.includes(hpath)) {
         let docID = existDailyNotes.value.find((dailyNote) => {
             return dailyNote.hpath === hpath;
-        }).id;
+        })?.id;
         window.open(`siyuan://blocks/${docID}`);
         return;
     }
@@ -178,7 +184,7 @@ async function createDailyNote(date) {
     const docID = await request('/api/filetree/createDocWithMd', {
         notebook: bookID,
         path: hpath,
-        markdown: '',
+        markdown: ''
     });
     existDailyNotes.value.push({ id: docID, hpath: hpath });
     window.open(`siyuan://blocks/${docID}`);
@@ -189,23 +195,23 @@ async function createDailyNote(date) {
         let templateDir = system.conf.system.dataDir + '\\templates' + dailyNoteTemplatePath.value;
         const render = await request('/api/template/render', {
             id: docID,
-            path: templateDir,
+            path: templateDir
         });
         request('/api/block/prependBlock', {
             data: render.content,
             dataType: 'dom',
-            parentID: docID,
+            parentID: docID
         });
     }
 }
 
 // 设置 cell 类
-function getCell(date) {
+function getCell(date: Date) {
     let hpath = getHpath(dailyNoteSavePath.value, deconstructDate(date));
     return existDailyNotesHpath.value.includes(hpath);
 }
 </script>
-<style lang="less">
+<style lang="scss">
 body[arco-theme='dark'] {
     // 页面底色
     --color-bg-1: #21252b !important;

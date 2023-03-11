@@ -1,0 +1,17 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.web.json",
+    "include": ["../arco-calendar/env.d.ts", "src/**/*", "src/**/*.vue"],
+    "compilerOptions": {
+        "baseUrl": ".",
+        "lib": ["ESNext", "DOM"],
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        }
+    ]
+}

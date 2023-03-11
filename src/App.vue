@@ -7,26 +7,34 @@
                 placeholder="选择笔记本..."
                 allow-search
             >
-                <a-option v-for="book of notebooks" :value="book" :label="book.label" />
+                <a-option
+                    v-for="book of notebooks"
+                    :value="book"
+                    :label="book.label"
+                    :key="book.value"
+                />
             </a-select>
         </template>
         <a-tab-pane key="1">
             <template #title> 日历 </template>
-            <Calendar :notebook="currentNotebook" />
+            <CalendarView :notebook="currentNotebook" />
         </a-tab-pane>
         <!-- <a-tab-pane key="2">
         </a-tab-pane> -->
     </a-tabs>
 </template>
 
-<script setup>
-import Calendar from './Calendar.vue';
-import { request, getAppID } from './utils';
-import { Socket } from './socket';
+<script lang="ts" setup>
+import type { Notebook, ArcoOption } from './interface/notebook';
+
+import CalendarView from './components/CalendarView.vue';
+import { getAppID } from './utils/id';
+import { request } from './utils/request';
+import { Socket } from './utils/socket';
 import { computed, ref, watch } from 'vue';
 
-const notebooks = ref([]);
-const currentNotebook = ref(null);
+const notebooks = ref<ArcoOption[]>([]);
+const currentNotebook = ref<ArcoOption | undefined>(undefined);
 
 const notebooksID = computed(() => {
     return notebooks.value.map((book) => {
@@ -36,16 +44,16 @@ const notebooksID = computed(() => {
 
 watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true });
 
-async function changeStorage(book) {
+async function changeStorage(book: ArcoOption | undefined) {
     if (!book) {
         return;
     }
     const storage = await request('/api/storage/getLocalStorage');
-    if (currentNotebook.value.value !== storage['local-dailynoteid']) {
+    if (currentNotebook.value?.value !== storage['local-dailynoteid']) {
         request('/api/storage/setLocalStorageVal', {
             app: getAppID(),
             key: 'local-dailynoteid',
-            val: currentNotebook.value.value,
+            val: currentNotebook.value?.value
         });
     }
 }
@@ -71,13 +79,13 @@ setDarkTheme();
 async function getNotebooks() {
     const data = await request('/api/notebook/lsNotebooks');
 
-    let tempNotebooks = [];
-    data.notebooks.forEach((book) => {
+    let tempNotebooks: ArcoOption[] = [];
+    data.notebooks.forEach((book: Notebook) => {
         if (!book.closed) {
             tempNotebooks.push({
                 value: book.id,
                 label: book.name,
-                other: 'other',
+                other: 'other'
             });
         }
     });
@@ -93,7 +101,7 @@ async function getCurrentBook() {
             });
         }
     } else if (!notebooksID.value.includes(currentNotebook.value.value)) {
-        currentNotebook.value = null;
+        currentNotebook.value = undefined;
     }
 }
 

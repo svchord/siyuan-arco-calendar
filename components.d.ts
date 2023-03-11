@@ -12,5 +12,6 @@ declare module '@vue/runtime-core' {
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
+    CalendarView: typeof import('./src/components/CalendarView.vue')['default']
   }
 }
