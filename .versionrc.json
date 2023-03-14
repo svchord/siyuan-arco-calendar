@@ -53,6 +53,10 @@
         {
             "filename": "package.json",
             "type": "json"
+        },
+        {
+            "filename": "calendar/manifest.json",
+            "type": "json"
         }
     ]
 }

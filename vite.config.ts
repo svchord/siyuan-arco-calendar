@@ -7,6 +7,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
@@ -20,7 +22,8 @@ export default defineConfig({
                     sideEffect: true
                 })
             ]
-        })
+        }),
+        cssInjectedByJsPlugin()
     ],
     resolve: {
         alias: {
@@ -38,9 +41,19 @@ export default defineConfig({
         }
     },
     // 打包后的公共路径（用于嵌入形式的开发）
-    base: './',
+    // base: './',
     // 打包文件所在目录
     build: {
-        outDir: 'calendar/dist'
+        assetsDir: '',
+        outDir: 'calendar',
+        emptyOutDir: false,
+        lib: {
+            entry: 'src/main.ts',
+            formats: ['cjs'],
+            fileName: 'main'
+        },
+        rollupOptions: {
+            external: ['siyuan']
+        }
     }
 })
