@@ -17,7 +17,7 @@
 </template>
 <script lang="ts" setup>
 import { request } from '../utils/request'
-import { Socket } from '../utils/socket'
+// import { Socket } from '../utils/socket'
 import { watch, computed, ref, toRefs } from 'vue'
 import type { ArcoOption } from '../interface/notebook'
 import type { DailyNote, DeconstructDate } from '../interface/dailynote'
@@ -32,12 +32,12 @@ const existDailyNotes = ref<DailyNote[]>([])
 const dailyNoteSavePath = ref<string>('')
 // 日记模板存放路径
 const dailyNoteTemplatePath = ref<string>('')
-// 当前面板已存在日记的ID
-const existDailyNotesID = computed(() =>
-    existDailyNotes.value.map((dailyNote) => {
-        return dailyNote.id
-    })
-)
+// // 当前面板已存在日记的ID
+// const existDailyNotesID = computed(() =>
+//     existDailyNotes.value.map((dailyNote) => {
+//         return dailyNote.id
+//     })
+// )
 // 当前面板已存在日记的路径
 const existDailyNotesHpath = computed(() =>
     existDailyNotes.value.map((dailyNote) => {
@@ -140,28 +140,28 @@ async function setCalendar(book: ArcoOption | undefined) {
 }
 
 // 重置日记数据
-const ws = new Socket()
-ws.on('removeDoc', resetExistDailyNote)
+// const ws = new Socket()
+// ws.on('removeDoc', resetExistDailyNote)
 
-function resetExistDailyNote(data: { ids: string[] }) {
-    const book = notebook.value
-    if (!book) {
-        notebookError()
-        return
-    }
-    // 删除日记
-    const removeDocID = data.ids[0]
-    if (existDailyNotesID.value.includes(removeDocID)) {
-        existDailyNotes.value = existDailyNotes.value.filter((dailyNote) => {
-            return dailyNote.id !== removeDocID
-        })
-        return
-    }
-    // 删除日记祖先文档
-    setTimeout(() => {
-        getExistDailyNotes(book)
-    }, 3000)
-}
+// function resetExistDailyNote(data: { ids: string[] }) {
+//     const book = notebook.value
+//     if (!book) {
+//         notebookError()
+//         return
+//     }
+//     // 删除日记
+//     const removeDocID = data.ids[0]
+//     if (existDailyNotesID.value.includes(removeDocID)) {
+//         existDailyNotes.value = existDailyNotes.value.filter((dailyNote) => {
+//             return dailyNote.id !== removeDocID
+//         })
+//         return
+//     }
+//     // 删除日记祖先文档
+//     setTimeout(() => {
+//         getExistDailyNotes(book)
+//     }, 3000)
+// }
 
 // 创建日记
 async function createDailyNote(date: Date) {
@@ -225,25 +225,25 @@ function getCell(date: Date) {
         // 当月日期
         &.arco-picker-cell-in-view {
             .arco-picker-date-value:hover {
-                border-color: rgb(var(--arcoblue-6));
+                border-color: rgb(var(--primary-6));
             }
             .exist {
-                color: rgb(var(--arcoblue-6)) !important;
-                background-color: rgb(var(--arcoblue-1));
+                color: rgb(var(--primary-6)) !important;
+                background-color: var(--color-primary-light-2);
                 &:hover {
-                    background-color: rgb(var(--arcoblue-1)) !important;
+                    background-color: var(--color-primary-light-2) !important;
                 }
             }
         }
         // 非当月日期
         &:not(.arco-picker-cell-in-view) {
             .arco-picker-date-value:hover {
-                border-color: rgb(var(--gray-4));
+                border-color: var(--gray-4);
             }
             .exist {
-                background-color: rgb(var(--gray-1));
+                background-color: var(--color-fill-2);
                 &:hover {
-                    background-color: rgb(var(--gray-1)) !important;
+                    background-color: var(--color-fill-2) !important;
                 }
             }
         }

@@ -15,22 +15,24 @@
 将以下代码插入 `theme.css` 内,并自行修改颜色
 
 ```css
-// 明亮模式的颜色即删除下行内的"[data-theme-mode='dark']"
-[data-theme-mode='dark'] .arco-tabs {
+// 暗黑模式的颜色即下两行开头添加"[data-theme-mode='dark']"
+.arco-tabs,
+.arco-trigger-popup {
+    // 主色 (r,g,b)
+    --primary-6: 53, 117, 240;
+    // 浅主色
+    --color-primary-light-2: var(--b3-theme-primary-lightest);
+
     // 页面底色
-    --color-bg-1: #21252b;
+    --color-bg-1: var(--b3-menu-background);
     // 下拉选择框输入时底色
-    --color-bg-2: #21252b;
+    --color-bg-2: var(--b3-menu-background);
     // 下拉选择框底色 && 下拉菜单选项悬浮底色
-    --color-fill-2: #323842;
-    --color-fill-3: #323842;
+    --color-fill-2: var(--b3-list-hover);
+    --color-fill-3: var(--b3-list-hover);
 
     // 日历底色
-    --color-bg-popup: #282c34;
-    // 非当月日期，有日记底色（r,g,b）
-    --gray-1: 33, 37, 43;
-    // 当月日期，有日记底色（r,g,b,a）
-    --arcoblue-1: 60, 126, 255, 0.2;
+    --color-bg-popup: var(--b3-menu-background);
 }
 ```
 
