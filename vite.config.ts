@@ -40,9 +40,6 @@ export default defineConfig({
             }
         }
     },
-    // 打包后的公共路径（用于嵌入形式的开发）
-    // base: './',
-    // 打包文件所在目录
     build: {
         assetsDir: '',
         outDir: 'calendar',
