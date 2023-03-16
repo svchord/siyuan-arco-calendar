@@ -238,7 +238,7 @@ function getCell(date: Date) {
         // 非当月日期
         &:not(.arco-picker-cell-in-view) {
             .arco-picker-date-value:hover {
-                border-color: var(--gray-4);
+                border-color: var(--color-neutral-3);
             }
             .exist {
                 background-color: var(--color-fill-2);

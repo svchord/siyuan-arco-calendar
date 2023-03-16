@@ -13,6 +13,5 @@ declare module '@vue/runtime-core' {
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
     CalendarView: typeof import('./src/components/CalendarView.vue')['default']
-    TopBarButton: typeof import('./src/components/TopBarButton.vue')['default']
   }
 }

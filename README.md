@@ -19,7 +19,8 @@
 .arco-tabs,
 .arco-trigger-popup {
     // 主色 (r,g,b)
-    --primary-6: 53, 117, 240;
+    --arco-primary: 53, 117, 240;
+    --primary-6: var(--arco-primary);
     // 浅主色
     --color-primary-light-2: var(--b3-theme-primary-lightest);
 
@@ -33,6 +34,12 @@
 
     // 日历底色
     --color-bg-popup: var(--b3-menu-background);
+
+    // 边框颜色
+    --color-neutral-3: var(--b3-border-color);
+
+    // 文字颜色
+    --color-text-1: var(--b3-theme-on-background);
 }
 ```
 
