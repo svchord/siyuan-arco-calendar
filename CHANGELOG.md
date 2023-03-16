@@ -1,6 +1,24 @@
 # 版本日志 | Changelog 
 
 
+### [0.0.5](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.3...v0.0.5) (2023-03-16)
+
+
+### 代码重构 | Code Refactoring
+
+* 使用 TypeScript 重构项目 ([6a10010](https://github.com/svchord/siyuan-arco-calendar/commit/6a10010231848236adb7472367a3823cc41e6d50))
+
+
+### 新增功能 | Features
+
+* 适配插件系统 ([1f5bf31](https://github.com/svchord/siyuan-arco-calendar/commit/1f5bf3105a5ac8bf064f152dec578ffbbc9237b4))
+
+
+### 修复缺陷 | Bug Fixes
+
+* 兼容思源css变量 ([868049a](https://github.com/svchord/siyuan-arco-calendar/commit/868049a28823d28b751ce07e54af1f5256a986aa))
+* 完善按钮选择器和卸载钩子 ([dc37be8](https://github.com/svchord/siyuan-arco-calendar/commit/dc37be8bd1f83bd546b9694a7ad2f09bdac064e4))
+
 ### [0.0.4](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.3...v0.0.4) (2023-03-14)
 
 
