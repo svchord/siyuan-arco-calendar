@@ -119,7 +119,7 @@ getAll()
 // ws.on('renamenotebook', getAll)
 // ws.on('transactions', getCurrentBook)
 </script>
-<style lang="scss">
+<style lang="less">
 .arco-tabs,
 .arco-trigger-popup {
     // 主色 (r,g,b)
@@ -152,5 +152,11 @@ getAll()
     a:hover {
         text-decoration: none;
     }
+    // :deep(svg) {
+    //     fill: none;
+    // }
+    // :deep(a:hover) {
+    //     text-decoration: none;
+    // }
 }
 </style>

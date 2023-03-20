@@ -211,7 +211,7 @@ function getCell(date: Date) {
     return existDailyNotesHpath.value.includes(hpath)
 }
 </script>
-<style lang="scss">
+<style lang="less">
 .arco-picker-cell {
     .arco-picker-date-value {
         border: 1.4px solid transparent;
