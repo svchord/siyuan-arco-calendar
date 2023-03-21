@@ -1,6 +1,15 @@
 # 版本日志 | Changelog 
 
 
+### [0.0.6](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.5...v0.0.6) (2023-03-21)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 优化图标 ([fc8556d](https://github.com/svchord/siyuan-arco-calendar/commit/fc8556d3c6580d78102b16646ba326a549881eec))
+* 暂时修复样式污染问题 ([44c3d78](https://github.com/svchord/siyuan-arco-calendar/commit/44c3d782b87c8f05f0ef12fa230689814ff9f84d)), closes [#2](https://github.com/svchord/siyuan-arco-calendar/issues/2)
+* Style inject ([a0f70d1](https://github.com/svchord/siyuan-arco-calendar/commit/a0f70d1204491ef54683383e1d6e364e8cbbbc95))
+
 ### [0.0.5](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.3...v0.0.5) (2023-03-16)
 
 
