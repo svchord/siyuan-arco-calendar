@@ -1,6 +1,31 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import ArcoVue from '@arco-design/web-vue'
+import { Select, DatePicker, Tabs } from '@arco-design/web-vue';
+
+import "@arco-design/web-vue/es/input/style/index.css";
+import "@arco-design/web-vue/es/_components/input-label/style/index.css";
+import "@arco-design/web-vue/es/tag/style/index.css";
+import "@arco-design/web-vue/es/input-tag/style/index.css";
+import "@arco-design/web-vue/es/_components/select-view/style/index.css";
+import "@arco-design/web-vue/es/trigger/style/index.css";
+import "@arco-design/web-vue/es/empty/style/index.css";
+import "@arco-design/web-vue/es/checkbox/style/index.css";
+import "@arco-design/web-vue/es/scrollbar/style/index.css";
+import "@arco-design/web-vue/es/select/style/index.css";
+
+// import "@arco-design/web-vue/es/style/index.css";
+import "@arco-design/web-vue/es/input/style/index.css";
+import "@arco-design/web-vue/es/trigger/style/index.css";
+import "@arco-design/web-vue/es/_components/picker/style/index.css";
+import "@arco-design/web-vue/es/time-picker/style/index.css";
+import "@arco-design/web-vue/es/button/style/index.css";
+import "@arco-design/web-vue/es/link/style/index.css";
+import "@arco-design/web-vue/es/date-picker/style/index.css";
+
+import "@arco-design/web-vue/es/tabs/style/index.css";
+
+
 
 import { Plugin, Menu, clientApi } from 'siyuan'
 
@@ -23,7 +48,9 @@ export default class CalendarPlugin extends Plugin {
         this.el.addEventListener('click', (event) => {
             const ca = document.createElement('div')
             const app = createApp(App)
-            app.use(ArcoVue)
+            app.use(Select)
+            app.use(DatePicker)
+            app.use(Tabs)
             app.mount(ca)
             new Menu('Calendar').addItem({ element: ca }).showAtMouseEvent(event)
             event.stopPropagation()
