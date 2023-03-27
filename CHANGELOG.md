@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [0.0.7](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.6...v0.0.7) (2023-03-27)
+
+
+### 新增功能 | Features
+
+* 增加国际化功能 ([99bf14f](https://github.com/svchord/siyuan-arco-calendar/commit/99bf14f49ecf1a5157610ff3a0ebaf0fff7e86e2)), closes [#6](https://github.com/svchord/siyuan-arco-calendar/issues/6)
+
 ### [0.0.6](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.5...v0.0.6) (2023-03-21)
 
 
