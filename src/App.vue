@@ -1,41 +1,50 @@
 <template>
-    <a-tabs style="width: 280px; margin: auto">
-        <template #extra>
-            <a-select
-                v-model="currentNotebook"
-                :style="{ width: '160px', margin: 'auto' }"
-                placeholder="选择笔记本..."
-                allow-search
-            >
-                <a-option
-                    v-for="book of notebooks"
-                    :value="book"
-                    :label="book.label"
-                    :key="book.value"
-                />
-            </a-select>
-        </template>
-        <a-tab-pane key="1">
-            <template #title> 日历 </template>
-            <CalendarView :notebook="currentNotebook" />
-        </a-tab-pane>
-        <!-- <a-tab-pane key="2">
+    <a-config-provider :locale="locale">
+        <a-tabs style="width: 280px; margin: auto">
+            <template #extra>
+                <a-select
+                    v-model="currentNotebook"
+                    :style="{ width: '160px', margin: 'auto' }"
+                    placeholder="选择笔记本..."
+                    allow-search
+                >
+                    <a-option
+                        v-for="book of notebooks"
+                        :value="book"
+                        :label="book.label"
+                        :key="book.value"
+                    />
+                </a-select>
+            </template>
+            <a-tab-pane key="1">
+                <template #title> {{ tabName }} </template>
+                <CalendarView :notebook="currentNotebook" />
+            </a-tab-pane>
+            <!-- <a-tab-pane key="2">
         </a-tab-pane> -->
-    </a-tabs>
+        </a-tabs>
+    </a-config-provider>
 </template>
 
 <script lang="ts" setup>
 import type { Notebook, ArcoOption } from './interface/notebook'
-
+import { computed, ref, watch } from 'vue'
 import CalendarView from './components/CalendarView.vue'
+//utils
 import { getAppID } from './utils/id'
 import { request } from './utils/request'
 // import { Socket } from './utils/socket'
-import { computed, ref, watch } from 'vue'
+// hooks
+import { useTheme } from './hooks/useTheme'
+import { useLocale } from './hooks/useLocale'
+
+useTheme()
+
+const { locale, tabName, getLocaleType } = useLocale()
+getLocaleType()
 
 const notebooks = ref<ArcoOption[]>([])
 const currentNotebook = ref<ArcoOption | undefined>(undefined)
-
 const notebooksID = computed(() => {
     return notebooks.value.map((book) => {
         return book.value
@@ -43,7 +52,6 @@ const notebooksID = computed(() => {
 })
 
 watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true })
-
 async function changeStorage(book: ArcoOption | undefined) {
     if (!book) {
         return
@@ -57,23 +65,6 @@ async function changeStorage(book: ArcoOption | undefined) {
         })
     }
 }
-
-// 设置明暗切换
-async function setDarkTheme() {
-    const data = await request('/api/system/getConf')
-    const themeMode = data.conf.appearance.mode
-
-    switch (themeMode) {
-        case 1:
-            document.body.setAttribute('arco-theme', 'dark')
-            break
-        case 0:
-        default:
-            document.body.removeAttribute('arco-theme')
-            break
-    }
-}
-setDarkTheme()
 
 // 获取笔记本列表
 async function getNotebooks() {
