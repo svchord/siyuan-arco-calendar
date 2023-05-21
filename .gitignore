@@ -26,3 +26,14 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+
+.idea
+.vscode
+.DS_Store
+pnpm-lock.yaml
+package.zip
+node_modules
+dev
+dist
+build

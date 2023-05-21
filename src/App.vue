@@ -1,107 +1,98 @@
 <template>
-    <a-config-provider :locale="locale">
-        <a-tabs style="width: 280px; margin: auto">
-            <template #extra>
-                <a-select
-                    v-model="currentNotebook"
-                    :style="{ width: '160px', margin: 'auto' }"
-                    placeholder="选择笔记本..."
-                    allow-search
-                >
-                    <a-option
-                        v-for="book of notebooks"
-                        :value="book"
-                        :label="book.label"
-                        :key="book.value"
-                    />
-                </a-select>
-            </template>
-            <a-tab-pane key="1">
-                <template #title> {{ tabName }} </template>
-                <CalendarView :notebook="currentNotebook" />
-            </a-tab-pane>
-            <!-- <a-tab-pane key="2">
+  <a-config-provider :locale="locale">
+    <a-tabs style="width: 280px; margin: auto">
+      <template #extra>
+        <a-select v-model="currentNotebook" :style="{ width: '160px', margin: 'auto' }" placeholder="选择笔记本..."
+          allow-search>
+          <a-option v-for="book of notebooks" :value="book" :label="book.label" :key="book.value" />
+        </a-select>
+      </template>
+      <a-tab-pane key="1">
+        <template #title> {{ tabName }} </template>
+        <CalendarView :notebook="currentNotebook" />
+      </a-tab-pane>
+      <!-- <a-tab-pane key="2">
         </a-tab-pane> -->
-        </a-tabs>
-    </a-config-provider>
+    </a-tabs>
+  </a-config-provider>
 </template>
 
 <script lang="ts" setup>
-import type { Notebook, ArcoOption } from './interface/notebook'
-import { computed, ref, watch } from 'vue'
-import CalendarView from './components/CalendarView.vue'
+import type { Notebook, ArcoOption } from './interface/notebook';
+import { computed, ref, watch } from 'vue';
+import CalendarView from './components/CalendarView.vue';
 //utils
-import { getAppID } from './utils/id'
-import { request } from './utils/request'
+import { getAppID } from './utils/id';
+import { request } from './utils/request';
 // import { Socket } from './utils/socket'
 // hooks
-import { useTheme } from './hooks/useTheme'
-import { useLocale } from './hooks/useLocale'
+import { useTheme } from './hooks/useTheme';
+import { useLocale } from './hooks/useLocale';
 
-useTheme()
+useTheme();
 
-const { locale, tabName, getLocaleType } = useLocale()
-getLocaleType()
+const { locale, tabName, getLocaleType } = useLocale();
+getLocaleType();
 
-const notebooks = ref<ArcoOption[]>([])
-const currentNotebook = ref<ArcoOption | undefined>(undefined)
+const notebooks = ref<ArcoOption[]>([]);
+const currentNotebook = ref<ArcoOption | undefined>(undefined);
 const notebooksID = computed(() => {
-    return notebooks.value.map((book) => {
-        return book.value
-    })
-})
+  return notebooks.value.map((book) => {
+    return book.value;
+  });
+});
 
-watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true })
+watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true });
 async function changeStorage(book: ArcoOption | undefined) {
-    if (!book) {
-        return
-    }
-    const storage = await request('/api/storage/getLocalStorage')
-    if (currentNotebook.value?.value !== storage['local-dailynoteid']) {
-        request('/api/storage/setLocalStorageVal', {
-            app: getAppID(),
-            key: 'local-dailynoteid',
-            val: currentNotebook.value?.value
-        })
-    }
+  if (!book) {
+    return;
+  }
+  const storage = await request('/api/storage/getLocalStorage');
+  if (currentNotebook.value?.value !== storage['local-dailynoteid']) {
+    request('/api/storage/setLocalStorageVal', {
+      app: getAppID(),
+      key: 'local-dailynoteid',
+      val: currentNotebook.value?.value
+    });
+  }
 }
 
 // 获取笔记本列表
 async function getNotebooks() {
-    const data = await request('/api/notebook/lsNotebooks')
+  const data = await request('/api/notebook/lsNotebooks');
 
-    let tempNotebooks: ArcoOption[] = []
-    data.notebooks.forEach((book: Notebook) => {
-        if (!book.closed) {
-            tempNotebooks.push({
-                value: book.id,
-                label: book.name,
-                other: 'other'
-            })
-        }
-    })
-    notebooks.value = tempNotebooks
+  let tempNotebooks: ArcoOption[] = [];
+  data.notebooks.forEach((book: Notebook) => {
+    if (!book.closed) {
+      tempNotebooks.push({
+        value: book.id,
+        label: book.name,
+        other: 'other'
+      });
+    }
+  });
+  notebooks.value = tempNotebooks;
 }
 
 async function getCurrentBook() {
-    if (!currentNotebook.value) {
-        const storage = await request('/api/storage/getLocalStorage')
-        if (notebooksID.value.includes(storage['local-dailynoteid'])) {
-            currentNotebook.value = notebooks.value.find((book) => {
-                return book.value === storage['local-dailynoteid']
-            })
-        }
-    } else if (!notebooksID.value.includes(currentNotebook.value.value)) {
-        currentNotebook.value = undefined
+  if (!currentNotebook.value) {
+    const storage = await request('/api/storage/getLocalStorage');
+    if (notebooksID.value.includes(storage['local-dailynoteid'])) {
+      currentNotebook.value = notebooks.value.find((book) => {
+        return book.value === storage['local-dailynoteid'];
+      });
     }
+  } else if (!notebooksID.value.includes(currentNotebook.value.value)) {
+    currentNotebook.value = undefined;
+  }
 }
 
 async function getAll() {
-    await getNotebooks()
-    await getCurrentBook()
+  await getNotebooks();
+  await getCurrentBook();
 }
 
-getAll()
+getAll();
 // const ws = new Socket()
 // ws.on('mount', getAll)
 // ws.on('unmount', getAll)

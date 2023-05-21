@@ -1,38 +1,99 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import minimist from 'minimist';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import livereload from 'rollup-plugin-livereload';
+import zipPack from 'vite-plugin-zip-pack';
+import fg from 'fast-glob';
 
-// https://vitejs.dev/config/
+const args = minimist(process.argv.slice(2));
+const isWatch = args.watch || args.w || false;
+const devDistDir = './dev';
+const distDir = isWatch ? devDistDir : './dist';
+
+console.log('isWatch=>', isWatch);
+console.log('distDir=>', distDir);
+
 export default defineConfig({
-    plugins: [vue(), cssInjectedByJsPlugin()],
-    resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
-        }
+  plugins: [
+    vue(),
+    viteStaticCopy({
+      targets: [
+        { src: './README*.md', dest: './' },
+        { src: './icon.png', dest: './' },
+        { src: './preview.png', dest: './' },
+        { src: './plugin.json', dest: './' },
+        { src: './src/i18n/**', dest: './i18n/' }
+      ]
+    })
+  ],
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
+  },
+
+  // https://github.com/vitejs/vite/issues/1930
+  // https://vitejs.dev/guide/env-and-mode.html#env-files
+  // https://github.com/vitejs/vite/discussions/3058#discussioncomment-2115319
+  // 在这里自定义变量
+  define: {
+    'process.env.DEV_MODE': `"${isWatch}"`
+  },
+
+  build: {
+    // 输出路径
+    outDir: distDir,
+    emptyOutDir: false,
+
+    // 构建后是否生成 source map 文件
+    sourcemap: false,
+
+    // 设置为 false 可以禁用最小化混淆
+    // 或是用来指定是应用哪种混淆器
+    // boolean | 'terser' | 'esbuild'
+    // 不压缩，用于调试
+    minify: !isWatch,
+
+    lib: {
+      entry: 'src/index.ts',
+      // the proper extensions will be added
+      fileName: 'index',
+      formats: ['cjs']
     },
-    server: {
-        proxy: {
-            // 本地开发环境通过代理实现跨域，生产环境使用 nginx 转发
-            // 正则表达式写法
-            '^/api': {
-                target: 'http://127.0.0.1:6806', // 后端服务实际地址
-                changeOrigin: true //开启代理
+    rollupOptions: {
+      plugins: isWatch
+        ? [
+            livereload(devDistDir),
+            {
+              //监听静态资源文件
+              name: 'watch-external',
+              async buildStart() {
+                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json']);
+                for (const file of files) {
+                  this.addWatchFile(file);
+                }
+              }
             }
+          ]
+        : [
+            zipPack({
+              inDir: './dist',
+              outDir: './',
+              outFileName: 'package.zip'
+            })
+          ],
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ['siyuan', 'process'],
+      output: {
+        entryFileNames: '[name].js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'index.css';
+          }
         }
-    },
-    build: {
-        assetsDir: '',
-        outDir: 'calendar',
-        emptyOutDir: false,
-        lib: {
-            entry: 'src/main.ts',
-            formats: ['cjs'],
-            fileName: 'main'
-        },
-        rollupOptions: {
-            external: ['siyuan']
-        }
+      }
     }
-})
+  }
+});
