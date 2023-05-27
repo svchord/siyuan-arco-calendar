@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+## [0.0.8](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.7...v0.0.8) (2023-05-27)
+
+
+### Code Refactoring
+
+* 根据新版插件模板重构 ([720105f](https://github.com/svchord/siyuan-arco-calendar/commit/720105fa9fba8e069e9de2a672ca290a6980785f))
+
 ### [0.0.7](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.6...v0.0.7) (2023-03-27)
 
 
