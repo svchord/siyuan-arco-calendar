@@ -1,7 +1,7 @@
 {
   "name": "arco-calendar",
   "author": "svchord",
-  "url": "https://github.com/siyuan-note/plugin-sample-vite-svelte",
+  "url": "https://github.com/svchord/siyuan-arco-calendar",
   "version": "1.0.3",
   "displayName": {
     "zh_CN": "顶栏日历",
