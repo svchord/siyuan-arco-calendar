@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.0.4](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.3...v1.0.4) (2023-05-27)
+
+
+### 文档更新 | Documentation
+
+* 更新plugin.json ([2ebddad](https://github.com/svchord/siyuan-arco-calendar/commit/2ebddadceada0e7ec02ee4b4ddf91e7f6977a316))
+
 ### [1.0.3](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.2...v1.0.3) (2023-05-27)
 
 ### [1.0.2](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.1...v1.0.2) (2023-05-27)
