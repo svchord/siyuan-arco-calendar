@@ -1,14 +1,16 @@
 # arco-calendar
 
-依赖 arco design 组件库开发的思源笔记日历插件，基于[社区插件系统](https://github.com/zuoez02/siyuan-plugin-system)
+简体中文 \| [English](README_en_US.md)
 
-![预览图](preview.png)
+依赖 arco design 组件库开发的思源笔记日历插件
 
-## 手动安装插件
+<img width="1280" alt="preview" src="https://github.com/svchord/siyuan-arco-calendar/assets/61345763/6bdf09a9-b5a1-48f7-b499-340d44397787">
 
-- 确保你已经安装了插件系统，[安装教程地址](https://github.com/zuoez02/siyuan-plugin-system/blob/main/README_zh.md)
-- 复制 `calendar` 目录下的文件到 `工作空间/data/plugins` 目录下
-- 重载思源，关闭插件系统的安全模式，并开启该插件
+## 参考与感谢
+
+- [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
+- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
+- [九炎](https://github.com/leolee9086) 大佬提供的 WebSocket 封装模板
 
 ## 修改颜色
 
@@ -43,9 +45,10 @@
 }
 ```
 
-## 参考与感谢
+## 版本日志
 
-- [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
-- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
-- [九炎](https://github.com/leolee9086) 大佬提供的 WebSocket 封装模板
-- [zuoez02](https://github.com/zuoez02) 大佬创建的 [社区插件系统](https://github.com/zuoez02/siyuan-plugin-system)
+[Changelog](./CHANGELOG.md)
+
+## License
+
+[License](./LICENSE)

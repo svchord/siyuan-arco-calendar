@@ -4,19 +4,19 @@
   "url": "https://github.com/siyuan-note/plugin-sample-vite-svelte",
   "version": "1.0.0",
   "displayName": {
-    "en_US": "Plugin sample with vite and svelte",
-    "zh_CN": "插件样例 vite + svelte 版"
+    "zh_CN": "顶栏日历",
+    "en_US": "Topbar Calendar"
   },
   "description": {
-    "en_US": "SiYuan plugin sample with vite and svelte",
-    "zh_CN": "使用 vite 和 svelte 开发的思源插件样例"
+    "zh_CN": "顶栏按钮打开日历菜单，快速新建或转到日记",
+    "en_US": "Top bar button opens calendar menu, quickly create new or go to diary"
   },
   "readme": {
-    "en_US": "README.md",
-    "zh_CN": "README_zh_CN.md"
+    "zh_CN": "README.md",
+    "en_US": "README_en_US.md"
   },
-  "i18n": ["en_US", "zh_CN"],
+  "i18n": ["zh_CN", "en_US"],
   "funding": {
-    "custom": ["https://afdian.net/a/frostime"]
+    "custom": ["https://afdian.net/a/svchord"]
   }
 }
