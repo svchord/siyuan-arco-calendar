@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+## [1.0.1](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.0...v1.0.1) (2023-05-27)
+
+
+### Code Refactoring
+
+* 删除standard-version相关文件 ([cb86f69](https://github.com/svchord/siyuan-arco-calendar/commit/cb86f69c769980a5aaecbcef58b10c8fd66ce842))
+
 ### [0.0.7](https://github.com/svchord/siyuan-arco-calendar/compare/v0.0.6...v0.0.7) (2023-03-27)
 
 
