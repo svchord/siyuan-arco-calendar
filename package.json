@@ -16,6 +16,7 @@
     "type-check:watch": "vue-tsc --noEmit --watch",
     "commit": "git add . && git cz",
     "amend": "git add . && git commit --amend --no-edit && git push --force",
+    "release": "standard-version && git push --follow-tags origin main",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write ."
   },
@@ -48,6 +49,7 @@
     "prettier": "^2.8.8",
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^0.7.1",
+    "standard-version": "^9.5.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "unplugin-auto-import": "^0.16.2",
