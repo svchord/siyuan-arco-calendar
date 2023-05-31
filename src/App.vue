@@ -102,33 +102,6 @@ getAll();
 // ws.on('transactions', getCurrentBook)
 </script>
 <style lang="less">
-// base
-@import '@arco-design/web-vue/es/style/icon.less';
-@import '@arco-design/web-vue/es/style/animation/index.less';
-@import '@arco-design/web-vue/es/style/theme/index.less';
-@import '@arco-design/web-vue/es/style/theme/css-variables.less';
-
-// Select
-@import '@arco-design/web-vue/es/input/style/index.css';
-@import '@arco-design/web-vue/es/_components/input-label/style/index.css';
-@import '@arco-design/web-vue/es/tag/style/index.css';
-@import '@arco-design/web-vue/es/input-tag/style/index.css';
-@import '@arco-design/web-vue/es/_components/select-view/style/index.css';
-@import '@arco-design/web-vue/es/trigger/style/index.css';
-@import '@arco-design/web-vue/es/empty/style/index.css';
-@import '@arco-design/web-vue/es/checkbox/style/index.css';
-@import '@arco-design/web-vue/es/scrollbar/style/index.css';
-@import '@arco-design/web-vue/es/select/style/index.css';
-
-// Date-Picker
-@import '@arco-design/web-vue/es/_components/picker/style/index.css';
-@import '@arco-design/web-vue/es/time-picker/style/index.css';
-@import '@arco-design/web-vue/es/button/style/index.css';
-@import '@arco-design/web-vue/es/link/style/index.css';
-@import '@arco-design/web-vue/es/date-picker/style/index.css';
-
-// tabs
-@import '@arco-design/web-vue/es/tabs/style/index.css';
 .arco-tabs,
 .arco-trigger-popup {
     // 主色 (r,g,b)
