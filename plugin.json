@@ -2,10 +2,17 @@
   "name": "arco-calendar",
   "author": "svchord",
   "url": "https://github.com/svchord/siyuan-arco-calendar",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "minAppVersion": "2.8.10",
-  "backends": ["windows", "linux", "darwin"],
-  "frontends": ["desktop", "mobile"],
+  "backends": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "frontends": [
+    "desktop",
+    "mobile"
+  ],
   "displayName": {
     "zh_CN": "顶栏日历",
     "en_US": "Topbar Calendar"
@@ -18,8 +25,13 @@
     "zh_CN": "README.md",
     "en_US": "README_en_US.md"
   },
-  "i18n": ["zh_CN", "en_US"],
+  "i18n": [
+    "zh_CN",
+    "en_US"
+  ],
   "funding": {
-    "custom": ["https://afdian.net/a/sevenchord"]
+    "custom": [
+      "https://afdian.net/a/sevenchord"
+    ]
   }
 }

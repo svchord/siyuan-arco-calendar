@@ -1,6 +1,23 @@
 # 版本日志 | Changelog 
 
 
+### [1.0.5](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.4...v1.0.5) (2023-05-31)
+
+
+### 构建相关 | Build System
+
+* 更新依赖 ([add6281](https://github.com/svchord/siyuan-arco-calendar/commit/add6281bc0f5aa1c39feeb4ab4cc908a26687788))
+
+
+### 修复缺陷 | Bug Fixes
+
+* 兼容思源v2.8.10新的api ([f0d1ebb](https://github.com/svchord/siyuan-arco-calendar/commit/f0d1ebba5757bfb48ed34b99f126d95824d98592))
+
+
+### 文档更新 | Documentation
+
+* 修改plugin.json，新增思源v2.8.10插件集市所需配置项 ([3aac1bd](https://github.com/svchord/siyuan-arco-calendar/commit/3aac1bdf71f7f47764ace52756efbc32954499cf))
+
 ### [1.0.4](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.3...v1.0.4) (2023-05-27)
 
 
