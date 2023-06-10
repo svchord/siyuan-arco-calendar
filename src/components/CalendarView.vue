@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-date-picker v-model:pickerValue="pickerValue" hide-trigger style="width: 268px; margin: auto; box-shadow: none">
+    <a-date-picker @picker-value-change="test" hide-trigger style="width: 268px; margin: auto; box-shadow: none">
       <template #cell="{ date }">
         <div class="arco-picker-date" @click="createDailyNote(date)">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
@@ -15,13 +15,14 @@
 import { request } from '../utils/request';
 // import { Socket } from '../utils/socket'
 import { watch, computed, ref, toRefs } from 'vue';
-import type { ArcoOption } from '../interface/notebook';
-import type { DailyNote, DeconstructDate } from '../interface/dailynote';
 
 const props = defineProps<{ notebook: ArcoOption | undefined }>();
 const { notebook } = toRefs(props);
 
-const pickerValue = ref(null);
+function test(e: Event) {
+  console.log(e);
+}
+
 // 当前面板已存在日记
 const existDailyNotes = ref<DailyNote[]>([]);
 // 含变量的日记存放路径

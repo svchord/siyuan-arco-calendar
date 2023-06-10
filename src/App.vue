@@ -18,7 +18,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Notebook, ArcoOption } from './interface/notebook';
 import { computed, ref, watch } from 'vue';
 import CalendarView from './components/CalendarView.vue';
 //utils
