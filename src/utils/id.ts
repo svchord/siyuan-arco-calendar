@@ -1,5 +1,5 @@
 export function getAppID() {
-  return Math.random().toString(36).substring(8);
+  return Math.random().toString(36).substring(8)
 }
 
 export const genUUID = () =>
@@ -7,4 +7,4 @@ export const genUUID = () =>
     (parseInt(c, 10) ^ (window.crypto.getRandomValues(new Uint32Array(1))[0] & (15 >> (parseInt(c, 10) / 4)))).toString(
       16
     )
-  );
+  )

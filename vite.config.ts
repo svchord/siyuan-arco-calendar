@@ -1,20 +1,20 @@
-import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 
-import minimist from 'minimist';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import livereload from 'rollup-plugin-livereload';
-import zipPack from 'vite-plugin-zip-pack';
-import fg from 'fast-glob';
+import minimist from 'minimist'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+import livereload from 'rollup-plugin-livereload'
+import zipPack from 'vite-plugin-zip-pack'
+import fg from 'fast-glob'
 
-const args = minimist(process.argv.slice(2));
-const isWatch = args.watch || args.w || false;
-const devDistDir = './dev';
-const distDir = isWatch ? devDistDir : './dist';
+const args = minimist(process.argv.slice(2))
+const isWatch = args.watch || args.w || false
+const devDistDir = './dev'
+const distDir = isWatch ? devDistDir : './dist'
 
-console.log('isWatch=>', isWatch);
-console.log('distDir=>', distDir);
+console.log('isWatch=>', isWatch)
+console.log('distDir=>', distDir)
 
 export default defineConfig({
   plugins: [
@@ -69,9 +69,9 @@ export default defineConfig({
               //监听静态资源文件
               name: 'watch-external',
               async buildStart() {
-                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json']);
+                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json'])
                 for (const file of files) {
-                  this.addWatchFile(file);
+                  this.addWatchFile(file)
                 }
               }
             }
@@ -90,10 +90,10 @@ export default defineConfig({
         entryFileNames: '[name].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.css')) {
-            return 'index.css';
+            return 'index.css'
           }
         }
       }
     }
   }
-});
+})

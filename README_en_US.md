@@ -23,7 +23,7 @@ Insert the following code into theme.css and modify the color by yourself
   // primary color (r,g,b)
   --arco-primary: 53, 117, 240;
   --primary-6: var(--arco-primary);
-  // light primary color 
+  // light primary color
   --color-primary-light-2: var(--b3-theme-primary-lightest);
 
   // page background color

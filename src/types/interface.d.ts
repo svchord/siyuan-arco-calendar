@@ -1,18 +1,12 @@
 interface DailyNote {
-  id: string;
-  hpath: string;
+  id: string
+  hpath: string
 }
 
-type DeconstructDate = [string, string, string];
-
-interface Notebook {
-  id: string;
-  name: string;
-  closed: boolean;
-}
+type DeconstructDate = [string, string, string]
 
 interface ArcoOption {
-  value: string;
-  label: string;
-  other: string;
+  value: string
+  label: string
+  other: string
 }
