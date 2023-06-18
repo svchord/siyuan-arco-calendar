@@ -4,8 +4,8 @@
   "url": "https://github.com/svchord/siyuan-arco-calendar",
   "version": "1.0.5",
   "minAppVersion": "2.8.10",
-  "backends": ["windows", "linux", "darwin"],
-  "frontends": ["desktop", "mobile"],
+  "backends": ["all"],
+  "frontends": ["all"],
   "displayName": {
     "zh_CN": "顶栏日历",
     "en_US": "Topbar Calendar"
