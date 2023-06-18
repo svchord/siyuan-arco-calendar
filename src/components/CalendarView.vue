@@ -98,7 +98,7 @@ function getHpath(path: String, date: DeconstructDate) {
 async function getExistDailyNotes(book: ArcoOption) {
   let hpath = getHpath(dailyNoteSavePath.value, ['%', '%', '%'])
   const dailyNotes = await request('/api/query/sql', {
-    stmt: `select * from blocks where type='d' and box = '${book.value}' and hpath like '${hpath}'`
+    stmt: `select * from blocks where type='d' and box = '${book.value}' and hpath like '${hpath}' limit 1000`
   })
   let tempExistDailyNotes = []
   if (dailyNotes.length) {
