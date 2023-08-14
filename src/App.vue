@@ -27,7 +27,6 @@ import CalendarView from './components/CalendarView.vue'
 //utils
 import { getAppID } from './utils/id'
 import { request } from './utils/request'
-// import { Socket } from './utils/socket'
 // hooks
 import { useTheme } from './hooks/useTheme'
 import { useLocale } from './hooks/useLocale'

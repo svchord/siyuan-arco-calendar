@@ -12,7 +12,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { request } from '../utils/request'
+import { request } from '@/utils/request'
 // import { Socket } from '../utils/socket'
 import { watch, computed, ref, toRefs } from 'vue'
 
@@ -67,7 +67,7 @@ function parsePath(path: string) {
   // 月
   if (path?.match(/{{(?<str1>.*?)01(?<str2>.*?)}}/g)) {
     path = path.replaceAll(/{{(?<str1>.*?)01(?<str2>.*?)}}/g, `{{$<str1>[[month]]$<str2>}}`)
-    if (path.match(/{{(?<str1>.*?)01(?<str2>.*?)}}/g)) {
+    if (path.match(/{ {(?<str1>.*?)01(?<str2>.*?)}}/g)) {
       path = parsePath(path)
     }
   }
