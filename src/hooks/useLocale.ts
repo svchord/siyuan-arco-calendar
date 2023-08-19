@@ -29,24 +29,15 @@ const locales: { [key: string]: typeof zhCN } = {
   vi_VN: viVN,
 };
 
-const tabNames: { [key: string]: string } = {
-  zh_CN: '日历',
-  en_US: 'Calendar',
-  es_ES: 'Calendario',
-  fr_FR: 'Calendrier',
-};
-
 export function useLocale() {
   const localeType = ref('zh_CN');
   const locale = computed(() => {
     return locales[localeType.value] || zhCN;
   });
-  const tabName = computed(() => {
-    return tabNames[localeType.value] || '日历';
-  });
   async function getLocaleType() {
     const data = await request('/api/system/getConf');
     localeType.value = data.conf.lang;
   }
-  return { localeType, locale, tabName, getLocaleType };
+  getLocaleType();
+  return { localeType, locale };
 }

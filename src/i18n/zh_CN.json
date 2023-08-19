@@ -1,3 +1,8 @@
 {
-  "openCalendar": "打开日历"
+  "openCalendar": "打开日历",
+  "tabName": "日历",
+  "msg": {
+    "begin": "[日历插件]",
+    "notNoteBook": "获取当前笔记本失败，请手动设置"
+  }
 }

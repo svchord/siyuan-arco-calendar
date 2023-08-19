@@ -12,7 +12,7 @@
         </a-select>
       </template>
       <a-tab-pane key="1">
-        <template #title> {{ tabName }} </template>
+        <template #title> {{ i18n.tabName }} </template>
         <CalendarView :notebook="currentNotebook" />
       </a-tab-pane>
       <!-- <a-tab-pane key="2">
@@ -29,12 +29,12 @@ import { getAppID } from '@/utils/id';
 import { lsNotebooks, request } from '@/utils/api';
 // hooks
 import { useLocale } from '@/hooks/useLocale';
+import { i18n } from '@/hooks/useI18n';
 // types
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import type { Notebook } from '@/types/notebook';
 
-const { locale, tabName, getLocaleType } = useLocale();
-getLocaleType();
+const { locale } = useLocale();
 
 // 获取笔记本列表
 const notebooks = ref<SelectOptionData[]>([]);

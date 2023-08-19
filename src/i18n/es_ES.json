@@ -1,0 +1,8 @@
+{
+  "openCalendar": "calendario abierto",
+  "tabName": "Calendario",
+  "msg": {
+    "begin": "[Complemento de calendario]",
+    "notNoteBook": "No se pudo obtener el cuaderno actual, configúrelo manualmente"
+  }
+}

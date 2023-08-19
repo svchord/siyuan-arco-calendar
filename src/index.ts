@@ -1,56 +1,52 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue'
-import { Plugin, Menu, getFrontend } from 'siyuan'
+import { createApp } from 'vue';
+import App from './App.vue';
+import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue';
+import { Plugin, Menu, getFrontend } from 'siyuan';
 
-import './index.less'
-// import '@arco-design/web-vue/dist/arco.css';
-
-// const app = createApp(App)
-// app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs)
-// app.mount('#app')
-
-export default class PluginSample extends Plugin {
-  private isMobile!: boolean
-  public element!: HTMLElement
+import './index.less';
+import { i18n } from '@/hooks/useI18n';
+export default class ArcoCalendarPlugin extends Plugin {
+  private isMobile!: boolean;
+  public element!: HTMLElement;
 
   onload() {
-    const frontEnd = getFrontend()
-    this.isMobile = frontEnd === 'mobile' || frontEnd === 'browser-mobile'
+    i18n.value = this.i18n;
+    const frontEnd = getFrontend();
+    this.isMobile = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
     this.element = this.addTopBar({
       icon: 'iconCalendar',
       title: this.i18n.openCalendar,
       position: 'left',
       callback: () => {
-        let rect = this.element.getBoundingClientRect()
+        let rect = this.element.getBoundingClientRect();
         // 如果被隐藏，则使用更多按钮
         if (rect.width === 0) {
-          rect = document.querySelector('#barMore')!.getBoundingClientRect()
+          rect = document.querySelector('#barMore')!.getBoundingClientRect();
         }
-        this.addMenu(rect)
-      }
-    })
+        this.addMenu(rect);
+      },
+    });
   }
 
   onunload() {
-    this.element?.remove()
+    this.element?.remove();
   }
 
   private addMenu(rect: DOMRect) {
-    const ca = document.createElement('div')
-    const app = createApp(App)
-    app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs)
-    app.mount(ca)
+    const ca = document.createElement('div');
+    const app = createApp(App);
+    app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs);
+    app.mount(ca);
 
-    const menu = new Menu('Calendar')
-    menu.addItem({ element: ca })
+    const menu = new Menu('Calendar');
+    menu.addItem({ element: ca });
     if (this.isMobile) {
-      menu.fullscreen()
+      menu.fullscreen();
     } else {
       menu.open({
         x: rect.left,
-        y: rect.bottom
-      })
+        y: rect.bottom,
+      });
     }
   }
 }

@@ -31,6 +31,7 @@ import {
 } from '@/utils/api';
 // types
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import { i18n } from '@/hooks/useI18n';
 
 const props = defineProps<{ notebook: SelectOptionData | undefined }>();
 const { notebook } = toRefs(props);
@@ -42,7 +43,7 @@ const dailyNoteTemplatePath = ref<string>('');
 watch(notebook, newValue => setCalendar(newValue), { deep: true });
 async function setCalendar(book: SelectOptionData | undefined) {
   if (!book) {
-    notebookError();
+    pushErrMsg(formateMsg('notNoteBook'));
     return;
   }
   // 获取含变量的日记存放路径
@@ -79,7 +80,7 @@ async function getDailyNotesID(hPath: string) {
 // 创建日记
 async function createDailyNote(date: Date) {
   if (!notebook.value) {
-    notebookError();
+    pushErrMsg(formateMsg('notNoteBook'));
     return;
   }
   const hPath = await getHPath(date);
@@ -104,8 +105,9 @@ async function createDailyNote(date: Date) {
 }
 
 // 当前笔记本为空报错
-function notebookError() {
-  pushErrMsg('[日历插件] 获取当前笔记本失败，请手动设置');
+function formateMsg(key: string) {
+  const msg = i18n.value.msg;
+  return `${msg.begin} ${msg[key]}`;
 }
 
 function test(e: string) {
