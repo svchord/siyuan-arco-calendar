@@ -8,7 +8,7 @@
           placeholder="选择笔记本..."
           allow-search
         >
-          <a-option v-for="book of notebooks" :value="book" :label="book.label" :key="book.value" />
+          <a-option v-for="book of notebooks" :value="book" :label="book.label" :key="book.value as string" />
         </a-select>
       </template>
       <a-tab-pane key="1">
@@ -22,86 +22,65 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
-import CalendarView from './components/CalendarView.vue'
+import { computed, ref, watch } from 'vue';
+import CalendarView from '@/components/CalendarView.vue';
 //utils
-import { getAppID } from './utils/id'
-import { request } from './utils/request'
+import { getAppID } from '@/utils/id';
+import { lsNotebooks, request } from '@/utils/api';
 // hooks
-import { useTheme } from './hooks/useTheme'
-import { useLocale } from './hooks/useLocale'
+import { useLocale } from '@/hooks/useLocale';
+// types
+import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import type { Notebook } from '@/types/notebook';
 
-useTheme()
-
-const { locale, tabName, getLocaleType } = useLocale()
-getLocaleType()
-
-const notebooks = ref<ArcoOption[]>([])
-const currentNotebook = ref<ArcoOption | undefined>(undefined)
-const notebooksID = computed(() => {
-  return notebooks.value.map((book) => {
-    return book.value
-  })
-})
-
-watch(currentNotebook, (newValue) => changeStorage(newValue), { deep: true })
-async function changeStorage(book: ArcoOption | undefined) {
-  if (!book) {
-    return
-  }
-  const storage = await request('/api/storage/getLocalStorage')
-  if (currentNotebook.value?.value !== storage['local-dailynoteid']) {
-    request('/api/storage/setLocalStorageVal', {
-      app: getAppID(),
-      key: 'local-dailynoteid',
-      val: currentNotebook.value?.value
-    })
-  }
-}
+const { locale, tabName, getLocaleType } = useLocale();
+getLocaleType();
 
 // 获取笔记本列表
+const notebooks = ref<SelectOptionData[]>([]);
+const notebooksID = computed(() => notebooks.value.map(book => book.value));
 async function getNotebooks() {
-  const data = await request('/api/notebook/lsNotebooks')
+  const data = await lsNotebooks();
 
-  let tempNotebooks: ArcoOption[] = []
-  data.notebooks.forEach((book: Notebook) => {
-    if (!book.closed) {
-      tempNotebooks.push({
-        value: book.id,
-        label: book.name,
-        other: 'other'
-      })
-    }
-  })
-  notebooks.value = tempNotebooks
+  notebooks.value = data.notebooks
+    .filter((book: Notebook) => !book.closed)
+    .map((book: Notebook) => {
+      return { value: book.id, label: book.name };
+    });
 }
 
+const currentNotebook = ref<SelectOptionData | undefined>(undefined);
 async function getCurrentBook() {
-  if (!currentNotebook.value) {
-    const storage = await request('/api/storage/getLocalStorage')
-    if (notebooksID.value.includes(storage['local-dailynoteid'])) {
-      currentNotebook.value = notebooks.value.find((book) => {
-        return book.value === storage['local-dailynoteid']
-      })
-    }
-  } else if (!notebooksID.value.includes(currentNotebook.value.value)) {
-    currentNotebook.value = undefined
+  const curBook = currentNotebook.value;
+  const books = notebooksID.value;
+  if (curBook) {
+    return;
+  }
+  const storage = await request('/api/storage/getLocalStorage');
+  if (books.includes(storage['local-dailynoteid'])) {
+    currentNotebook.value = notebooks.value.find(book => book.value === storage['local-dailynoteid']);
   }
 }
-
-async function getAll() {
-  await getNotebooks()
-  await getCurrentBook()
+async function init() {
+  await getNotebooks();
+  await getCurrentBook();
 }
+init();
 
-getAll()
-// const ws = new Socket()
-// ws.on('mount', getAll)
-// ws.on('unmount', getAll)
-// ws.on('createnotebook', getNotebooks)
-// ws.on('createdailynote', getAll)
-// ws.on('renamenotebook', getAll)
-// ws.on('transactions', getCurrentBook)
+watch(currentNotebook, newValue => changeStorage(newValue), { deep: true });
+async function changeStorage(book: SelectOptionData | undefined) {
+  if (!book) {
+    return;
+  }
+  const storage = await request('/api/storage/getLocalStorage');
+  if (book?.value !== storage['local-dailynoteid']) {
+    await request('/api/storage/setLocalStorageVal', {
+      app: getAppID(),
+      key: 'local-dailynoteid',
+      val: book?.value,
+    });
+  }
+}
 </script>
 <style lang="less">
 .arco-tabs,

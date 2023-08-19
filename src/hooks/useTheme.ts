@@ -1,4 +1,4 @@
-import { request } from '@/utils/request'
+import { request } from '@/utils/api'
 
 // 设置明暗切换
 export async function useTheme() {

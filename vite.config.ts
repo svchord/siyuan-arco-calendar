@@ -1,20 +1,20 @@
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-import minimist from 'minimist'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-import livereload from 'rollup-plugin-livereload'
-import zipPack from 'vite-plugin-zip-pack'
-import fg from 'fast-glob'
+import minimist from 'minimist';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import livereload from 'rollup-plugin-livereload';
+import zipPack from 'vite-plugin-zip-pack';
+import fg from 'fast-glob';
 
-const args = minimist(process.argv.slice(2))
-const isWatch = args.watch || args.w || false
-const devDistDir = './dev'
-const distDir = isWatch ? devDistDir : './dist'
+const args = minimist(process.argv.slice(2));
+const isWatch = args.watch || args.w || false;
+const devDistDir = './dev';
+const distDir = isWatch ? devDistDir : './dist';
 
-console.log('isWatch=>', isWatch)
-console.log('distDir=>', distDir)
+console.log('isWatch=>', isWatch);
+console.log('distDir=>', distDir);
 
 export default defineConfig({
   plugins: [
@@ -25,12 +25,12 @@ export default defineConfig({
         { src: './icon.png', dest: './' },
         { src: './preview.png', dest: './' },
         { src: './plugin.json', dest: './' },
-        { src: './src/i18n/**', dest: './i18n/' }
-      ]
-    })
+        { src: './src/i18n/**', dest: './i18n/' },
+      ],
+    }),
   ],
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
 
   // https://github.com/vitejs/vite/issues/1930
@@ -38,7 +38,7 @@ export default defineConfig({
   // https://github.com/vitejs/vite/discussions/3058#discussioncomment-2115319
   // 在这里自定义变量
   define: {
-    'process.env.DEV_MODE': `"${isWatch}"`
+    'process.env.DEV_MODE': `"${isWatch}"`,
   },
 
   build: {
@@ -59,7 +59,7 @@ export default defineConfig({
       entry: 'src/index.ts',
       // the proper extensions will be added
       fileName: 'index',
-      formats: ['cjs']
+      formats: ['cjs'],
     },
     rollupOptions: {
       plugins: isWatch
@@ -69,31 +69,32 @@ export default defineConfig({
               //监听静态资源文件
               name: 'watch-external',
               async buildStart() {
-                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json'])
+                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json']);
                 for (const file of files) {
-                  this.addWatchFile(file)
+                  this.addWatchFile(file);
                 }
-              }
-            }
+              },
+            },
           ]
         : [
             zipPack({
               inDir: './dist',
               outDir: './',
-              outFileName: 'package.zip'
-            })
+              outFileName: 'package.zip',
+            }),
           ],
       // make sure to externalize deps that shouldn't be bundled
       // into your library
       external: ['siyuan', 'process'],
       output: {
         entryFileNames: '[name].js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name?.endsWith('.css')) {
-            return 'index.css'
+            return 'index.css';
           }
-        }
-      }
-    }
-  }
-})
+          return assetInfo.name;
+        },
+      },
+    },
+  },
+});

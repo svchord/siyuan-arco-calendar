@@ -6,9 +6,9 @@ import { Plugin, Menu, getFrontend } from 'siyuan'
 import './index.less'
 // import '@arco-design/web-vue/dist/arco.css';
 
-const app = createApp(App)
-app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs)
-app.mount('#app')
+// const app = createApp(App)
+// app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs)
+// app.mount('#app')
 
 export default class PluginSample extends Plugin {
   private isMobile!: boolean
