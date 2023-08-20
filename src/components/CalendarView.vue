@@ -1,13 +1,13 @@
 <template>
   <div>
     <a-date-picker
-      @picker-value-change="change"
-      :show-now-btn="false"
+      @change="createDailyNote"
+      @picker-value-change="changePanel"
       hide-trigger
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date" @click="createDailyNote(date)">
+        <div class="arco-picker-date">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -55,15 +55,24 @@ async function setCalendar(book: SelectOptionData | undefined) {
   dailyNoteTemplatePath.value = conf.dailyNoteTemplatePath.replaceAll('/', '\\');
 }
 
-async function getHPath(date: Date) {
-  const { localeType } = useLocale();
-  const dateStr = date
-    .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-    .replace(/\//g, '-');
+async function getHPath(date: Date | string) {
+  let dateStr = '';
+  if (date instanceof Date) {
+    const { localeType } = useLocale();
+    dateStr = date
+      .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+      .replace(/\//g, '-');
+  }
+  if (typeof date === 'string') {
+    dateStr = date;
+  }
+  if (!dateStr) {
+    return '';
+  }
   const path = dailyNoteSavePath.value.replaceAll('[[dateSlot]]', dateStr);
   return renderSprig(path);
 }
@@ -78,12 +87,18 @@ async function getDailyNotesID(hPath: string) {
 }
 
 // 创建日记
-async function createDailyNote(date: Date) {
+async function createDailyNote(date: string) {
+  if (!date) {
+    return;
+  }
   if (!notebook.value) {
     pushErrMsg(formateMsg('notNoteBook'));
     return;
   }
   const hPath = await getHPath(date);
+  if (!hPath) {
+    return;
+  }
   const dailyNoteID = await getDailyNotesID(hPath);
 
   // 当前日期已有日记，打开日记
@@ -93,7 +108,7 @@ async function createDailyNote(date: Date) {
   }
   // 当前日期无日记，创建日记
   const docID = await createDocWithMd(notebook.value.value, hPath, '');
-  existDate.value.push(date.getTime());
+  existDate.value.push(new Date(date).getTime());
   window.open(`siyuan://blocks/${docID}`);
 
   // 根据模板渲染日记
@@ -134,7 +149,8 @@ async function getExistDate(lastDate: Date | undefined) {
 }
 
 onMounted(() => getExistDate(lastDate.value));
-function change() {
+function changePanel() {
+  console.log(1);
   setTimeout(() => getExistDate(lastDate.value), 0);
 }
 
