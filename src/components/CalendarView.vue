@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-date-picker
-      @picker-value-change="test"
+      @picker-value-change="change"
       :show-now-btn="false"
       hide-trigger
       style="width: 268px; margin: auto; box-shadow: none"
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref, toRefs } from 'vue';
+import { watch, ref, toRefs, onMounted } from 'vue';
 import { useLocale } from '@/hooks/useLocale';
 import {
   request,
@@ -93,6 +93,7 @@ async function createDailyNote(date: Date) {
   }
   // 当前日期无日记，创建日记
   const docID = await createDocWithMd(notebook.value.value, hPath, '');
+  existDate.value.push(date.getTime());
   window.open(`siyuan://blocks/${docID}`);
 
   // 根据模板渲染日记
@@ -110,12 +111,38 @@ function formateMsg(key: string) {
   return `${msg.begin} ${msg[key]}`;
 }
 
-function test(e: string) {
-  console.log(e);
+const lastDate = ref<Date | undefined>();
+const existDate = ref<number[]>([]);
+async function getExistDate(lastDate: Date | undefined) {
+  if (!lastDate) {
+    return;
+  }
+  let last = lastDate.getTime();
+  const oneDayTime = 24 * 60 * 60 * 1000;
+  for (let i = 0; i < 42; i++) {
+    let timeStamp = last - i * oneDayTime;
+    if (existDate.value.includes(timeStamp)) {
+      continue;
+    }
+    const hPath = await getHPath(new Date(timeStamp));
+    const dailyNoteID = await getDailyNotesID(hPath);
+    if (!dailyNoteID) {
+      continue;
+    }
+    existDate.value.push(timeStamp);
+  }
+}
+
+onMounted(() => getExistDate(lastDate.value));
+function change() {
+  setTimeout(() => getExistDate(lastDate.value), 0);
 }
 
 // 设置 cell 类
-function getCell(date: Date) {}
+function getCell(date: Date) {
+  lastDate.value = date;
+  return existDate.value.includes(date.getTime());
+}
 </script>
 <style lang="less">
 .arco-picker-cell {
