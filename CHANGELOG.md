@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.0.8](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.7...v1.0.8) (2023-08-20)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复点击创建后无法更新已存在日记的问题 ([53eaac3](https://github.com/svchord/siyuan-arco-calendar/commit/53eaac3424a4ce2e56e1d66c9ccd0fd27d48ad6e))
+
 ### [1.0.7](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.6...v1.0.7) (2023-08-20)
 
 
