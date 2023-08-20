@@ -143,9 +143,9 @@ function formateDate(date: Date) {
     .replace(/\//g, '-');
 }
 
-onMounted(() => getExistDate(lastDate.value));
+onMounted(() => changePanel());
 function changePanel() {
-  setTimeout(() => getExistDate(lastDate.value), 0);
+  setTimeout(() => getExistDate(lastDate.value), 300);
 }
 
 // 设置 cell 类
