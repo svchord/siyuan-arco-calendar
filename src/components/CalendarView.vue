@@ -7,7 +7,7 @@
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date">
+        <div class="arco-picker-date" @click="click(date)">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -55,25 +55,8 @@ async function setCalendar(book: SelectOptionData | undefined) {
   dailyNoteTemplatePath.value = conf.dailyNoteTemplatePath.replaceAll('/', '\\');
 }
 
-async function getHPath(date: Date | string) {
-  let dateStr = '';
-  if (date instanceof Date) {
-    const { localeType } = useLocale();
-    dateStr = date
-      .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      })
-      .replace(/\//g, '-');
-  }
-  if (typeof date === 'string') {
-    dateStr = date;
-  }
-  if (!dateStr) {
-    return '';
-  }
-  const path = dailyNoteSavePath.value.replaceAll('[[dateSlot]]', dateStr);
+async function getHPath(date: string) {
+  const path = dailyNoteSavePath.value.replaceAll('[[dateSlot]]', date);
   return renderSprig(path);
 }
 
@@ -139,7 +122,8 @@ async function getExistDate(lastDate: Date | undefined) {
     if (existDate.value.includes(timeStamp)) {
       continue;
     }
-    const hPath = await getHPath(new Date(timeStamp));
+    const dateStr = formateDate(new Date(timeStamp));
+    const hPath = await getHPath(dateStr);
     const dailyNoteID = await getDailyNotesID(hPath);
     if (!dailyNoteID) {
       continue;
@@ -148,9 +132,19 @@ async function getExistDate(lastDate: Date | undefined) {
   }
 }
 
+function formateDate(date: Date) {
+  const { localeType } = useLocale();
+  return date
+    .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/\//g, '-');
+}
+
 onMounted(() => getExistDate(lastDate.value));
 function changePanel() {
-  console.log(1);
   setTimeout(() => getExistDate(lastDate.value), 0);
 }
 
@@ -158,6 +152,10 @@ function changePanel() {
 function getCell(date: Date) {
   lastDate.value = date;
   return existDate.value.includes(date.getTime());
+}
+
+function click(date: Date) {
+  existDate.value.push(date.getTime());
 }
 </script>
 <style lang="less">
