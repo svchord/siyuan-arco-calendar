@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.0.10](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.9...v1.0.10) (2023-08-23)
+
+
+### 性能提升 | Performance Improvements
+
+* 优化请求逻辑和时期，提升展示性能 ([3c61b07](https://github.com/svchord/siyuan-arco-calendar/commit/3c61b0775501791de4d436eba52fb90d01ff2c05))
+
 ### [1.0.9](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.8...v1.0.9) (2023-08-20)
 
 
