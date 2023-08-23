@@ -7,7 +7,7 @@
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date" @click="click(date)">
+        <div class="arco-picker-date" @click="addExist(date)">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref, toRefs, onMounted } from 'vue';
+import { watch, ref, toRefs } from 'vue';
 import { useLocale } from '@/hooks/useLocale';
 import {
   request,
@@ -37,26 +37,28 @@ const props = defineProps<{ notebook: SelectOptionData | undefined }>();
 const { notebook } = toRefs(props);
 
 // 含变量的日记存放路径
-const dailyNoteSavePath = ref<string>('');
+const savePath = ref<string>('');
 // 日记模板存放路径
-const dailyNoteTemplatePath = ref<string>('');
+const templatePath = ref<string>('');
 watch(notebook, newValue => setCalendar(newValue), { deep: true });
 async function setCalendar(book: SelectOptionData | undefined) {
   if (!book) {
-    pushErrMsg(formateMsg('notNoteBook'));
+    await pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
   // 获取含变量的日记存放路径
-  const bookID = book.value;
-  const { conf } = await getNotebookConf(bookID);
-  dailyNoteSavePath.value = conf.dailyNoteSavePath.replace(/\{\{(.*?)\}\}/g, (match: string) =>
+  const { conf } = await getNotebookConf(book.value);
+  const { dailyNoteSavePath, dailyNoteTemplatePath } = conf;
+  savePath.value = dailyNoteSavePath.replace(/\{\{(.*?)\}\}/g, (match: string) =>
     match.replace(/\bnow\b(?=(?:(?:[^"]*"){2})*[^"]*$)/g, `(toDate "2006-01-02" "[[dateSlot]]")`)
   );
-  dailyNoteTemplatePath.value = conf.dailyNoteTemplatePath.replaceAll('/', '\\');
+  templatePath.value = dailyNoteTemplatePath.replaceAll('/', '\\');
+  // 获取已存在日记的日期
+  await getExistDate(new Date());
 }
 
 async function getHPath(date: string) {
-  const path = dailyNoteSavePath.value.replaceAll('[[dateSlot]]', date);
+  const path = savePath.value.replaceAll('[[dateSlot]]', date);
   return renderSprig(path);
 }
 
@@ -75,7 +77,7 @@ async function createDailyNote(date: string) {
     return;
   }
   if (!notebook.value) {
-    pushErrMsg(formateMsg('notNoteBook'));
+    await pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
   const hPath = await getHPath(date);
@@ -91,38 +93,38 @@ async function createDailyNote(date: string) {
   }
   // 当前日期无日记，创建日记
   const docID = await createDocWithMd(notebook.value.value, hPath, '');
-  existDate.value.push(new Date(date).getTime());
   window.open(`siyuan://blocks/${docID}`);
 
   // 根据模板渲染日记
-  if (dailyNoteTemplatePath.value.length) {
+  if (templatePath.value.length) {
     const system = await request('/api/system/getConf');
-    let templateDir = system.conf.system.dataDir + '\\templates' + dailyNoteTemplatePath.value;
+    let templateDir = system.conf.system.dataDir + '\\templates' + templatePath.value;
     const res = await render(docID, templateDir);
     await prependBlock('dom', res.content, docID);
   }
+  addExist(new Date(date));
 }
 
 // 当前笔记本为空报错
-function formateMsg(key: string) {
+function formatMsg(key: string) {
   const msg = i18n.value.msg;
   return `${msg.begin} ${msg[key]}`;
 }
-
-const lastDate = ref<Date | undefined>();
+//已存在日记的日期
 const existDate = ref<number[]>([]);
-async function getExistDate(lastDate: Date | undefined) {
-  if (!lastDate) {
-    return;
-  }
-  let last = lastDate.getTime();
+function changePanel(date: string) {
+  getExistDate(new Date(date));
+}
+async function getExistDate(date: Date) {
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
   const oneDayTime = 24 * 60 * 60 * 1000;
+  const firstDate = firstDayOfMonth.getTime() - firstDayOfMonth.getDay() * oneDayTime;
   for (let i = 0; i < 42; i++) {
-    let timeStamp = last - i * oneDayTime;
+    const timeStamp = firstDate + i * oneDayTime;
     if (existDate.value.includes(timeStamp)) {
       continue;
     }
-    const dateStr = formateDate(new Date(timeStamp));
+    const dateStr = formatDate(new Date(timeStamp));
     const hPath = await getHPath(dateStr);
     const dailyNoteID = await getDailyNotesID(hPath);
     if (!dailyNoteID) {
@@ -132,7 +134,7 @@ async function getExistDate(lastDate: Date | undefined) {
   }
 }
 
-function formateDate(date: Date) {
+function formatDate(date: Date) {
   const { localeType } = useLocale();
   return date
     .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
@@ -143,18 +145,12 @@ function formateDate(date: Date) {
     .replace(/\//g, '-');
 }
 
-onMounted(() => changePanel());
-function changePanel() {
-  setTimeout(() => getExistDate(lastDate.value), 300);
-}
-
 // 设置 cell 类
 function getCell(date: Date) {
-  lastDate.value = date;
   return existDate.value.includes(date.getTime());
 }
 
-function click(date: Date) {
+function addExist(date: Date) {
   existDate.value.push(date.getTime());
 }
 </script>
