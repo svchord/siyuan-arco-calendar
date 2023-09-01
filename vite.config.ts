@@ -38,6 +38,7 @@ export default defineConfig({
   // https://github.com/vitejs/vite/discussions/3058#discussioncomment-2115319
   // 在这里自定义变量
   define: {
+    'process.env.NODE_ENV': isWatch ? `"development"` : `"production"`,
     'process.env.DEV_MODE': `"${isWatch}"`,
   },
 
