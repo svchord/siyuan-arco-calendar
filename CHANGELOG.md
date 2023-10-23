@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.0.11](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.10...v1.0.11) (2023-10-23)
+
+
+### 修复缺陷 | Bug Fixes
+
+* #[#14](https://github.com/svchord/siyuan-arco-calendar/issues/14) 修复不兼容docker部署的思源的问题 ([86db221](https://github.com/svchord/siyuan-arco-calendar/commit/86db2218633bb18f0286a5f9ad538b6690b6edd9))
+
 ### [1.0.10](https://github.com/svchord/siyuan-arco-calendar/compare/v1.0.9...v1.0.10) (2023-08-23)
 
 

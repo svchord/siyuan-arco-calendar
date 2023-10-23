@@ -2,7 +2,7 @@
   "name": "arco-calendar",
   "author": "svchord",
   "url": "https://github.com/svchord/siyuan-arco-calendar",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "minAppVersion": "2.8.10",
   "backends": [
     "all"
