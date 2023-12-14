@@ -5,13 +5,13 @@
 /**
  * Frequently used data structures in SiYuan
  */
-export type DocumentId = string;
-export type BlockId = string;
-export type NotebookId = string;
-export type PreviousID = BlockId;
-export type ParentID = BlockId | DocumentId;
+type DocumentId = string;
+type BlockId = string;
+type NotebookId = string;
+type PreviousID = BlockId;
+type ParentID = BlockId | DocumentId;
 
-export type Notebook = {
+type Notebook = {
   id: NotebookId;
   name: string;
   icon: string;
@@ -19,7 +19,7 @@ export type Notebook = {
   closed: boolean;
 };
 
-export type NotebookConf = {
+type NotebookConf = {
   name: string;
   closed: boolean;
   refCreateSavePath: string;
@@ -28,9 +28,9 @@ export type NotebookConf = {
   dailyNoteTemplatePath: string;
 };
 
-export type BlockType = 'd' | 's' | 'h' | 't' | 'i' | 'p' | 'f' | 'audio' | 'video' | 'other';
+type BlockType = 'd' | 's' | 'h' | 't' | 'i' | 'p' | 'f' | 'audio' | 'video' | 'other';
 
-export type BlockSubType =
+type BlockSubType =
   | 'd1'
   | 'd2'
   | 's1'
@@ -65,7 +65,7 @@ export type BlockSubType =
   | 'video'
   | 'other';
 
-export type Block = {
+type Block = {
   id: BlockId;
   parent_id?: BlockId;
   root_id: DocumentId;
@@ -92,7 +92,7 @@ export type Block = {
   updated: string;
 };
 
-export type doOperation = {
+type doOperation = {
   action: string;
   data: string;
   id: BlockId;
@@ -101,7 +101,7 @@ export type doOperation = {
   retData: null;
 };
 
-export interface Window {
+interface Window {
   siyuan: {
     notebooks: any;
     menus: any;
