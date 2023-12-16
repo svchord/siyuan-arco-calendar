@@ -2,8 +2,8 @@
   "name": "arco-calendar",
   "author": "svchord",
   "url": "https://github.com/svchord/siyuan-arco-calendar",
-  "version": "1.0.11",
-  "minAppVersion": "2.8.10",
+  "version": "1.1.0",
+  "minAppVersion": "2.11.1",
   "backends": [
     "all"
   ],
@@ -30,5 +30,11 @@
     "custom": [
       "https://afdian.net/a/sevenchord"
     ]
-  }
+  },
+  "keywords": [
+    "calendar",
+    "日历",
+    "日记",
+    "daily"
+  ]
 }

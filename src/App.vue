@@ -32,7 +32,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { i18n } from '@/hooks/useI18n';
 // types
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-import type { Notebook } from '@/types/notebook';
+// import type { Notebook } from '@/types/notebook';
 
 const { locale } = useLocale();
 

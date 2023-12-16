@@ -5,14 +5,18 @@ import { Plugin, Menu, getFrontend } from 'siyuan';
 
 import './index.less';
 import { i18n } from '@/hooks/useI18n';
+import { app, isMobile } from './hooks/useSiYuan';
 export default class ArcoCalendarPlugin extends Plugin {
   private isMobile!: boolean;
   public element!: HTMLElement;
 
   onload() {
     i18n.value = this.i18n;
+    app.value = this.app;
     const frontEnd = getFrontend();
     this.isMobile = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
+    isMobile.value = this.isMobile;
+
     this.element = this.addTopBar({
       icon: 'iconCalendar',
       title: this.i18n.openCalendar,
