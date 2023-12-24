@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.1.3](https://github.com/svchord/siyuan-arco-calendar/compare/v1.1.2...v1.1.3) (2023-12-24)
+
+
+### 构建相关 | Build System
+
+* 修改构建配置 ([f30565e](https://github.com/svchord/siyuan-arco-calendar/commit/f30565eb6b2ec73436c573b42406b0d3be99475e))
+
 ### [1.1.2](https://github.com/svchord/siyuan-arco-calendar/compare/v1.1.1...v1.1.2) (2023-12-23)
 
 
