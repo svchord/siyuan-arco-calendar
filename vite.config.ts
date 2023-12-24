@@ -77,23 +77,17 @@ export default defineConfig({
               },
             },
           ]
-        : [
-            zipPack({
-              inDir: './dist',
-              outDir: './',
-              outFileName: 'package.zip',
-            }),
-          ],
+        : [zipPack({ inDir: './dist', outDir: './', outFileName: 'package.zip' })],
       // make sure to externalize deps that shouldn't be bundled
       // into your library
       external: ['siyuan', 'process'],
       output: {
         entryFileNames: '[name].js',
-        assetFileNames: assetInfo => {
-          if (assetInfo.name?.endsWith('.css')) {
+        assetFileNames: chunkInfo => {
+          if (chunkInfo.name?.endsWith('.css')) {
             return 'index.css';
           }
-          return assetInfo.name;
+          return chunkInfo.name as string;
         },
       },
     },
