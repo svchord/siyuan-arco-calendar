@@ -19,20 +19,10 @@
 <script lang="ts" setup>
 import { watch, ref, toRefs } from 'vue';
 import { useLocale } from '@/hooks/useLocale';
-import {
-  request,
-  pushErrMsg,
-  render,
-  prependBlock,
-  createDocWithMd,
-  getNotebookConf,
-  renderSprig,
-  sql,
-} from '@/utils/api';
+import * as api from '@/utils/api';
 import { openDoc, setCustomDNAttr } from '@/utils/daily-note';
-// types
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import { i18n } from '@/hooks/useI18n';
+import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
 const props = defineProps<{ notebook: SelectOptionData | undefined }>();
 const { notebook } = toRefs(props);
@@ -44,12 +34,12 @@ const templatePath = ref<string>('');
 watch(notebook, newValue => setCalendar(newValue), { deep: true });
 async function setCalendar(book: SelectOptionData | undefined) {
   if (!book) {
-    await pushErrMsg(formatMsg('notNoteBook'));
+    await api.pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
   //@fostime comments: 如有需要, 可以参考 https://github.com/frostime/siyuan-dailynote-today/blob/main/src/func/dailynote/past-dn.ts
   // 获取含变量的日记存放路径
-  const { conf } = await getNotebookConf(book.value as string);
+  const { conf } = await api.getNotebookConf(book.value as string);
   const { dailyNoteSavePath, dailyNoteTemplatePath } = conf;
   savePath.value = dailyNoteSavePath.replace(/\{\{(.*?)\}\}/g, (match: string) =>
     match.replace(/\bnow\b(?=(?:(?:[^"]*"){2})*[^"]*$)/g, `(toDate "2006-01-02" "[[dateSlot]]")`)
@@ -61,7 +51,7 @@ async function setCalendar(book: SelectOptionData | undefined) {
 
 async function getHPath(date: string) {
   const path = savePath.value.replaceAll('[[dateSlot]]', date);
-  return renderSprig(path);
+  return api.renderSprig(path);
 }
 
 async function getDailyNotesID(hPath: string) {
@@ -69,7 +59,7 @@ async function getDailyNotesID(hPath: string) {
     return;
   }
   const searchSql = `select * from blocks where type='d' and box = '${notebook.value.value}' and hpath = '${hPath}'`;
-  const data = await sql(searchSql);
+  const data = await api.sql(searchSql);
   return data.length ? data[0].id : null;
 }
 
@@ -79,7 +69,7 @@ async function createDailyNote(date: string) {
     return;
   }
   if (!notebook.value) {
-    await pushErrMsg(formatMsg('notNoteBook'));
+    await api.pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
   const hPath = await getHPath(date);
@@ -92,25 +82,25 @@ async function createDailyNote(date: string) {
   // 当前日期已有日记，打开日记
   if (dailyNoteID) {
     // window.open(`siyuan://blocks/${dailyNoteID}`);
-    openDoc(dailyNoteID);  //打开新建的日记
-    setCustomDNAttr(dailyNoteID, dateObj);  //为新建的日记添加自定义属性
+    openDoc(dailyNoteID); //打开新建的日记
+    setCustomDNAttr(dailyNoteID, dateObj); //为新建的日记添加自定义属性
     return;
   }
   // 当前日期无日记，创建日记
-  const docID = await createDocWithMd(notebook.value.value as string, hPath, '');
+  const docID = await api.createDocWithMd(notebook.value.value as string, hPath, '');
   // window.open(`siyuan://blocks/${docID}`);
-  openDoc(docID);  //打开新建的日记
+  openDoc(docID); //打开新建的日记
 
   // 根据模板渲染日记
   if (templatePath.value.length) {
-    const system = await request('/api/system/getConf');
+    const system = await api.request('/api/system/getConf');
     let templateDir = system.conf.system.dataDir + '\\templates' + templatePath.value;
-    const res = await render(docID, templateDir);
-    await prependBlock('dom', res.content, docID);
+    const res = await api.render(docID, templateDir);
+    await api.prependBlock('dom', res.content, docID);
   }
 
   addExist(dateObj);
-  setCustomDNAttr(docID, dateObj);  //为新建的日记添加自定义属性
+  setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
 }
 
 // 当前笔记本为空报错
