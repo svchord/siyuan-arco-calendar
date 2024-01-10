@@ -7,22 +7,21 @@ import './index.less';
 import { i18n } from '@/hooks/useLocale';
 import { app, isMobile } from './hooks/useSiYuan';
 export default class ArcoCalendarPlugin extends Plugin {
-  private isMobile!: boolean;
-  public element!: HTMLElement;
+  public topEle!: HTMLElement;
+  public menuEle!: HTMLElement;
 
   onload() {
     i18n.value = this.i18n;
     app.value = this.app;
     const frontEnd = getFrontend();
-    this.isMobile = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
-    isMobile.value = this.isMobile;
+    isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
 
-    this.element = this.addTopBar({
+    this.topEle = this.addTopBar({
       icon: 'iconCalendar',
       title: this.i18n.openCalendar,
       position: 'left',
       callback: () => {
-        let rect = this.element.getBoundingClientRect();
+        let rect = this.topEle.getBoundingClientRect();
         // 如果被隐藏，则使用更多按钮
         if (rect.width === 0) {
           rect = document.querySelector('#barMore')!.getBoundingClientRect();
@@ -30,21 +29,21 @@ export default class ArcoCalendarPlugin extends Plugin {
         this.addMenu(rect);
       },
     });
+
+    const vueApp = createApp(App);
+    vueApp.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs);
+    this.menuEle = document.createElement('div');
+    vueApp.mount(this.menuEle);
   }
 
   onunload() {
-    this.element?.remove();
+    this.topEle?.remove();
   }
 
   private addMenu(rect: DOMRect) {
-    const ca = document.createElement('div');
-    const app = createApp(App);
-    app.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs);
-    app.mount(ca);
-
     const menu = new Menu('Calendar');
-    menu.addItem({ element: ca });
-    if (this.isMobile) {
+    menu.addItem({ element: this.menuEle });
+    if (isMobile.value) {
       menu.fullscreen();
     } else {
       menu.open({
