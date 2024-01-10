@@ -1,6 +1,14 @@
 # 版本日志 | Changelog 
 
 
+### [1.2.1](https://github.com/svchord/siyuan-arco-calendar/compare/v1.2.0...v1.2.1) (2024-01-10)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复模板路径报错的问题 ([83974f0](https://github.com/svchord/siyuan-arco-calendar/commit/83974f072bbfb64cbe4be899870b46271858269f))
+* 修复删除文档后不正确更新标记的问题 ([e375eff](https://github.com/svchord/siyuan-arco-calendar/commit/e375effff3a633df4cd47b1189944e5c5a2d5152))
+
 ## [1.2.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.1.3...v1.2.0) (2024-01-10)
 
 
