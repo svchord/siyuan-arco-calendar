@@ -1,6 +1,30 @@
 # 版本日志 | Changelog 
 
 
+## [1.2.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.1.3...v1.2.0) (2024-01-10)
+
+
+### 代码格式 | Styles
+
+* 修改引入格式 ([55052cd](https://github.com/svchord/siyuan-arco-calendar/commit/55052cd76141c270823ac5725074924f595163c9))
+
+
+### 代码重构 | Code Refactoring
+
+* 使用思源内置常量 ([bbe8c74](https://github.com/svchord/siyuan-arco-calendar/commit/bbe8c74692742a03baa8bc787fc8d423898d749b))
+* 修改国际化引入方式 ([c2edadf](https://github.com/svchord/siyuan-arco-calendar/commit/c2edadf1640a6641da8977c4c3e545a311660260))
+* 修改样式位置 ([d0ca93d](https://github.com/svchord/siyuan-arco-calendar/commit/d0ca93da133dfbd2f09acfc4f77687555b435a9f))
+
+
+### 新增功能 | Features
+
+* 记忆面板 ([2b947c9](https://github.com/svchord/siyuan-arco-calendar/commit/2b947c96f269703e5282b747135dacd24bdda9dd))
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复mac无法创建日记的问题 ([886c872](https://github.com/svchord/siyuan-arco-calendar/commit/886c872aa1d167d86be349d449a1e10fe5c95992)), closes [#20](https://github.com/svchord/siyuan-arco-calendar/issues/20) [#27](https://github.com/svchord/siyuan-arco-calendar/issues/27)
+
 ### [1.1.3](https://github.com/svchord/siyuan-arco-calendar/compare/v1.1.2...v1.1.3) (2023-12-24)
 
 
