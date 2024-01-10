@@ -43,8 +43,10 @@ async function setCalendar(book: SelectOptionData | undefined) {
   savePath.value = dailyNoteSavePath.replace(/\{\{(.*?)\}\}/g, (match: string) =>
     match.replace(/\bnow\b(?=(?:(?:[^"]*"){2})*[^"]*$)/g, `(toDate "2006-01-02" "[[dateSlot]]")`)
   );
-  const system = await api.request('/api/system/getConf');
-  templatePath.value = system.conf.system.dataDir + '/templates' + dailyNoteTemplatePath;
+  if (dailyNoteTemplatePath) {
+    const system = await api.request('/api/system/getConf');
+    templatePath.value = system.conf.system.dataDir + '/templates' + dailyNoteTemplatePath;
+  }
   // 获取已存在日记的日期
   await getExistDate(new Date());
 }

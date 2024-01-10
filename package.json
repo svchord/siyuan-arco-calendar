@@ -14,7 +14,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "commit": "git cz",
-    "amend": "git commit --amend --no-edit && git push --force",
+    "amend": "git commit --amend --no-edit",
     "release": "standard-version && pnpm run push-tag",
     "push-tag": "git push --follow-tags origin main",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
