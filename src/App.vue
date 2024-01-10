@@ -25,7 +25,7 @@
 import { computed, ref, watch } from 'vue';
 import CalendarView from '@/components/CalendarView.vue';
 //utils
-import { getAppID } from '@/utils/id';
+import { Constants } from 'siyuan';
 import { lsNotebooks, request } from '@/utils/api';
 import { useLocale, i18n } from '@/hooks/useLocale';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
@@ -71,7 +71,7 @@ async function changeStorage(book: SelectOptionData | undefined) {
   const storage = await request('/api/storage/getLocalStorage');
   if (book?.value !== storage['local-dailynoteid']) {
     await request('/api/storage/setLocalStorageVal', {
-      app: getAppID(),
+      app: Constants.SIYUAN_APPID,
       key: 'local-dailynoteid',
       val: book?.value,
     });

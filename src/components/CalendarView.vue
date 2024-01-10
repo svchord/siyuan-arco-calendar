@@ -7,7 +7,7 @@
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date" @click="addExist(date)">
+        <div class="arco-picker-date" @click="addExistClass(date)">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -80,14 +80,12 @@ async function createDailyNote(date: string) {
 
   // 当前日期已有日记，打开日记
   if (dailyNoteID) {
-    // window.open(`siyuan://blocks/${dailyNoteID}`);
     openDoc(dailyNoteID); //打开新建的日记
     setCustomDNAttr(dailyNoteID, dateObj); //为新建的日记添加自定义属性
     return;
   }
   // 当前日期无日记，创建日记
   const docID = await api.createDocWithMd(notebook.value.value as string, hPath, '');
-  // window.open(`siyuan://blocks/${docID}`);
   openDoc(docID); //打开新建的日记
 
   // 根据模板渲染日记
@@ -98,7 +96,7 @@ async function createDailyNote(date: string) {
     await api.prependBlock('dom', res.content, docID);
   }
 
-  addExist(dateObj);
+  addExistClass(dateObj);
   setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
 }
 
@@ -142,7 +140,7 @@ function getCell(date: Date) {
   return existDate.value.includes(date.getTime());
 }
 
-function addExist(date: Date) {
+function addExistClass(date: Date) {
   existDate.value.push(date.getTime());
 }
 </script>
