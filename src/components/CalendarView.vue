@@ -102,7 +102,7 @@ async function createDailyNote(date: string) {
 }
 
 //已存在日记的日期
-const existDate = ref<number[]>([]);
+const existDate = ref(new Set());
 function changePanel(date: string) {
   getExistDate(new Date(date));
 }
@@ -112,16 +112,14 @@ async function getExistDate(date: Date) {
   const firstDate = firstDayOfMonth.getTime() - firstDayOfMonth.getDay() * oneDayTime;
   for (let i = 0; i < 42; i++) {
     const timeStamp = firstDate + i * oneDayTime;
-    if (existDate.value.includes(timeStamp)) {
-      continue;
-    }
     const dateStr = formatDate(new Date(timeStamp));
     const hPath = await getHPath(dateStr);
     const dailyNoteID = await getDailyNotesID(hPath);
-    if (!dailyNoteID) {
-      continue;
+    if (dailyNoteID) {
+      existDate.value.add(timeStamp);
+    } else {
+      existDate.value.delete(timeStamp);
     }
-    existDate.value.push(timeStamp);
   }
 }
 
@@ -138,10 +136,10 @@ function formatDate(date: Date) {
 
 // 设置 cell 类
 function getCell(date: Date) {
-  return existDate.value.includes(date.getTime());
+  return existDate.value.has(date.getTime());
 }
 
 function addExistClass(date: Date) {
-  existDate.value.push(date.getTime());
+  existDate.value.add(date.getTime());
 }
 </script>
