@@ -4,7 +4,7 @@ import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue';
 import { Plugin, Menu, getFrontend } from 'siyuan';
 
 import './index.less';
-import { i18n } from '@/hooks/useI18n';
+import { i18n } from '@/hooks/useLocale';
 import { app, isMobile } from './hooks/useSiYuan';
 export default class ArcoCalendarPlugin extends Plugin {
   private isMobile!: boolean;

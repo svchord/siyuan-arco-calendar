@@ -14,6 +14,8 @@ import itIT from '@arco-design/web-vue/es/locale/lang/it-it';
 import thTH from '@arco-design/web-vue/es/locale/lang/th-th';
 import viVN from '@arco-design/web-vue/es/locale/lang/vi-vn';
 
+import type { I18N } from 'siyuan';
+
 const locales: { [key: string]: typeof zhCN } = {
   zh_CN: zhCN,
   en_US: enUS,
@@ -28,6 +30,13 @@ const locales: { [key: string]: typeof zhCN } = {
   th_TH: thTH,
   vi_VN: viVN,
 };
+
+export const i18n = ref<I18N>({});
+
+export function formatMsg(key: string) {
+  const msg = i18n.value.msg;
+  return `${msg.begin} ${msg[key]}`;
+}
 
 export function useLocale() {
   const localeType = ref('zh_CN');

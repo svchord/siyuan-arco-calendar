@@ -18,10 +18,9 @@
 </template>
 <script lang="ts" setup>
 import { watch, ref, toRefs } from 'vue';
-import { useLocale } from '@/hooks/useLocale';
 import * as api from '@/utils/api';
+import { useLocale, formatMsg } from '@/hooks/useLocale';
 import { openDoc, setCustomDNAttr } from '@/utils/daily-note';
-import { i18n } from '@/hooks/useI18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
 const props = defineProps<{ notebook: SelectOptionData | undefined }>();
@@ -103,11 +102,6 @@ async function createDailyNote(date: string) {
   setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
 }
 
-// 当前笔记本为空报错
-function formatMsg(key: string) {
-  const msg = i18n.value.msg;
-  return `${msg.begin} ${msg[key]}`;
-}
 //已存在日记的日期
 const existDate = ref<number[]>([]);
 function changePanel(date: string) {

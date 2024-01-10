@@ -27,12 +27,8 @@ import CalendarView from '@/components/CalendarView.vue';
 //utils
 import { getAppID } from '@/utils/id';
 import { lsNotebooks, request } from '@/utils/api';
-// hooks
-import { useLocale } from '@/hooks/useLocale';
-import { i18n } from '@/hooks/useI18n';
-// types
+import { useLocale, i18n } from '@/hooks/useLocale';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-// import type { Notebook } from '@/types/notebook';
 
 const { locale } = useLocale();
 
