@@ -42,3 +42,95 @@
     box-sizing: border-box !important;
   }
 }
+.arco-tabs,
+.arco-trigger-popup {
+  // 主色 (r,g,b)
+  --arco-primary: 53, 117, 240;
+  --primary-6: var(--arco-primary);
+  // 浅主色
+  --color-primary-light-2: var(--b3-theme-primary-lightest);
+
+  // 页面底色
+  --color-bg-1: var(--b3-menu-background);
+  // 下拉选择框输入时底色
+  --color-bg-2: var(--b3-menu-background);
+  // 下拉选择框底色 && 下拉菜单选项悬浮底色
+  --color-fill-2: var(--b3-list-hover);
+  --color-fill-3: var(--b3-list-hover);
+
+  // 日历底色
+  --color-bg-popup: var(--b3-menu-background);
+
+  // 边框颜色
+  --color-neutral-3: var(--b3-border-color);
+
+  // 文字颜色
+  --color-text-1: var(--b3-theme-on-background);
+
+  color: var(--color-text-1);
+  svg {
+    fill: none;
+  }
+  a:hover {
+    text-decoration: none;
+  }
+  // :deep(svg) {
+  //     fill: none;
+  // }
+  // :deep(a:hover) {
+  //     text-decoration: none;
+  // }
+}
+
+.arco-picker-cell {
+  .arco-picker-date-value {
+    border: 1.4px solid transparent;
+    border-radius: var(--border-radius-medium);
+  }
+
+  // 非选中日期
+  &:not(.arco-picker-cell-selected) {
+    .arco-picker-date-value:hover {
+      background-color: transparent !important;
+    }
+
+    // 当月日期
+    &.arco-picker-cell-in-view {
+      .arco-picker-date-value:hover {
+        border-color: rgb(var(--primary-6));
+      }
+
+      .exist {
+        color: rgb(var(--primary-6)) !important;
+        background-color: var(--color-primary-light-2);
+
+        &:hover {
+          background-color: var(--color-primary-light-2) !important;
+        }
+      }
+    }
+
+    // 非当月日期
+    &:not(.arco-picker-cell-in-view) {
+      .arco-picker-date-value:hover {
+        border-color: var(--color-neutral-3);
+      }
+
+      .exist {
+        background-color: var(--color-fill-2);
+
+        &:hover {
+          background-color: var(--color-fill-2) !important;
+        }
+      }
+    }
+  }
+}
+
+.arco-select-dropdown {
+  padding: 6px !important;
+}
+
+.arco-select-option {
+  border-radius: var(--border-radius-medium);
+}
