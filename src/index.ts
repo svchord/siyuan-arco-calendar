@@ -1,14 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue';
-import { Plugin, Menu, getFrontend } from 'siyuan';
+import { Plugin, getFrontend } from 'siyuan';
 import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
 
 import './index.less';
 export default class ArcoCalendarPlugin extends Plugin {
-  public topEle!: HTMLElement;
-  public menuEle!: HTMLElement;
-
   onload() {
     i18n.value = this.i18n;
     app.value = this.app;
@@ -17,40 +14,24 @@ export default class ArcoCalendarPlugin extends Plugin {
     const frontEnd = getFrontend();
     isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
 
-    this.topEle = this.addTopBar({
-      icon: 'iconCalendar',
-      title: this.i18n.openCalendar,
-      position: 'left',
-      callback: () => {
-        let rect = this.topEle.getBoundingClientRect();
-        // 如果被隐藏，则使用更多按钮
-        if (rect.width === 0) {
-          rect = document.querySelector('#barMore')!.getBoundingClientRect();
-        }
-        this.addMenu(rect);
-      },
-    });
-
     const vueApp = createApp(App);
     vueApp.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs);
-    this.menuEle = document.createElement('div');
-    vueApp.mount(this.menuEle);
+    const DOCK_TYPE = 'dock_tab';
+    const _plugin = this;
+    this.addDock({
+      config: {
+        position: 'RightTop',
+        size: { width: 300, height: 0 },
+        icon: 'iconCalendar',
+        title: _plugin.i18n.tabName,
+      },
+      data: {},
+      type: DOCK_TYPE,
+      init: dock => {
+        vueApp.mount(dock.element);
+      },
+    });
   }
 
-  onunload() {
-    this.topEle?.remove();
-  }
-
-  private addMenu(rect: DOMRect) {
-    const menu = new Menu('Calendar');
-    menu.addItem({ element: this.menuEle });
-    if (isMobile.value) {
-      menu.fullscreen();
-    } else {
-      menu.open({
-        x: rect.left,
-        y: rect.bottom,
-      });
-    }
-  }
+  onunload() {}
 }

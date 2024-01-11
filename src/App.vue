@@ -1,6 +1,6 @@
 <template>
   <a-config-provider :locale="locale">
-    <a-tabs style="width: 280px; margin: auto">
+    <a-tabs style="width: 280px; margin: 3px auto">
       <template #extra>
         <a-select
           v-model="currentNotebook"
