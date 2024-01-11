@@ -90,16 +90,14 @@ async function createDailyNote(date: string) {
   }
   // 当前日期无日记，创建日记
   const docID = await api.createDocWithMd(notebook.value.value as string, hPath, '');
-  openDoc(docID); //打开新建的日记
-
   // 根据模板渲染日记
   if (templatePath.value.length) {
     const res = await api.render(docID, templatePath.value);
     await api.prependBlock('dom', res.content, docID);
   }
-
-  addExistClass(dateObj);
+  openDoc(docID); //打开新建的日记
   setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
+  addExistClass(dateObj);
 }
 
 //已存在日记的日期
