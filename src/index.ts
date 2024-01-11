@@ -5,7 +5,7 @@ import { Plugin, Menu, getFrontend } from 'siyuan';
 
 import './index.less';
 import { i18n } from '@/hooks/useLocale';
-import { app, isMobile } from './hooks/useSiYuan';
+import { app, isMobile, eventBus } from './hooks/useSiYuan';
 export default class ArcoCalendarPlugin extends Plugin {
   public topEle!: HTMLElement;
   public menuEle!: HTMLElement;
@@ -13,6 +13,8 @@ export default class ArcoCalendarPlugin extends Plugin {
   onload() {
     i18n.value = this.i18n;
     app.value = this.app;
+    eventBus.value = this.eventBus;
+
     const frontEnd = getFrontend();
     isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
 

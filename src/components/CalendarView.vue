@@ -20,6 +20,7 @@
 import { watch, ref, toRefs } from 'vue';
 import * as api from '@/utils/api';
 import { useLocale, formatMsg } from '@/hooks/useLocale';
+import { eventBus } from '@/hooks/useSiYuan';
 import { openDoc, setCustomDNAttr } from '@/utils/daily-note';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
@@ -103,9 +104,19 @@ async function createDailyNote(date: string) {
 
 //已存在日记的日期
 const existDate = ref(new Set());
+const currentPanelDate = ref(new Date());
 function changePanel(date: string) {
-  getExistDate(new Date(date));
+  currentPanelDate.value = new Date(date);
+  getExistDate(currentPanelDate.value);
 }
+
+eventBus.value?.on('ws-main', ({ detail }) => {
+  const { cmd } = detail;
+  if (['removeDoc', 'createdailynote'].includes(cmd)) {
+    getExistDate(currentPanelDate.value);
+  }
+});
+
 async function getExistDate(date: Date) {
   const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
   const oneDayTime = 24 * 60 * 60 * 1000;

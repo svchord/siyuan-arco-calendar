@@ -1,9 +1,11 @@
 import { ref } from 'vue';
-import type { App } from 'siyuan';
+import type { App, EventBus } from 'siyuan';
 
 export const app = ref<App>({
-    plugins: [],
-    appId: ''
+  plugins: [],
+  appId: '',
 });
 
 export const isMobile = ref<boolean>(false);
+
+export const eventBus = ref<EventBus>();
