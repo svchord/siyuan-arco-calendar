@@ -11,12 +11,12 @@
     "all"
   ],
   "displayName": {
-    "zh_CN": "顶栏日历",
-    "en_US": "Topbar Calendar"
+    "zh_CN": "日历面板",
+    "en_US": "Calendar Panel"
   },
   "description": {
-    "zh_CN": "顶栏按钮打开日历菜单，快速新建或转到日记",
-    "en_US": "Top bar button opens calendar menu, quickly create new or go to diary"
+    "zh_CN": "日历面板上快速新建或转到日记",
+    "en_US": "Quickly create a new or go to diary on the calendar panel"
   },
   "readme": {
     "zh_CN": "README.md",
