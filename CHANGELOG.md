@@ -1,6 +1,35 @@
 # 版本日志 | Changelog 
 
 
+## [1.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.2.1...v1.3.0) (2024-01-11)
+
+
+### 构建相关 | Build System
+
+* 更新依赖 ([6a26e69](https://github.com/svchord/siyuan-arco-calendar/commit/6a26e69ae43e299e2c468682fa3c661e71a5e3e9))
+
+
+### 代码重构 | Code Refactoring
+
+* 修改国际化位置 ([5c91d47](https://github.com/svchord/siyuan-arco-calendar/commit/5c91d47b9ce67e8af1dd3958a2df05fa767972e3))
+
+
+### 新增功能 | Features
+
+* 面板位置改为dock栏 ([84389b5](https://github.com/svchord/siyuan-arco-calendar/commit/84389b5812ad106e26b7db5cf8d8ccd0d3d3c430))
+
+
+### 修复缺陷 | Bug Fixes
+
+* 快捷键创建日记和删除文档时更新当前月份面板 ([a9a9beb](https://github.com/svchord/siyuan-arco-calendar/commit/a9a9beb7bc76c0c9abb9aa7b26d1c72b90a68fa6))
+* 修复笔记本未及时更新的问题 ([aa081e5](https://github.com/svchord/siyuan-arco-calendar/commit/aa081e53f39d482bd277ccedf58d3c57fa557ec7))
+* 修复模板文件渲染顺序的问题 ([9953169](https://github.com/svchord/siyuan-arco-calendar/commit/9953169178e1b88cc89b4f17fa8533cf458ef88e))
+
+
+### 文档更新 | Documentation
+
+* 修改插件名和描述 ([10f990d](https://github.com/svchord/siyuan-arco-calendar/commit/10f990d0f9ebc6ee3a1b68905d45406bf4649f90))
+
 ### [1.2.1](https://github.com/svchord/siyuan-arco-calendar/compare/v1.2.0...v1.2.1) (2024-01-10)
 
 
