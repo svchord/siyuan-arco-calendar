@@ -28,7 +28,7 @@ import CalendarView from '@/components/CalendarView.vue';
 import { Constants } from 'siyuan';
 import { lsNotebooks, request } from '@/utils/api';
 import { useLocale } from '@/hooks/useLocale';
-import { i18n } from '@/hooks/useSiYuan';
+import { eventBus, i18n } from '@/hooks/useSiYuan';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
 const { locale } = useLocale();
@@ -48,14 +48,11 @@ async function getNotebooks() {
 
 const currentNotebook = ref<SelectOptionData | undefined>(undefined);
 async function getCurrentBook() {
-  const curBook = currentNotebook.value;
-  const books = notebooksID.value;
-  if (curBook) {
-    return;
-  }
   const storage = await request('/api/storage/getLocalStorage');
-  if (books.includes(storage['local-dailynoteid'])) {
+  if (notebooksID.value.includes(storage['local-dailynoteid'])) {
     currentNotebook.value = notebooks.value.find(book => book.value === storage['local-dailynoteid']);
+  } else {
+    currentNotebook.value = undefined;
   }
 }
 async function init() {
@@ -63,6 +60,13 @@ async function init() {
   await getCurrentBook();
 }
 init();
+
+eventBus.value?.on('ws-main', ({ detail }) => {
+  const { cmd } = detail;
+  if (['createnotebook', 'mount', 'unmount'].includes(cmd)) {
+    init();
+  }
+});
 
 watch(currentNotebook, newValue => changeStorage(newValue), { deep: true });
 async function changeStorage(book: SelectOptionData | undefined) {
