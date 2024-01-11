@@ -2,10 +2,9 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue';
 import { Plugin, Menu, getFrontend } from 'siyuan';
+import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
 
 import './index.less';
-import { i18n } from '@/hooks/useLocale';
-import { app, isMobile, eventBus } from './hooks/useSiYuan';
 export default class ArcoCalendarPlugin extends Plugin {
   public topEle!: HTMLElement;
   public menuEle!: HTMLElement;

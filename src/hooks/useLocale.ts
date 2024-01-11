@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue';
 import { request } from '@/utils/api';
+import { i18n } from './useSiYuan';
 
 import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
@@ -13,8 +14,6 @@ import koKR from '@arco-design/web-vue/es/locale/lang/ko-kr';
 import itIT from '@arco-design/web-vue/es/locale/lang/it-it';
 import thTH from '@arco-design/web-vue/es/locale/lang/th-th';
 import viVN from '@arco-design/web-vue/es/locale/lang/vi-vn';
-
-import type { I18N } from 'siyuan';
 
 const locales: { [key: string]: typeof zhCN } = {
   zh_CN: zhCN,
@@ -30,8 +29,6 @@ const locales: { [key: string]: typeof zhCN } = {
   th_TH: thTH,
   vi_VN: viVN,
 };
-
-export const i18n = ref<I18N>({});
 
 export function formatMsg(key: string) {
   const msg = i18n.value.msg;

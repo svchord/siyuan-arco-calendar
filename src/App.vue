@@ -27,7 +27,8 @@ import CalendarView from '@/components/CalendarView.vue';
 //utils
 import { Constants } from 'siyuan';
 import { lsNotebooks, request } from '@/utils/api';
-import { useLocale, i18n } from '@/hooks/useLocale';
+import { useLocale } from '@/hooks/useLocale';
+import { i18n } from '@/hooks/useSiYuan';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
 const { locale } = useLocale();
