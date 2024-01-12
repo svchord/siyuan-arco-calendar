@@ -8,6 +8,9 @@ dependencies:
   '@arco-design/web-vue':
     specifier: ^2.54.1
     version: 2.54.1(vue@3.4.8)
+  dayjs:
+    specifier: ^1.11.10
+    version: 1.11.10
   vue:
     specifier: ^3.4.8
     version: 3.4.8(typescript@5.3.3)

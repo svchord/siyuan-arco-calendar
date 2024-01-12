@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.54.1",
+    "dayjs": "^1.11.10",
     "vue": "^3.4.8"
   },
   "config": {

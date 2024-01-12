@@ -7,7 +7,7 @@
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date" @click="addExistClass(date)">
+        <div class="arco-picker-date" @click="addExistDate(date)">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -18,8 +18,9 @@
 </template>
 <script lang="ts" setup>
 import { watch, ref, toRefs } from 'vue';
+import dayjs from 'dayjs';
 import * as api from '@/utils/api';
-import { useLocale, formatMsg } from '@/hooks/useLocale';
+import { formatMsg } from '@/hooks/useLocale';
 import { eventBus } from '@/hooks/useSiYuan';
 import { openDoc, setCustomDNAttr } from '@/utils/daily-note';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
@@ -97,7 +98,7 @@ async function createDailyNote(date: string) {
   }
   openDoc(docID); //打开新建的日记
   setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
-  addExistClass(dateObj);
+  addExistDate(dateObj);
 }
 
 //已存在日记的日期
@@ -116,39 +117,25 @@ eventBus.value?.on('ws-main', ({ detail }) => {
 });
 
 async function getExistDate(date: Date) {
-  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-  const oneDayTime = 24 * 60 * 60 * 1000;
-  const firstDate = firstDayOfMonth.getTime() - firstDayOfMonth.getDay() * oneDayTime;
+  const firstDate = dayjs(date).date(1).day(0);
   for (let i = 0; i < 42; i++) {
-    const timeStamp = firstDate + i * oneDayTime;
-    const dateStr = formatDate(new Date(timeStamp));
+    const dateStr = firstDate.add(i, 'day').format('YYYY-MM-DD');
     const hPath = await getHPath(dateStr);
     const dailyNoteID = await getDailyNotesID(hPath);
     if (dailyNoteID) {
-      existDate.value.add(timeStamp);
+      existDate.value.add(dateStr);
     } else {
-      existDate.value.delete(timeStamp);
+      existDate.value.delete(dateStr);
     }
   }
 }
 
-function formatDate(date: Date) {
-  const { localeType } = useLocale();
-  return date
-    .toLocaleDateString(localeType.value.replace(/_/g, '-'), {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-    .replace(/\//g, '-');
-}
-
 // 设置 cell 类
 function getCell(date: Date) {
-  return existDate.value.has(date.getTime());
+  return existDate.value.has(dayjs(date).format('YYYY-MM-DD'));
 }
 
-function addExistClass(date: Date) {
-  existDate.value.add(date.getTime());
+function addExistDate(date: Date) {
+  existDate.value.add(dayjs(date).format('YYYY-MM-DD'));
 }
 </script>
