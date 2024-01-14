@@ -20,13 +20,7 @@ export default defineConfig({
   plugins: [
     vue(),
     viteStaticCopy({
-      targets: [
-        { src: './README*.md', dest: './' },
-        { src: './icon.png', dest: './' },
-        { src: './preview.png', dest: './' },
-        { src: './plugin.json', dest: './' },
-        { src: './src/i18n/**', dest: './i18n/' },
-      ],
+      targets: [{ src: './README*.md', dest: './' }],
     }),
   ],
   resolve: {
@@ -70,7 +64,7 @@ export default defineConfig({
               //监听静态资源文件
               name: 'watch-external',
               async buildStart() {
-                const files = await fg(['src/i18n/*.json', './README*.md', './plugin.json']);
+                const files = await fg(['public/**', './README*.md']);
                 for (const file of files) {
                   this.addWatchFile(file);
                 }
