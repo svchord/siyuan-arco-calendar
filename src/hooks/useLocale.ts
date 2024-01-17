@@ -1,4 +1,4 @@
-import { request } from '@/utils/api';
+import { request } from '@/api/api';
 import { i18n } from './useSiYuan';
 
 import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';

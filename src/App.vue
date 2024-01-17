@@ -25,7 +25,7 @@
 import CalendarView from '@/components/CalendarView.vue';
 //utils
 import { Constants } from 'siyuan';
-import { lsNotebooks, request } from '@/utils/api';
+import { lsNotebooks, request } from '@/api/api';
 import { useLocale } from '@/hooks/useLocale';
 import { eventBus, i18n } from '@/hooks/useSiYuan';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
@@ -82,3 +82,4 @@ async function changeStorage(book: SelectOptionData | undefined) {
   }
 }
 </script>
+@/api/api

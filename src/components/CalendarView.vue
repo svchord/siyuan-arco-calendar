@@ -18,10 +18,10 @@
 </template>
 <script lang="ts" setup>
 import dayjs from 'dayjs';
-import * as api from '@/utils/api';
+import * as api from '@/api/api';
 import { formatMsg } from '@/hooks/useLocale';
 import { eventBus } from '@/hooks/useSiYuan';
-import { openDoc, setCustomDNAttr } from '@/utils/daily-note';
+import { openDoc, setCustomDNAttr } from '@/api/daily-note';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 
 const props = defineProps<{ notebook: SelectOptionData | undefined }>();
