@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 import type { App, I18N, EventBus } from 'siyuan';
 
 export const app = ref<App>({ plugins: [], appId: '' });

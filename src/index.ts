@@ -1,6 +1,4 @@
-import { createApp } from 'vue';
 import App from './App.vue';
-import { ConfigProvider, Select, DatePicker, Tabs } from '@arco-design/web-vue';
 import { Plugin, getFrontend } from 'siyuan';
 import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
 
@@ -15,7 +13,6 @@ export default class ArcoCalendarPlugin extends Plugin {
     isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
 
     const vueApp = createApp(App);
-    vueApp.use(ConfigProvider).use(Select).use(DatePicker).use(Tabs);
     const DOCK_TYPE = 'dock_tab';
     const _plugin = this;
     this.addDock({

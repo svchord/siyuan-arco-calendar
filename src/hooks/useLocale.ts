@@ -1,4 +1,3 @@
-import { computed, ref } from 'vue';
 import { request } from '@/utils/api';
 import { i18n } from './useSiYuan';
 

@@ -22,7 +22,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
 import CalendarView from '@/components/CalendarView.vue';
 //utils
 import { Constants } from 'siyuan';

@@ -17,7 +17,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref, toRefs } from 'vue';
 import dayjs from 'dayjs';
 import * as api from '@/utils/api';
 import { formatMsg } from '@/hooks/useLocale';

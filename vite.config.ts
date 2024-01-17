@@ -1,6 +1,9 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import { ArcoResolver } from 'unplugin-vue-components/resolvers';
 
 import minimist from 'minimist';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -19,6 +22,17 @@ console.log('distDir=>', distDir);
 export default defineConfig({
   plugins: [
     vue(),
+    AutoImport({
+      resolvers: [ArcoResolver()],
+      imports: ['vue'],
+    }),
+    Components({
+      resolvers: [
+        ArcoResolver({
+          sideEffect: false,
+        }),
+      ],
+    }),
     viteStaticCopy({
       targets: [{ src: './README*.md', dest: './' }],
     }),
