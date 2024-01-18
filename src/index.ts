@@ -1,9 +1,13 @@
 import App from './App.vue';
-import { Plugin, getFrontend } from 'siyuan';
+import { Plugin, Menu, Setting, getFrontend } from 'siyuan';
+import type { IDockModel } from 'siyuan';
 import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
 
 import './index.less';
 export default class ArcoCalendarPlugin extends Plugin {
+  public topEle!: HTMLElement;
+  public menuEle!: HTMLElement;
+
   onload() {
     i18n.value = this.i18n;
     app.value = this.app;
@@ -11,9 +15,44 @@ export default class ArcoCalendarPlugin extends Plugin {
 
     const frontEnd = getFrontend();
     isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
+    this.addDockItem();
+    this.addTopItem();
+    this.setting = new Setting({ height: '400px', width: '400px' });
+  }
 
-    const vueApp = createApp(App);
-    const DOCK_TYPE = 'dock_tab';
+  onunload() {
+    this.topEle?.remove();
+    this.menuEle?.remove();
+  }
+
+  private addTopItem() {
+    this.topEle = this.addTopBar({
+      icon: 'iconCalendar',
+      title: this.i18n.openCalendar,
+      position: 'left',
+      callback: () => {
+        let rect = this.topEle.getBoundingClientRect();
+        // 如果被隐藏，则使用更多按钮
+        if (rect.width === 0) {
+          rect = document.querySelector('#barMore')!.getBoundingClientRect();
+        }
+        const menu = new Menu('Calendar');
+        menu.addItem({ element: this.menuEle });
+        if (isMobile.value) {
+          menu.fullscreen();
+        } else {
+          menu.open({
+            x: rect.left,
+            y: rect.bottom,
+          });
+        }
+      },
+    });
+    this.menuEle = document.createElement('div');
+    createApp(App).mount(this.menuEle);
+  }
+
+  private addDockItem() {
     const _plugin = this;
     this.addDock({
       config: {
@@ -23,12 +62,10 @@ export default class ArcoCalendarPlugin extends Plugin {
         title: _plugin.i18n.tabName,
       },
       data: {},
-      type: DOCK_TYPE,
+      type: 'dock_tab',
       init: dock => {
-        vueApp.mount(dock.element);
+        createApp(App).mount(dock.element);
       },
     });
   }
-
-  onunload() {}
 }
