@@ -1,13 +1,13 @@
 <template>
   <div>
     <a-date-picker
-      @change="createDailyNote"
-      @picker-value-change="changePanel"
+      @change="changeDate"
+      @picker-value-change="changeMonth"
       hide-trigger
       style="width: 268px; margin: auto; box-shadow: none"
     >
       <template #cell="{ date }">
-        <div class="arco-picker-date" @click="addExistDate(date)">
+        <div class="arco-picker-date">
           <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
             {{ date.getDate() }}
           </div>
@@ -19,122 +19,73 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs';
 import * as api from '@/api/api';
+import { openDoc } from '@/api/daily-note';
 import { formatMsg } from '@/hooks/useLocale';
 import { eventBus } from '@/hooks/useSiYuan';
-import { openDoc, setCustomDNAttr } from '@/api/daily-note';
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import { CusNotebook } from '@/utils/notebook';
 
-const props = defineProps<{ notebook: SelectOptionData | undefined }>();
+const props = defineProps<{ notebook: CusNotebook | undefined }>();
 const { notebook } = toRefs(props);
 
-// 含变量的日记存放路径
-const savePath = ref<string>('');
-// 日记模板存放路径
-const templatePath = ref<string>('');
-watch(notebook, newValue => setCalendar(newValue), { deep: true });
-async function setCalendar(book: SelectOptionData | undefined) {
-  if (!book) {
-    await api.pushErrMsg(formatMsg('notNoteBook'));
-    return;
-  }
-  //@fostime comments: 如有需要, 可以参考 https://github.com/frostime/siyuan-dailynote-today/blob/main/src/func/dailynote/past-dn.ts
-  // 获取含变量的日记存放路径
-  const { conf } = await api.getNotebookConf(book.value as string);
-  const { dailyNoteSavePath, dailyNoteTemplatePath } = conf;
-  savePath.value = dailyNoteSavePath.replace(/\{\{(.*?)\}\}/g, (match: string) =>
-    match.replace(/\bnow\b(?=(?:(?:[^"]*"){2})*[^"]*$)/g, `(toDate "2006-01-02" "[[dateSlot]]")`)
-  );
-  if (dailyNoteTemplatePath) {
-    const system = await api.request('/api/system/getConf');
-    templatePath.value = system.conf.system.dataDir + '/templates' + dailyNoteTemplatePath;
-  }
-  // 获取已存在日记的日期
-  await getExistDate(new Date());
-}
-
-async function getHPath(date: string) {
-  const path = savePath.value.replaceAll('[[dateSlot]]', date);
-  return api.renderSprig(path);
-}
-
-async function getDailyNotesID(hPath: string) {
-  if (!notebook.value) {
-    return;
-  }
-  const searchSql = `select * from blocks where type='d' and box = '${notebook.value.value}' and hpath = '${hPath}'`;
-  const data = await api.sql(searchSql);
-  return data.length ? data[0].id : null;
-}
-
-// 创建日记
-async function createDailyNote(date: string) {
-  if (!date) {
-    return;
-  }
-  if (!notebook.value) {
-    await api.pushErrMsg(formatMsg('notNoteBook'));
-    return;
-  }
-  const hPath = await getHPath(date);
-  if (!hPath) {
-    return;
-  }
-  const dailyNoteID = await getDailyNotesID(hPath);
-  const dateObj = new Date(date);
-
-  // 当前日期已有日记，打开日记
-  if (dailyNoteID) {
-    openDoc(dailyNoteID); //打开新建的日记
-    setCustomDNAttr(dailyNoteID, dateObj); //为新建的日记添加自定义属性
-    return;
-  }
-  // 当前日期无日记，创建日记
-  const docID = await api.createDocWithMd(notebook.value.value as string, hPath, '');
-  // 根据模板渲染日记
-  if (templatePath.value.length) {
-    const res = await api.render(docID, templatePath.value);
-    await api.prependBlock('dom', res.content, docID);
-  }
-  openDoc(docID); //打开新建的日记
-  setCustomDNAttr(docID, dateObj); //为新建的日记添加自定义属性
-  addExistDate(dateObj);
-}
-
 //已存在日记的日期
-const existDate = ref(new Set());
-const currentPanelDate = ref(new Date());
-function changePanel(date: string) {
-  currentPanelDate.value = new Date(date);
-  getExistDate(currentPanelDate.value);
+const existDailyNotesMap = ref(new Map());
+
+async function getExistDate(date: Date) {
+  if (!notebook.value) {
+    return;
+  }
+  const existDailyNotes = await notebook.value.getExistDailyNote(date);
+  if (!existDailyNotes) {
+    existDailyNotesMap.value.clear();
+    return;
+  }
+  for (const { id, dateStr } of existDailyNotes) {
+    existDailyNotesMap.value.set(dateStr, id);
+  }
 }
 
-eventBus.value?.on('ws-main', ({ detail }) => {
-  const { cmd } = detail;
-  if (['removeDoc', 'createdailynote'].includes(cmd)) {
-    getExistDate(currentPanelDate.value);
+watch(notebook, notebook => {
+  existDailyNotesMap.value.clear();
+  if (notebook) {
+    getExistDate(new Date());
   }
 });
 
-async function getExistDate(date: Date) {
-  const firstDate = dayjs(date).date(1).day(0);
-  for (let i = 0; i < 42; i++) {
-    const dateStr = firstDate.add(i, 'day').format('YYYY-MM-DD');
-    const hPath = await getHPath(dateStr);
-    const dailyNoteID = await getDailyNotesID(hPath);
-    if (dailyNoteID) {
-      existDate.value.add(dateStr);
-    } else {
-      existDate.value.delete(dateStr);
-    }
+// 更改日期
+async function changeDate(dateStr: string) {
+  if (!notebook.value) {
+    await api.pushErrMsg(formatMsg('notNoteBook'));
+    return;
   }
+  if (existDailyNotesMap.value.has(dateStr)) {
+    openDoc(existDailyNotesMap.value.get(dateStr));
+    return;
+  }
+  const thisDate = new Date(dateStr);
+  const dailyNote = await notebook.value.createDailyNote(thisDate);
+  const { id } = dailyNote;
+  openDoc(id); //打开新建的日记
+  existDailyNotesMap.value.set(dateStr, id);
 }
+
+const thisPanelDate = ref(new Date());
+function changeMonth(dateStr: string) {
+  thisPanelDate.value = new Date(dateStr);
+  getExistDate(thisPanelDate.value);
+}
+
+eventBus.value?.on('ws-main', ({ detail }) => {
+  if (!notebook.value) {
+    return;
+  }
+  const { cmd } = detail;
+  if (['removeDoc', 'createdailynote'].includes(cmd)) {
+    setTimeout(() => getExistDate(thisPanelDate.value), 3000);
+  }
+});
 
 // 设置 cell 类
 function getCell(date: Date) {
-  return existDate.value.has(dayjs(date).format('YYYY-MM-DD'));
-}
-
-function addExistDate(date: Date) {
-  existDate.value.add(dayjs(date).format('YYYY-MM-DD'));
+  return existDailyNotesMap.value.has(dayjs(date).format('YYYY-MM-DD'));
 }
 </script>

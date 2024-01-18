@@ -253,7 +253,7 @@ export async function getBlockAttrs(id: BlockId): Promise<{ [key: string]: strin
 
 // **************************************** SQL ****************************************
 
-export async function sql(sql: string): Promise<any[]> {
+export async function sql(sql: string): Promise<Block[] | []> {
   const sqldata = { stmt: sql };
   const url = '/api/query/sql';
   return request(url, sqldata);

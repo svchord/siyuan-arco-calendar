@@ -3,17 +3,18 @@
     <a-tabs style="width: 280px; margin: 3px auto">
       <template #extra>
         <a-select
-          v-model="currentNotebook"
+          v-model="selectNotebookId"
+          :options="cusNotebooks"
+          :field-names="{ value: 'id', label: 'name' }"
           :style="{ width: '160px', margin: 'auto' }"
           placeholder="选择笔记本..."
           allow-search
         >
-          <a-option v-for="book of notebooks" :value="book" :label="book.label" :key="book.value as string" />
         </a-select>
       </template>
       <a-tab-pane key="1">
         <template #title> {{ i18n.tabName }} </template>
-        <CalendarView :notebook="currentNotebook" />
+        <CalendarView :notebook="selectNotebook" />
       </a-tab-pane>
       <!-- <a-tab-pane key="2">
         </a-tab-pane> -->
@@ -23,63 +24,55 @@
 
 <script lang="ts" setup>
 import CalendarView from '@/components/CalendarView.vue';
-//utils
 import { Constants } from 'siyuan';
-import { lsNotebooks, request } from '@/api/api';
-import { useLocale } from '@/hooks/useLocale';
+import { lsNotebooks, request, pushErrMsg } from '@/api/api';
+import { useLocale, formatMsg } from '@/hooks/useLocale';
 import { eventBus, i18n } from '@/hooks/useSiYuan';
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import { CusNotebook } from '@/utils/notebook';
 
 const { locale } = useLocale();
 
 // 获取笔记本列表
-const notebooks = ref<SelectOptionData[]>([]);
-const notebooksID = computed(() => notebooks.value.map(book => book.value));
-async function getNotebooks() {
-  const data = await lsNotebooks();
+const cusNotebooks = ref<CusNotebook[]>([]);
+const selectNotebookId = ref<NotebookId | undefined>(undefined);
+const selectNotebook = computed(() => cusNotebooks.value.find(book => book.id === selectNotebookId.value));
 
-  notebooks.value = data.notebooks
-    .filter((book: Notebook) => !book.closed)
-    .map((book: Notebook) => {
-      return { value: book.id, label: book.name };
-    });
-}
-
-const currentNotebook = ref<SelectOptionData | undefined>(undefined);
-async function getCurrentBook() {
-  const storage = await request('/api/storage/getLocalStorage');
-  if (notebooksID.value.includes(storage['local-dailynoteid'])) {
-    currentNotebook.value = notebooks.value.find(book => book.value === storage['local-dailynoteid']);
-  } else {
-    currentNotebook.value = undefined;
-  }
-}
 async function init() {
-  await getNotebooks();
-  await getCurrentBook();
+  const { notebooks } = await lsNotebooks();
+  const books = notebooks.filter((book: Notebook) => !book.closed);
+  for (const book of books) {
+    const cusNotebook = await CusNotebook.build(book);
+    cusNotebooks.value.push(cusNotebook);
+  }
+  const storage = await request('/api/storage/getLocalStorage');
+  if (cusNotebooks.value.map(book => book.id).includes(storage['local-dailynoteid'])) {
+    selectNotebookId.value = storage['local-dailynoteid'];
+  } else {
+    selectNotebookId.value = undefined;
+  }
 }
 init();
 
 eventBus.value?.on('ws-main', ({ detail }) => {
   const { cmd } = detail;
   if (['createnotebook', 'mount', 'unmount'].includes(cmd)) {
+    cusNotebooks.value = [];
     init();
   }
 });
 
-watch(currentNotebook, newValue => changeStorage(newValue), { deep: true });
-async function changeStorage(book: SelectOptionData | undefined) {
-  if (!book) {
+watch(selectNotebookId, async bookId => {
+  if (!bookId) {
+    await pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
   const storage = await request('/api/storage/getLocalStorage');
-  if (book?.value !== storage['local-dailynoteid']) {
+  if (bookId !== storage['local-dailynoteid']) {
     await request('/api/storage/setLocalStorageVal', {
       app: Constants.SIYUAN_APPID,
       key: 'local-dailynoteid',
-      val: book?.value,
+      val: bookId,
     });
   }
-}
+});
 </script>
-@/api/api

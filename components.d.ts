@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AConfigProvider: typeof import('@arco-design/web-vue')['ConfigProvider']
     ADatePicker: typeof import('@arco-design/web-vue')['DatePicker']
-    AOption: typeof import('@arco-design/web-vue')['Option']
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
     ATabs: typeof import('@arco-design/web-vue')['Tabs']

@@ -1,3 +1,8 @@
+interface DailyNote {
+  id: string;
+  dateStr: string;
+}
+
 /**
  * Copyright (c) 2023 frostime. All rights reserved.
  */
@@ -11,22 +16,22 @@ type NotebookId = string;
 type PreviousID = BlockId;
 type ParentID = BlockId | DocumentId;
 
-type Notebook = {
+interface Notebook {
   id: NotebookId;
   name: string;
-  icon: string;
-  sort: number;
-  closed: boolean;
-};
+  closed?: boolean;
+  icon?: string;
+  sort?: number;
+}
 
-type NotebookConf = {
+interface NotebookConf {
   name: string;
-  closed: boolean;
-  refCreateSavePath: string;
-  createDocNameTemplate: string;
   dailyNoteSavePath: string;
   dailyNoteTemplatePath: string;
-};
+  closed?: boolean;
+  refCreateSavePath?: string;
+  createDocNameTemplate?: string;
+}
 
 type BlockType = 'd' | 's' | 'h' | 't' | 'i' | 'p' | 'f' | 'audio' | 'video' | 'other';
 
