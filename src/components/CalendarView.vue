@@ -23,6 +23,7 @@ import { openDoc } from '@/api/daily-note';
 import { formatMsg } from '@/hooks/useLocale';
 import { eventBus } from '@/hooks/useSiYuan';
 import { CusNotebook } from '@/utils/notebook';
+import { refreshSql } from '@/api/utils';
 
 const props = defineProps<{ notebook: CusNotebook | undefined }>();
 const { notebook } = toRefs(props);
@@ -74,13 +75,14 @@ function changeMonth(dateStr: string) {
   getExistDate(thisPanelDate.value);
 }
 
-eventBus.value?.on('ws-main', ({ detail }) => {
+eventBus.value?.on('ws-main', async ({ detail }) => {
   if (!notebook.value) {
     return;
   }
   const { cmd } = detail;
   if (['removeDoc', 'createdailynote'].includes(cmd)) {
-    setTimeout(() => getExistDate(thisPanelDate.value), 3000);
+    await refreshSql();
+    await getExistDate(thisPanelDate.value);
   }
 });
 

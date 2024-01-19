@@ -29,6 +29,7 @@ import { lsNotebooks, request, pushErrMsg } from '@/api/api';
 import { useLocale, formatMsg } from '@/hooks/useLocale';
 import { eventBus, i18n } from '@/hooks/useSiYuan';
 import { CusNotebook } from '@/utils/notebook';
+import { refreshSql } from './api/utils';
 
 const { locale } = useLocale();
 
@@ -53,11 +54,12 @@ async function init() {
 }
 init();
 
-eventBus.value?.on('ws-main', ({ detail }) => {
+eventBus.value?.on('ws-main', async ({ detail }) => {
   const { cmd } = detail;
   if (['createnotebook', 'mount', 'unmount'].includes(cmd)) {
+    await refreshSql();
     cusNotebooks.value = [];
-    init();
+    await init();
   }
 });
 
