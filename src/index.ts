@@ -1,8 +1,8 @@
 import App from './App.vue';
 import { Plugin, Menu, Setting, getFrontend } from 'siyuan';
 import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
-
 import './index.less';
+
 export default class ArcoCalendarPlugin extends Plugin {
   public topEle!: HTMLElement;
   public menuEle!: HTMLElement;
@@ -11,9 +11,7 @@ export default class ArcoCalendarPlugin extends Plugin {
     i18n.value = this.i18n;
     app.value = this.app;
     eventBus.value = this.eventBus;
-
-    const frontEnd = getFrontend();
-    isMobile.value = frontEnd === 'mobile' || frontEnd === 'browser-mobile';
+    isMobile.value = ['mobile', 'browser-mobile'].includes(getFrontend());
     this.addDockItem();
     this.addTopItem();
     this.setting = new Setting({ height: '400px', width: '400px' });

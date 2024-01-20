@@ -37,7 +37,6 @@ async function getExistDate(date: Date) {
   }
   const existDailyNotes = await notebook.value.getExistDailyNote(date);
   if (!existDailyNotes) {
-    existDailyNotesMap.value.clear();
     return;
   }
   for (const { id, dateStr } of existDailyNotes) {
