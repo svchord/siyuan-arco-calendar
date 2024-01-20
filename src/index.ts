@@ -1,6 +1,5 @@
 import App from './App.vue';
 import { Plugin, Menu, Setting, getFrontend } from 'siyuan';
-import type { IDockModel } from 'siyuan';
 import { app, i18n, isMobile, eventBus } from './hooks/useSiYuan';
 
 import './index.less';
