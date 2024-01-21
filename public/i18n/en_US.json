@@ -4,5 +4,11 @@
   "msg": {
     "begin": "[Calendar Plugin]",
     "notNoteBook": "Failed to get the current notebook, please set it manually"
+  },
+  "position": {
+    "title": "Button entrance position",
+    "topLeft": "Top left",
+    "topRight": "Top right",
+    "dock": "Dock"
   }
 }

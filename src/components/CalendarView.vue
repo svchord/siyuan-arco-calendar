@@ -1,20 +1,18 @@
 <template>
-  <div>
-    <a-date-picker
-      @change="changeDate"
-      @picker-value-change="changeMonth"
-      hide-trigger
-      style="width: 268px; margin: auto; box-shadow: none"
-    >
-      <template #cell="{ date }">
-        <div class="arco-picker-date">
-          <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
-            {{ date.getDate() }}
-          </div>
+  <a-date-picker
+    @change="changeDate"
+    @picker-value-change="changeMonth"
+    hide-trigger
+    style="width: 268px; margin: auto; box-shadow: none"
+  >
+    <template #cell="{ date }">
+      <div class="arco-picker-date">
+        <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
+          {{ date.getDate() }}
         </div>
-      </template>
-    </a-date-picker>
-  </div>
+      </div>
+    </template>
+  </a-date-picker>
 </template>
 <script lang="ts" setup>
 import dayjs from 'dayjs';

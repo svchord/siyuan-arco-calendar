@@ -4,5 +4,11 @@
   "msg": {
     "begin": "[日历插件]",
     "notNoteBook": "获取当前笔记本失败，请手动设置"
+  },
+  "position": {
+    "title": "按钮入口位置",
+    "topLeft": "顶栏左",
+    "topRight": "顶栏右",
+    "dock": "边栏"
   }
 }

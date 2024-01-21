@@ -4,5 +4,11 @@
   "msg": {
     "begin": "[Plug-in de calendrier]",
     "notNoteBook": "Impossible d'obtenir le bloc-notes actuel, veuillez le définir manuellement"
+  },
+  "position": {
+    "title": "Position d'entrée du bouton",
+    "topLeft": "En haut à gauche",
+    "topRight": "En haut à droite",
+    "dock": "Dock"
   }
 }

@@ -4,5 +4,11 @@
   "msg": {
     "begin": "[Complemento de calendario]",
     "notNoteBook": "No se pudo obtener el cuaderno actual, configúrelo manualmente"
+  },
+  "position": {
+    "title": "Posición de entrada del botón",
+    "topLeft": "Arriba izquierda",
+    "topRight": "Arriba derecha",
+    "dock": "muelle"
   }
 }
