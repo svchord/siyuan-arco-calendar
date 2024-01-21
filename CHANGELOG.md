@@ -1,6 +1,34 @@
 # 版本日志 | Changelog 
 
 
+## [1.4.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.3.0...v1.4.0) (2024-01-21)
+
+
+### 代码重构 | Code Refactoring
+
+* 更换api目录 ([e14586e](https://github.com/svchord/siyuan-arco-calendar/commit/e14586e0f6e9a6151739e6c4c6b3e80b98f1ed4b))
+* 使用面向对象重构代码 ([bb98e08](https://github.com/svchord/siyuan-arco-calendar/commit/bb98e085d31f7e85abb44ddb81094958821cf24d))
+* 使用dayjs重构 ([27df65f](https://github.com/svchord/siyuan-arco-calendar/commit/27df65f78839cd895f43ecf5b0581560ef231e8c))
+
+
+### 构建相关 | Build System
+
+* 更新依赖 ([798da82](https://github.com/svchord/siyuan-arco-calendar/commit/798da8224612cc424293675c5b22dc09fe29e0a5))
+* 优化构建配置 ([ee2dac4](https://github.com/svchord/siyuan-arco-calendar/commit/ee2dac4f36df610352a93ff7389a858459837eb6))
+* 增加自动引入插件 ([a76d949](https://github.com/svchord/siyuan-arco-calendar/commit/a76d949bd291948502a3c9469b1f02e594d6bec8))
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复数据库更新不及时的问题 ([ecfbb24](https://github.com/svchord/siyuan-arco-calendar/commit/ecfbb2410235bea620a20ee167d6fedd60939fe8))
+* 修复已存在日记的日期错误清空的问题 ([8c2cbf4](https://github.com/svchord/siyuan-arco-calendar/commit/8c2cbf4ae71506c1b8ff3612480fcaf134be1a63))
+
+
+### 新增功能 | Features
+
+* 增加两种配置 ([9ac23d4](https://github.com/svchord/siyuan-arco-calendar/commit/9ac23d4a07e025fbb5b292b73540f9619167cbbf))
+* 增加配置按钮入口位置的功能 ([859a654](https://github.com/svchord/siyuan-arco-calendar/commit/859a65487c0a483aa472cde0f2575cd2ff1a2609))
+
 ## [1.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.2.1...v1.3.0) (2024-01-11)
 
 
