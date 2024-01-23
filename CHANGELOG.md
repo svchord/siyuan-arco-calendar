@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.4.3](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.2...v1.4.3) (2024-01-23)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复集市不能正常显示预览图的问题 ([30634cb](https://github.com/svchord/siyuan-arco-calendar/commit/30634cb2f2460a64c05b251415fe5036897d5ed9))
+
 ### [1.4.2](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.1...v1.4.2) (2024-01-23)
 
 
