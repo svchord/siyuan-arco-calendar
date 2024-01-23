@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.4.2](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.1...v1.4.2) (2024-01-23)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 更换plugin.json的位置 ([4869cd5](https://github.com/svchord/siyuan-arco-calendar/commit/4869cd58e284a297b09458756b8768c062d1ab8b))
+
 ### [1.4.1](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.0...v1.4.1) (2024-01-23)
 
 
