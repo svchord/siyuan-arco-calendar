@@ -1,6 +1,14 @@
 # 版本日志 | Changelog 
 
 
+### [1.4.4](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.3...v1.4.4) (2024-04-02)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复点击高亮日期失效的问题 ([e57b1a7](https://github.com/svchord/siyuan-arco-calendar/commit/e57b1a7a045fe20ebb6d901544fd1d65dd67aeb5)), closes [#29](https://github.com/svchord/siyuan-arco-calendar/issues/29)
+* 修复国际化文本 ([06ce7a0](https://github.com/svchord/siyuan-arco-calendar/commit/06ce7a05ac0f8927007fe6a8697308cb7570bfa0)), closes [#30](https://github.com/svchord/siyuan-arco-calendar/issues/30)
+
 ### [1.4.3](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.2...v1.4.3) (2024-01-23)
 
 
