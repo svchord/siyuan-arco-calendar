@@ -15,6 +15,6 @@
   ],
   "bumpFiles": [
     { "filename": "package.json", "type": "json" },
-    { "filename": "public/plugin.json", "type": "json" }
+    { "filename": "plugin.json", "type": "json" }
   ]
 }
