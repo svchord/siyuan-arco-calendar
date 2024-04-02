@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+### [1.4.5](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.4...v1.4.5) (2024-04-02)
+
+
+### 修复缺陷 | Bug Fixes
+
+* 修复版本号不自动更新的问题 ([dfab8ea](https://github.com/svchord/siyuan-arco-calendar/commit/dfab8ea94c6b069fa8053ee4678145a8427f15da))
+
 ### [1.4.4](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.3...v1.4.4) (2024-04-02)
 
 
