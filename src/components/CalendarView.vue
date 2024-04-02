@@ -1,13 +1,8 @@
 <template>
-  <a-date-picker
-    @change="changeDate"
-    @picker-value-change="changeMonth"
-    hide-trigger
-    style="width: 268px; margin: auto; box-shadow: none"
-  >
+  <a-date-picker @picker-value-change="changeMonth" hide-trigger style="width: 268px; margin: auto; box-shadow: none">
     <template #cell="{ date }">
       <div class="arco-picker-date">
-        <div class="arco-picker-date-value" :class="{ exist: getCell(date) }">
+        <div class="arco-picker-date-value" @click="clickDate(date)" :class="{ exist: getCell(date) }">
           {{ date.getDate() }}
         </div>
       </div>
@@ -49,8 +44,11 @@ watch(notebook, notebook => {
   }
 });
 
-// 更改日期
-async function changeDate(dateStr: string) {
+function clickDate(date: Date) {
+  openDailyNote(dayjs(date).format('YYYY-MM-DD'));
+}
+
+async function openDailyNote(dateStr: string) {
   if (!notebook.value) {
     await api.pushErrMsg(formatMsg('notNoteBook'));
     return;
