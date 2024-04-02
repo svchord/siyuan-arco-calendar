@@ -1,6 +1,7 @@
 {
   "openCalendar": "calendrier ouvert",
   "tabName": "Calendrier",
+  "placeholder": "Sélectionnez le bloc-notes...",
   "msg": {
     "begin": "[Plug-in de calendrier]",
     "notNoteBook": "Impossible d'obtenir le bloc-notes actuel, veuillez le définir manuellement"

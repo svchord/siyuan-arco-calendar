@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "make-link": "node ./scripts/make_dev_link.js",
-    "dev": "vite build --watch --mode dev",
+    "dev": "pnpm run type-check && vite build --watch",
     "build": "pnpm run type-check && pnpm run build-only",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",

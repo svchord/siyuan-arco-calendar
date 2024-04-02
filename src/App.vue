@@ -7,7 +7,7 @@
           :options="cusNotebooks"
           :field-names="{ value: 'id', label: 'name' }"
           :style="{ width: '160px', margin: 'auto' }"
-          placeholder="选择笔记本..."
+          :placeholder="i18n.placeholder"
           allow-search
         >
         </a-select>

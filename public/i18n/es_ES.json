@@ -1,6 +1,7 @@
 {
   "openCalendar": "calendario abierto",
   "tabName": "Calendario",
+  "placeholder": "Seleccionar libreta...",
   "msg": {
     "begin": "[Complemento de calendario]",
     "notNoteBook": "No se pudo obtener el cuaderno actual, configúrelo manualmente"

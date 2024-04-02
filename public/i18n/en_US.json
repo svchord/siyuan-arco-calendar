@@ -1,6 +1,7 @@
 {
   "openCalendar": "open calendar",
   "tabName": "Calendar",
+  "placeholder": "Select notebook...",
   "msg": {
     "begin": "[Calendar Plugin]",
     "notNoteBook": "Failed to get the current notebook, please set it manually"
