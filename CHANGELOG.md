@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+## [1.5.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.5...v1.5.0) (2024-04-12)
+
+
+### 新增功能 | Features
+
+* 重写底部今天按钮 ([c1a8538](https://github.com/svchord/siyuan-arco-calendar/commit/c1a8538082917ab7bc27360ba5e2a3cf183e64ac))
+
 ### [1.4.5](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.4...v1.4.5) (2024-04-02)
 
 
