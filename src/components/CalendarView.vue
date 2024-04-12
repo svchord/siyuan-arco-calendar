@@ -1,11 +1,21 @@
 <template>
-  <a-date-picker @picker-value-change="changeMonth" hide-trigger style="width: 268px; margin: auto; box-shadow: none">
+  <a-date-picker
+    v-model="thisDay"
+    @picker-value-change="changeMonth"
+    hide-trigger
+    style="width: 268px; margin: auto; box-shadow: none"
+  >
     <template #cell="{ date }">
       <div class="arco-picker-date">
-        <div class="arco-picker-date-value" @click="clickDate(date)" :class="{ exist: getCell(date) }">
+        <div class="arco-picker-date-value" @click="openDailyNote(date)" :class="{ exist: getCell(date) }">
           {{ date.getDate() }}
         </div>
       </div>
+    </template>
+    <template #extra>
+      <a-row style="text-align: center">
+        <a-button size="mini" @click="clickToday"> {{ locale.datePicker.today }} </a-button>
+      </a-row>
     </template>
   </a-date-picker>
 </template>
@@ -13,10 +23,12 @@
 import dayjs from 'dayjs';
 import * as api from '@/api/api';
 import { openDoc } from '@/api/daily-note';
-import { formatMsg } from '@/hooks/useLocale';
+import { useLocale, formatMsg } from '@/hooks/useLocale';
 import { eventBus } from '@/hooks/useSiYuan';
 import { CusNotebook } from '@/utils/notebook';
 import { refreshSql } from '@/api/utils';
+
+const { locale } = useLocale();
 
 const props = defineProps<{ notebook: CusNotebook | undefined }>();
 const { notebook } = toRefs(props);
@@ -44,21 +56,25 @@ watch(notebook, notebook => {
   }
 });
 
-function clickDate(date: Date) {
-  openDailyNote(dayjs(date).format('YYYY-MM-DD'));
+const thisDay = ref();
+
+function clickToday() {
+  const today = new Date();
+  openDailyNote(today);
+  thisDay.value = dayjs(today).format('YYYY-MM-DD');
 }
 
-async function openDailyNote(dateStr: string) {
+async function openDailyNote(date: Date) {
   if (!notebook.value) {
     await api.pushErrMsg(formatMsg('notNoteBook'));
     return;
   }
+  const dateStr = dayjs(date).format('YYYY-MM-DD');
   if (existDailyNotesMap.value.has(dateStr)) {
     openDoc(existDailyNotesMap.value.get(dateStr));
     return;
   }
-  const thisDate = new Date(dateStr);
-  const dailyNote = await notebook.value.createDailyNote(thisDate);
+  const dailyNote = await notebook.value.createDailyNote(date);
   const { id } = dailyNote;
   openDoc(id); //打开新建的日记
   existDailyNotesMap.value.set(dateStr, id);

@@ -39,10 +39,11 @@ export function useLocale() {
   const locale = computed(() => {
     return locales[localeType.value] || zhCN;
   });
-  async function getLocaleType() {
+
+  (async () => {
     const data = await request('/api/system/getConf');
     localeType.value = data.conf.lang;
-  }
-  getLocaleType();
+  })();
+
   return { localeType, locale };
 }
