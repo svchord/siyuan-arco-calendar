@@ -11,5 +11,10 @@
     "topLeft": "顶栏左",
     "topRight": "顶栏右",
     "dock": "边栏"
+  },
+  "startDayOfWeek": {
+    "title": "开始星期",
+    "sun": "周日",
+    "mon": "周一"
   }
 }

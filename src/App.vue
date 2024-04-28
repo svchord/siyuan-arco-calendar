@@ -14,7 +14,7 @@
       </template>
       <a-tab-pane key="1">
         <template #title> {{ i18n.tabName }} </template>
-        <CalendarView :notebook="selectNotebook" />
+        <CalendarView :notebook="selectNotebook" :startDayOfWeek="startDayOfWeek" />
       </a-tab-pane>
       <!-- <a-tab-pane key="2">
         </a-tab-pane> -->
@@ -27,7 +27,7 @@ import CalendarView from '@/components/CalendarView.vue';
 import { Constants } from 'siyuan';
 import { lsNotebooks, request, pushErrMsg } from '@/api/api';
 import { useLocale, formatMsg } from '@/hooks/useLocale';
-import { eventBus, i18n } from '@/hooks/useSiYuan';
+import { eventBus, i18n, startDayOfWeek } from '@/hooks/useSiYuan';
 import { CusNotebook } from '@/utils/notebook';
 import { refreshSql } from './api/utils';
 

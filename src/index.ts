@@ -1,7 +1,8 @@
 import App from './App.vue';
 import { Plugin, Menu, Setting, getFrontend } from 'siyuan';
-import { app, i18n, isMobile, eventBus, position } from './hooks/useSiYuan';
-import SySelect from './lib/SySelect.vue';
+import { app, i18n, isMobile, eventBus, position, startDayOfWeek } from './hooks/useSiYuan';
+import PositionSySelect from './lib/PositionSySelect.vue';
+import StartDaySySelect from './lib/StartDaySySelect.vue';
 import './index.less';
 
 const STORAGE_NAME = 'arco-calendar-entry';
@@ -26,11 +27,16 @@ export default class ArcoCalendarPlugin extends Plugin {
   private async init() {
     const data = await this.loadData(STORAGE_NAME);
     if (!data) {
-      await this.saveData(STORAGE_NAME, { position: 'top-left' });
+      await this.saveData(STORAGE_NAME, { 
+        position: 'top-left',
+        startDayOfWeek: 'sun'
+      });
       await this.loadData(STORAGE_NAME);
       position.value = 'top-left';
+      startDayOfWeek.value = 'sun';
     } else {
       position.value = data.position;
+      startDayOfWeek.value = data.startDayOfWeek;
     }
     if (position.value === 'top-left') {
       this.addTopItem('left');
@@ -47,17 +53,27 @@ export default class ArcoCalendarPlugin extends Plugin {
       height: 'auto',
       width: '500px',
       confirmCallback: async () => {
-        if (position.value !== this.data[STORAGE_NAME]) {
-          await this.saveData(STORAGE_NAME, { position: position.value });
+        if (position.value !== this.data[STORAGE_NAME].position || startDayOfWeek.value !== this.data[STORAGE_NAME].startDayOfWeek) {
+          await this.saveData(STORAGE_NAME, { 
+            position: position.value,
+            startDayOfWeek: startDayOfWeek.value
+          });
           window.location.reload();
         }
       },
     });
     const selectEle = document.createElement('div');
-    createApp(SySelect).mount(selectEle);
+    createApp(PositionSySelect).mount(selectEle);
     this.setting.addItem({
       title: i18n.value.position.title,
       actionElement: selectEle,
+    });
+
+    const startDayOfWeekEle = document.createElement('div');
+    createApp(StartDaySySelect).mount(startDayOfWeekEle);
+    this.setting.addItem({
+        title: i18n.value.startDayOfWeek.title,
+        actionElement: startDayOfWeekEle,
     });
   }
 

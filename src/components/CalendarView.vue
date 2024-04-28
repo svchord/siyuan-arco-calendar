@@ -3,6 +3,7 @@
     v-model="thisDay"
     @picker-value-change="changeMonth"
     hide-trigger
+    :dayStartOfWeek="startDayOfWeekNumber"
     style="width: 268px; margin: auto; box-shadow: none"
   >
     <template #cell="{ date }">
@@ -30,8 +31,12 @@ import { refreshSql } from '@/api/utils';
 
 const { locale } = useLocale();
 
-const props = defineProps<{ notebook: CusNotebook | undefined }>();
-const { notebook } = toRefs(props);
+const props = defineProps<{ notebook: CusNotebook | undefined, startDayOfWeek: string }>();
+const { notebook, startDayOfWeek } = toRefs(props);
+
+const startDayOfWeekNumber = computed(() => {
+ return startDayOfWeek.value === 'mon' ? 1 : 0;
+})
 
 //已存在日记的日期
 const existDailyNotesMap = ref(new Map());
