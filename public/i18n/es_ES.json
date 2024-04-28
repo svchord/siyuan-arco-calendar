@@ -11,5 +11,10 @@
     "topLeft": "Arriba izquierda",
     "topRight": "Arriba derecha",
     "dock": "muelle"
+  },
+  "startDayOfWeek": {
+    "title": "Primer día de la semana",
+    "sun": "Domingo",
+    "mon": "Lunes"
   }
 }

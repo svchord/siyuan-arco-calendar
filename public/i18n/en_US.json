@@ -11,5 +11,10 @@
     "topLeft": "Top left",
     "topRight": "Top right",
     "dock": "Dock"
+  },
+  "startDayOfWeek": {
+    "title": "Start day of week",
+    "sun": "Sunday",
+    "mon": "Monday"
   }
 }
