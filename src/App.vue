@@ -1,6 +1,6 @@
 <template>
   <a-config-provider :locale="locale">
-    <a-tabs style="width: 280px">
+    <a-tabs style="width: 100%">
       <template #extra>
         <a-select
           v-model="selectNotebookId"
@@ -55,14 +55,16 @@ async function init() {
 }
 init();
 
-eventBus.value?.on('ws-main', async ({ detail }) => {
+const onNotebookChange = async ({ detail }: CustomEvent) => {
   const { cmd } = detail;
   if (['createnotebook', 'mount', 'unmount'].includes(cmd)) {
     await refreshSql();
     cusNotebooks.value = [];
     await init();
   }
-});
+};
+eventBus.value?.on('ws-main', onNotebookChange);
+onUnmounted(() => eventBus.value?.off('ws-main', onNotebookChange));
 
 watch(selectNotebookId, async bookId => {
   if (!bookId) {
