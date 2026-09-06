@@ -127,6 +127,12 @@
   }
 }
 
+// The dropdown is teleported outside the calendar panel. Keep it above panels
+// using z-index: 99999 and override Arco's inline popup z-index only for this select.
+.arco-trigger-popup:has(.arco-calendar-notebook-dropdown) {
+  z-index: 100000 !important;
+}
+
 .arco-select-dropdown {
   padding: 6px !important;
 }

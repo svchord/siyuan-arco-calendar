@@ -8,6 +8,7 @@
           :field-names="{ value: 'id', label: 'name' }"
           :style="{ width: '160px', margin: 'auto' }"
           :placeholder="i18n.placeholder"
+          :trigger-props="{ contentClass: 'arco-calendar-notebook-dropdown' }"
           allow-search
         >
         </a-select>
