@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+## [2.2.0](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.1.0...siyuan-arco-calendar-v2.2.0) (2026-10-31)
+
+
+### Features
+
+* add yearly heatmap view and refine calendar controls ([77aee46](https://github.com/svchord/siyuan-arco-calendar/commit/77aee46fc8e3d150df191016762e39eec32f6261))
+
 ## [2.1.0](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.0.0...siyuan-arco-calendar-v2.1.0) (2026-10-31)
 
 
