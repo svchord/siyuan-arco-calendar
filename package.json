@@ -1,6 +1,6 @@
 {
   "name": "siyuan-arco-calendar",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "type": "module",
   "description": "A calendar panel plugin for SiYuan Note, rebuilt with React and shadcn/ui",
   "repository": "https://github.com/svchord/siyuan-arco-calendar",

@@ -1,6 +1,14 @@
 # 版本日志 | Changelog 
 
 
+## [2.2.2](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.2.1...siyuan-arco-calendar-v2.2.2) (2026-10-31)
+
+
+### Bug Fixes
+
+* reconcile path-only daily notes on refresh ([ece2e4b](https://github.com/svchord/siyuan-arco-calendar/commit/ece2e4b5f9060baafd9b5794517ad8957a3ccb67))
+* widen year and month selectors ([534fc5d](https://github.com/svchord/siyuan-arco-calendar/commit/534fc5dad48e90d376d799a2148018c9a00a8cbc))
+
 ## [2.2.1](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.2.0...siyuan-arco-calendar-v2.2.1) (2026-10-31)
 
 
