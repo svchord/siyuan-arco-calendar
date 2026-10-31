@@ -12,7 +12,6 @@ export interface PluginI18n {
   heatmapHint: string;
   heatmapBlocks: string;
   heatmapNoNote: string;
-  heatmapOpenTasks: string;
   heatmapLess: string;
   heatmapMore: string;
   loading: string;

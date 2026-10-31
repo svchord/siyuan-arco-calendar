@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { addMonths, endOfMonth, format, startOfMonth } from 'date-fns';
 import { CalendarDaysIcon, Settings2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { pushErrMsg, pushMsg } from '@/api/api';
@@ -76,6 +76,18 @@ export function CalendarPanel({
     try {
       const results = await Promise.all([notebooks.refresh(), dailyNotes.refresh(), activity.refresh()]);
       success = results.every(Boolean);
+
+      const rangeStart =
+        view === 'heatmap' ? new Date(heatmapYear, 0, 1) : startOfMonth(addMonths(dailyNotes.month, -1));
+      const rangeEnd = view === 'heatmap' ? new Date(heatmapYear, 11, 31) : endOfMonth(addMonths(dailyNotes.month, 1));
+      const repaired = notebooks.selectedNotebook
+        ? await notebooks.selectedNotebook.reconcileDailyNoteAttrs(rangeStart, rangeEnd)
+        : 0;
+
+      if (repaired > 0) {
+        const refreshed = await Promise.all([dailyNotes.refresh(), activity.refresh()]);
+        success = success && refreshed.every(Boolean);
+      }
     } catch {
       success = false;
     } finally {
@@ -166,7 +178,6 @@ export function CalendarPanel({
               activity={activity.activity}
               locale={locale}
               weekStartsOn={settings.weekStartsOn}
-              showTaskMarkers={settings.showTaskMarkers}
               refreshing={refreshing}
               onYearChange={setHeatmapYear}
               onRefresh={() => {

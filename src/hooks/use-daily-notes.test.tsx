@@ -34,7 +34,6 @@ const i18n: PluginI18n = {
   heatmapHint: 'Note activity by content-block count',
   heatmapBlocks: 'blocks',
   heatmapNoNote: 'No daily note',
-  heatmapOpenTasks: 'Open tasks',
   heatmapLess: 'Less',
   heatmapMore: 'More',
   loading: 'Loading...',

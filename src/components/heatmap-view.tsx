@@ -80,7 +80,6 @@ interface HeatmapViewProps {
   activity: Map<string, DayActivity>;
   locale: Locale;
   weekStartsOn: WeekStart;
-  showTaskMarkers?: boolean;
   refreshing: boolean;
   onYearChange: (year: number) => void;
   onRefresh: () => void;
@@ -91,7 +90,6 @@ export function HeatmapView({
   activity,
   locale,
   weekStartsOn,
-  showTaskMarkers = true,
   refreshing,
   onYearChange,
   onRefresh,
@@ -187,8 +185,7 @@ export function HeatmapView({
                 const inSection = day >= section.start && day <= section.end;
                 const level = activityLevel(entry);
                 const detail = entry ? `${entry.blocks} ${i18n.heatmapBlocks}` : i18n.heatmapNoNote;
-                const taskDetail = entry?.hasOpenTasks ? ` · ${i18n.heatmapOpenTasks}` : '';
-                const label = `${format(day, 'PPP', { locale })} · ${detail}${taskDetail}`;
+                const label = `${format(day, 'PPP', { locale })} · ${detail}`;
 
                 return (
                   <div
@@ -204,11 +201,7 @@ export function HeatmapView({
                       !inSection && 'invisible'
                     )}
                     style={{ gridColumn: weekIndex + 2, gridRow: dayIndex + 2 }}
-                  >
-                    {entry?.hasOpenTasks && showTaskMarkers ? (
-                      <span className="pointer-events-none absolute right-0 top-0 size-1 rounded-full bg-[var(--task-color,#d97706)]" />
-                    ) : null}
-                  </div>
+                  />
                 );
               })
             )}

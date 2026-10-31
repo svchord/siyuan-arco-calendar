@@ -2,7 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { BlockRow } from '@/types/domain';
 
 vi.mock('@/api/api', () => ({
+  batchSetBlockAttrs: vi.fn(),
   createDailyNote: vi.fn(),
+  flushTransaction: vi.fn(async () => null),
+  getDailyNoteInfo: vi.fn(),
   sql: vi.fn(),
 }));
 
@@ -10,7 +13,10 @@ import * as api from '@/api/api';
 import { CalendarNotebook } from './notebook';
 
 const mocks = {
+  batchSetBlockAttrs: vi.mocked(api.batchSetBlockAttrs),
   createDailyNote: vi.mocked(api.createDailyNote),
+  flushTransaction: vi.mocked(api.flushTransaction),
+  getDailyNoteInfo: vi.mocked(api.getDailyNoteInfo),
   sql: vi.mocked(api.sql),
 };
 
@@ -66,16 +72,61 @@ describe('CalendarNotebook', () => {
         { id: 'doc-2', ial: '{: custom-dailynote-20261001="20261001"}' },
       ])
       .mockResolvedValueOnce([{ date_key: '20260115', block_count: 2 } as unknown as BlockRow])
-      .mockResolvedValueOnce([{ root_id: 'doc-1', block_count: 4 } as unknown as BlockRow])
-      .mockResolvedValueOnce([{ id: 'task-1', root_id: 'doc-1' }]);
+      .mockResolvedValueOnce([{ root_id: 'doc-1', block_count: 4 } as unknown as BlockRow]);
 
     const activity = await notebook.getActivity(2026);
 
     expect(activity.get('2026-01-15')).toMatchObject({ blocks: 2 });
-    expect(activity.get('2026-09-30')).toMatchObject({ blocks: 4, hasOpenTasks: true });
-    expect(activity.get('2026-10-01')).toMatchObject({ blocks: 0, hasOpenTasks: false });
+    expect(activity.get('2026-09-30')).toMatchObject({ blocks: 4 });
+    expect(activity.get('2026-10-01')).toMatchObject({ blocks: 0 });
     expect(activity.size).toBe(3);
     expect(mocks.sql.mock.calls[0][0]).toContain("box = 'box-1'");
+  });
+
+  it('repairs missing daily-note attributes for date-titled documents', async () => {
+    const notebook = buildNotebook();
+    mocks.sql.mockResolvedValueOnce([
+      { id: 'doc-1', hpath: '/daily note/2026/10/2026-10-20', ial: '{: title="2026-10-20"}' },
+      {
+        id: 'doc-2',
+        hpath: '/daily note/2026/10/2026-10-21',
+        ial: '{: title="2026-10-21", custom-dailynote-20261021="20261021"}',
+      },
+      { id: 'doc-3', hpath: '/notes/2026-10-22', ial: '{: title="2026-10-22"}' },
+      { id: 'doc-4', hpath: '/notes/2026-10-23', ial: '{: title="2026-10-23"}' },
+    ]);
+    mocks.getDailyNoteInfo.mockImplementation(async (_notebook, date) => {
+      if (date === '2026-10-20') {
+        return {
+          id: 'doc-1',
+          hPath: '/daily note/2026/10/2026-10-20',
+          title: '2026-10-20',
+          existed: true,
+        };
+      }
+      if (date === '2026-10-23') {
+        return {
+          id: 'doc-4',
+          hPath: '/daily note/2026/10/2026-10-23',
+          title: '2026-10-23',
+          existed: true,
+        };
+      }
+      return {
+        id: '',
+        hPath: `/notes/${date}`,
+        title: date,
+        existed: false,
+      };
+    });
+
+    const repaired = await notebook.reconcileDailyNoteAttrs(new Date(2026, 9, 1), new Date(2026, 9, 31));
+
+    expect(repaired).toBe(1);
+    expect(mocks.batchSetBlockAttrs).toHaveBeenCalledWith([
+      { id: 'doc-1', attrs: { 'custom-dailynote-20261020': '20261020' } },
+    ]);
+    expect(mocks.flushTransaction).toHaveBeenCalledTimes(1);
   });
 
   it('delegates daily-note creation to the native kernel API', async () => {

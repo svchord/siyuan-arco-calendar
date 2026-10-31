@@ -1,6 +1,6 @@
 import { Constants, fetchSyncPost } from 'siyuan';
 import type { IWebSocketData } from 'siyuan';
-import type { BlockRow, DocumentId, Notebook, NotebookId, SystemConfResponse } from '@/types/domain';
+import type { BlockRow, DailyNoteInfo, DocumentId, Notebook, NotebookId, SystemConfResponse } from '@/types/domain';
 
 /**
  * Thin typed wrapper around SiYuan's synchronous kernel API.
@@ -35,6 +35,10 @@ export function lsNotebooks(): Promise<{ notebooks: Notebook[] } | null> {
 
 // **************************************** File tree ****************************************
 
+export function getDailyNoteInfo(notebook: NotebookId, date: string): Promise<DailyNoteInfo | null> {
+  return request('/api/filetree/getDailyNoteInfo', { notebook, date });
+}
+
 /**
  * Native daily-note creation. Besides the path/template/icon handling, the
  * kernel creates all missing parent documents idempotently for a given date,
@@ -51,6 +55,12 @@ export async function createDailyNote(notebook: NotebookId, date: string): Promi
     throw new Error(response?.msg || 'Unable to create daily note');
   }
   return response.data.id as DocumentId;
+}
+
+// **************************************** Block ****************************************
+
+export function batchSetBlockAttrs(blockAttrs: Array<{ id: string; attrs: Record<string, string> }>) {
+  return request('/api/attr/batchSetBlockAttrs', { blockAttrs });
 }
 
 // **************************************** SQL ****************************************

@@ -1,4 +1,11 @@
-import { escapeSqlString, formatDisplayDate, formatMonthKey, monthsAround, parseDateKey } from '@/lib/date';
+import {
+  escapeSqlString,
+  formatDateKey,
+  formatDisplayDate,
+  formatMonthKey,
+  monthsAround,
+  parseDateKey,
+} from '@/lib/date';
 import { parseDailyNoteRows } from '@/lib/daily-note-rows';
 import type { BlockRow, DailyNote, DayActivity, Notebook } from '@/types/domain';
 import * as api from '@/api/api';
@@ -57,6 +64,61 @@ export class CalendarNotebook implements Notebook {
     return { id, dateStr };
   }
 
+  /**
+   * Older/manual documents can look exactly like a daily note (date title and
+   * matching path) without the `custom-dailynote-*` attribute. Find those
+   * documents during an explicit refresh and add the missing attributes.
+   */
+  async reconcileDailyNoteAttrs(start: Date, end: Date): Promise<number> {
+    const rows = await this.searchDailyNote(`ial LIKE '%title="____-__-__"%' AND ial NOT LIKE '%custom-dailynote-%'`);
+    const startKey = formatDateKey(start);
+    const endKey = formatDateKey(end);
+    const candidates: Array<{ id: string; title: string; dateKey: string; hPath: string }> = [];
+
+    for (const row of rows) {
+      if (row.ial?.includes('custom-dailynote-')) {
+        continue;
+      }
+      const match = row.ial?.match(/title="(\d{4})-(\d{2})-(\d{2})"/);
+      if (!match) {
+        continue;
+      }
+      const title = `${match[1]}-${match[2]}-${match[3]}`;
+      const dateKey = `${match[1]}${match[2]}${match[3]}`;
+      const date = parseDateKey(dateKey);
+      if (!date || dateKey < startKey || dateKey > endKey) {
+        continue;
+      }
+      const hPath = row.hpath;
+      if (!hPath?.endsWith(`/${title}`)) {
+        continue;
+      }
+      candidates.push({ id: row.id, title, dateKey, hPath });
+    }
+
+    // A date-shaped title is not enough: the candidate must be the exact
+    // document the kernel resolves as this notebook's daily note.
+    const validated = await Promise.all(
+      candidates.map(async (candidate) => {
+        const info = await api.getDailyNoteInfo(this.id, candidate.title);
+        return info?.existed && info.id === candidate.id && info.hPath === candidate.hPath ? candidate : null;
+      })
+    );
+    const updates = validated
+      .filter((candidate): candidate is NonNullable<typeof candidate> => candidate !== null)
+      .map((candidate) => ({
+        id: candidate.id,
+        attrs: { [`custom-dailynote-${candidate.dateKey}`]: candidate.dateKey },
+      }));
+
+    if (updates.length === 0) {
+      return 0;
+    }
+    await api.batchSetBlockAttrs(updates);
+    await api.flushTransaction();
+    return updates.length;
+  }
+
   async getActivity(year: number): Promise<Map<string, DayActivity>> {
     const monthConditions = Array.from(
       { length: 12 },
@@ -78,18 +140,14 @@ export class CalendarNotebook implements Notebook {
         AND root_id NOT IN (SELECT block_id FROM attributes WHERE name LIKE 'custom-dailynote-%')
       GROUP BY date_key`;
 
-    const [nonDailyRows, dailyRows, taskRows] = await Promise.all([
+    const [nonDailyRows, dailyRows] = await Promise.all([
       api.sql<BlockRow & { date_key: string; block_count: number }>(nonDailySql),
       api.sql<BlockRow & { block_count: number }>(
         `SELECT root_id, COUNT(*) AS block_count FROM blocks WHERE ${dailyIdsCondition} AND type != 'd' GROUP BY root_id`
       ),
-      api.sql<BlockRow>(
-        `SELECT DISTINCT root_id FROM blocks WHERE type = 'i' AND subtype = 't' AND markdown LIKE '%[ ]%' AND ${dailyIdsCondition}`
-      ),
     ]);
 
     const dailyBlockCounts = new Map((dailyRows ?? []).map((row) => [row.root_id, Number(row.block_count)]));
-    const openRootIds = new Set((taskRows ?? []).map((row) => row.root_id));
     const result = new Map<string, DayActivity>();
 
     // Daily-note blocks always belong to the note's diary date, even if a block
@@ -99,7 +157,6 @@ export class CalendarNotebook implements Notebook {
         id: note.id,
         dateStr: note.dateStr,
         blocks: dailyBlockCounts.get(note.id) ?? 0,
-        hasOpenTasks: openRootIds.has(note.id),
       });
     }
 
@@ -115,7 +172,6 @@ export class CalendarNotebook implements Notebook {
         dateStr,
         id: existing?.id,
         blocks: (existing?.blocks ?? 0) + Number(row.block_count),
-        hasOpenTasks: existing?.hasOpenTasks,
       });
     }
 
