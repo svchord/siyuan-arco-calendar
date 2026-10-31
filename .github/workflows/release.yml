@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to rebuild package.zip for
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -30,7 +35,7 @@ jobs:
 
   build-and-upload:
     needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
+    if: needs.release-please.outputs.release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,7 +43,7 @@ jobs:
       - name: Checkout release tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
           fetch-depth: 0
 
       - name: Install pnpm
@@ -57,6 +62,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Normalize release metadata
+        run: pnpm exec oxfmt package.json .release-please-manifest.json plugin.json
+
       - name: Check source
         run: pnpm check
 
@@ -66,5 +74,5 @@ jobs:
       - name: Upload package.zip to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+          TAG_NAME: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
         run: gh release upload "$TAG_NAME" package.zip --clobber

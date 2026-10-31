@@ -13,6 +13,7 @@
     "src/components/ui",
     "package.zip",
     "pnpm-lock.yaml",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "plugin.json"
   ]
 }
