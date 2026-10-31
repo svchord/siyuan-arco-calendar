@@ -88,14 +88,14 @@ export function CalendarView({
               size="sm"
               aria-label={i18n.selectMonth}
               data-slot="calendar-month-select"
-              className="h-7 w-[78px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
+              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
             >
               <SelectValue>{monthNames[month.getMonth()]}</SelectValue>
             </SelectTrigger>
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[90px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {monthNames.map((name, index) => (
                 <SelectItem key={name} value={String(index)}>
@@ -110,14 +110,14 @@ export function CalendarView({
               size="sm"
               aria-label={i18n.selectYear}
               data-slot="calendar-year-select"
-              className="h-7 w-[70px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
+              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
             >
               <SelectValue>{selectedYear}</SelectValue>
             </SelectTrigger>
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[86px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {years.map((year) => (
                 <SelectItem key={year} value={String(year)}>

@@ -115,14 +115,14 @@ export function HeatmapView({
               size="sm"
               aria-label={i18n.selectYear}
               data-slot="heatmap-year-select"
-              className="h-7 w-[78px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
+              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
             >
               <SelectValue>{year}</SelectValue>
             </SelectTrigger>
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[86px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {years.map((yearOption) => (
                 <SelectItem key={yearOption} value={String(yearOption)}>
