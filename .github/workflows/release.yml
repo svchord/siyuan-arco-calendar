@@ -63,7 +63,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Normalize release metadata
-        run: pnpm exec oxfmt package.json .release-please-manifest.json plugin.json
+        run: pnpm exec oxfmt package.json .release-please-manifest.json public/plugin.json
 
       - name: Check source
         run: pnpm check

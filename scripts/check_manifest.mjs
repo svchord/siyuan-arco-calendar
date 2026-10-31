@@ -9,7 +9,7 @@ const fail = (message) => {
 };
 
 const packageJson = readJson('package.json');
-const pluginJson = readJson('plugin.json');
+const pluginJson = readJson('public/plugin.json');
 
 if (packageJson.version !== pluginJson.version) {
   fail(`version mismatch: package.json=${packageJson.version}, plugin.json=${pluginJson.version}`);

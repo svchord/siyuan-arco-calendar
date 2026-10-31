@@ -8,7 +8,7 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "plugin.json",
+          "path": "public/plugin.json",
           "jsonpath": "$.version"
         }
       ]

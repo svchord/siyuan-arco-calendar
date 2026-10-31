@@ -4,7 +4,7 @@
 
 A calendar panel plugin for SiYuan Note. Open a calendar from the top bar or dock, quickly create or jump to a daily note, and review writing activity in a yearly heatmap.
 
-<img width="1280" alt="preview" src="preview.png">
+<img width="1280" alt="preview" src="public/preview.png">
 
 ## Modifying Colors
 
@@ -164,7 +164,7 @@ Releases use the community-standard [release-please](https://github.com/googleap
 3. the workflow checks out the tag, runs `pnpm check` and the production build
 4. the generated `package.zip` is uploaded to that release
 
-release-please maintains the version and `CHANGELOG.md`; `plugin.json` is kept in sync through `extra-files` in `release-please-config.json`. The `Release` workflow can also be started manually from the Actions page.
+release-please maintains the version and `CHANGELOG.md`; `public/plugin.json` is kept in sync through `extra-files` in `release-please-config.json`. The `Release` workflow can also be started manually from the Actions page.
 
 ## Changelog
 

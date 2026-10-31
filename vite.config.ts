@@ -22,12 +22,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     viteStaticCopy({
-      targets: [
-        { src: 'README*.md', dest: './' },
-        { src: 'plugin.json', dest: './' },
-        { src: 'icon.png', dest: './' },
-        { src: 'preview.png', dest: './' },
-      ],
+      targets: [{ src: 'README*.md', dest: './' }],
     }),
   ],
   resolve: {
@@ -58,7 +53,7 @@ export default defineConfig({
             {
               name: 'watch-external',
               async buildStart() {
-                const files = await fg(['public/**', 'README*.md', 'plugin.json', 'icon.png', 'preview.png']);
+                const files = await fg(['public/**', 'README*.md']);
                 for (const file of files) {
                   this.addWatchFile(file);
                 }

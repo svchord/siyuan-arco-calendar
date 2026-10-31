@@ -31,7 +31,7 @@ const ask = (question) =>
     });
   });
 
-const pluginJsonPath = path.join(process.cwd(), 'plugin.json');
+const pluginJsonPath = path.join(process.cwd(), 'public/plugin.json');
 const packageJsonPath = path.join(process.cwd(), 'package.json');
 const pluginJson = readJson(pluginJsonPath);
 const packageJson = readJson(packageJsonPath);

@@ -4,7 +4,7 @@
 
 思源笔记日历面板插件：在顶栏或边栏打开日历，快速新建或跳转到某一天的日记，并用年度热力图回顾日记活跃度。
 
-<img width="1280" alt="preview" src="preview.png">
+<img width="1280" alt="preview" src="public/preview.png">
 
 ## 修改颜色
 
@@ -164,7 +164,7 @@ pnpm make-install   # 所有平台：构建后把 dist/ 复制到插件目录（
 3. workflow 检出该 tag，执行 `pnpm check` 与生产构建
 4. 将生成的 `package.zip` 上传到对应 Release
 
-版本号和 `CHANGELOG.md` 由 release-please 维护，`plugin.json` 通过 `release-please-config.json` 的 `extra-files` 同步。也可以在 Actions 页面手动触发 `Release` workflow。
+版本号和 `CHANGELOG.md` 由 release-please 维护，`public/plugin.json` 通过 `release-please-config.json` 的 `extra-files` 同步。也可以在 Actions 页面手动触发 `Release` workflow。
 
 ## 版本日志
 

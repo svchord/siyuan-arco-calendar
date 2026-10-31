@@ -97,16 +97,16 @@ export async function resolveTargetDir() {
 }
 
 export function getThisPluginName() {
-  if (!fs.existsSync('./plugin.json')) {
+  if (!fs.existsSync('./public/plugin.json')) {
     process.chdir('..');
-    if (!fs.existsSync('./plugin.json')) {
-      error('Failed! plugin.json not found');
+    if (!fs.existsSync('./public/plugin.json')) {
+      error('Failed! public/plugin.json not found');
       return null;
     }
   }
-  const plugin = JSON.parse(fs.readFileSync('./plugin.json', 'utf8'));
+  const plugin = JSON.parse(fs.readFileSync('./public/plugin.json', 'utf8'));
   if (!plugin?.name) {
-    error('Failed! Please set plugin name in plugin.json');
+    error('Failed! Please set plugin name in public/plugin.json');
     return null;
   }
   return plugin.name;
