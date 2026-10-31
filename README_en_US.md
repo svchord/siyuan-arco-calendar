@@ -141,14 +141,16 @@ pnpm dev         # watch build into dev/
 pnpm make-link   # link dev/ into the SiYuan workspace plugin directory
 ```
 
-Creating a directory symlink on Windows requires permission. If `pnpm make-link` fails with `EPERM`, enable Developer Mode or run the terminal as Administrator and retry:
+Creating a directory symlink on Windows requires permission. When unavailable, `pnpm make-link` automatically requests UAC elevation for that link-creation step only:
 
 ```bash
-pnpm make-link      # Linux / macOS / Windows (Windows needs Developer Mode or Administrator)
+pnpm make-link      # Linux / macOS / Windows (requests UAC when needed)
 pnpm make-install   # all platforms: build and copy dist/ into the plugin directory (no live reload)
 ```
 
-All scripts are Node.js based and do not require PowerShell. `make-link` creates a symlink directly on Linux/macOS; `make-install` uses cross-platform file copying.
+If you cancel the UAC prompt, use `pnpm make-install` instead.
+
+Development scripts are Node.js based; the optional Windows elevation step invokes system PowerShell.
 
 You can also set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip workspace discovery.
 `pnpm make-install` replaces the same-named plugin directory; re-enable the plugin in SiYuan afterwards.

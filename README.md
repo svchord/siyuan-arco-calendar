@@ -141,14 +141,16 @@ pnpm dev         # 监听构建到 dev/
 pnpm make-link   # 将 dev/ 链接到思源工作空间的插件目录
 ```
 
-Windows 上创建目录符号链接需要权限；如果 `pnpm make-link` 报 `EPERM`，可启用开发者模式或以管理员身份运行终端后重试：
+Windows 上创建目录符号链接需要权限；如果没有权限，`pnpm make-link` 会自动弹出 UAC，仅对创建链接这一步请求管理员权限：
 
 ```bash
-pnpm make-link      # Linux / macOS / Windows（Windows 需开发者模式或管理员权限）
+pnpm make-link      # Linux / macOS / Windows（Windows 无权限时会自动请求 UAC）
 pnpm make-install   # 所有平台：构建后把 dist/ 复制到插件目录（无热更新）
 ```
 
-所有脚本都是 Node.js 实现，不依赖 PowerShell；`make-link` 在 Linux/macOS 上直接创建符号链接，`make-install` 使用跨平台复制。
+如果取消 UAC，也可以使用 `pnpm make-install`。
+
+所有开发脚本以 Node.js 实现；Windows 的自动提权步骤会调用系统 PowerShell。
 
 也可以在终端中设置 `SIYUAN_PLUGIN_DIR` 指向 `<工作空间>/data/plugins`，跳过自动查找工作空间。
 `pnpm make-install` 会覆盖同名插件目录；安装后在思源中重新启用插件即可。

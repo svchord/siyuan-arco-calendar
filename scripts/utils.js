@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import readline from 'node:readline';
+import { spawnSync } from 'node:child_process';
 
 export const log = (info) => console.log(`\x1B[36m%s\x1B[0m`, info);
 export const error = (info) => console.error(`\x1B[31m%s\x1B[0m`, info);
@@ -153,17 +154,57 @@ export function makeSymbolicLink(srcPath, targetPath) {
   try {
     fs.symlinkSync(srcPath, targetPath, 'dir');
     log(`Done! Created symlink: ${targetPath}`);
+    return;
   } catch (cause) {
     if (cause.code !== 'EPERM' && cause.code !== 'EACCES') {
       throw cause;
     }
+    if (process.platform === 'win32' && elevateSymlink(srcPath, targetPath)) {
+      log(`Done! Created symlink with elevated permissions: ${targetPath}`);
+      return;
+    }
     error('Cannot create the directory symlink (permission denied).');
     error('Choose one of these options:');
-    error(
-      '  1. On Windows, enable Developer Mode: Settings -> System -> For developers -> Developer Mode, then retry.'
-    );
-    error('  2. Run the terminal as Administrator or with sufficient permissions, then retry.');
+    if (process.platform === 'win32') {
+      error('  1. Approve the automatic UAC prompt, or enable Windows Developer Mode.');
+      error('  2. Run the terminal as Administrator and retry.');
+    } else {
+      error('  1. Fix the permissions of the SiYuan plugin directory.');
+      error('  2. Run with a user that can create symlinks (for example, via sudo).');
+    }
     error('  3. Run "pnpm make-install" to copy dist/ into the plugin directory instead (no live reload).');
     process.exit(1);
+  }
+}
+
+/**
+ * On Windows, ask for UAC elevation only for the link creation step. The dev
+ * watcher itself should keep running as the normal, non-elevated user.
+ */
+function elevateSymlink(srcPath, targetPath) {
+  const quote = (value) => `'${value.replaceAll("'", "''")}'`;
+  const createScript = [
+    "$ErrorActionPreference = 'Stop'",
+    `New-Item -ItemType SymbolicLink -Path ${quote(targetPath)} -Target ${quote(srcPath)} | Out-Null`,
+  ].join('; ');
+  const encoded = Buffer.from(createScript, 'utf16le').toString('base64');
+  const command = [
+    "$process = Start-Process -FilePath 'powershell.exe'",
+    `-ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-EncodedCommand','${encoded}')`,
+    '-Verb RunAs -Wait -PassThru',
+    '; exit $process.ExitCode',
+  ].join(' ');
+  log('Requesting administrator permission to create the symbolic link...');
+  const result = spawnSync('powershell.exe', ['-NoProfile', '-Command', command], {
+    stdio: 'inherit',
+    windowsHide: false,
+  });
+  if (result.status !== 0) {
+    return false;
+  }
+  try {
+    return fs.lstatSync(targetPath).isSymbolicLink();
+  } catch {
+    return false;
   }
 }
