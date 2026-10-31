@@ -1,0 +1,333 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'react-day-picker/style.css' layer(components);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * shadcn/ui "Vega" preset tokens, scoped to the plugin surfaces so the host
+ * SiYuan application keeps its own typography and colour system.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+.sy-calendar-root,
+.sy-calendar-portal,
+.sy-calendar-setting,
+.sy-calendar-popup {
+  --background: var(--b3-menu-background, #ffffff);
+  --foreground: var(--b3-theme-on-background, #1f2329);
+  --card: var(--b3-menu-background, #ffffff);
+  --card-foreground: var(--b3-theme-on-background, #1f2329);
+  --popover: var(--b3-menu-background, #ffffff);
+  --popover-foreground: var(--b3-theme-on-background, #1f2329);
+  /* Vega is monochrome: the host foreground acts as the primary accent. */
+  --primary: var(--b3-theme-on-background, #1f2329);
+  --primary-foreground: var(--b3-menu-background, #ffffff);
+  --secondary: var(--b3-list-hover, #f4f5f7);
+  --secondary-foreground: var(--b3-theme-on-background, #1f2329);
+  --muted: var(--b3-list-hover, #f4f5f7);
+  --muted-foreground: var(--b3-theme-on-surface, #6b7280);
+  --accent: var(--b3-list-hover, #f4f5f7);
+  --accent-foreground: var(--b3-theme-on-background, #1f2329);
+  --destructive: #dc2626;
+  --task-color: #d97706;
+  --border: var(--b3-border-color, #e5e7eb);
+  --input: var(--b3-border-color, #e5e7eb);
+  --ring: var(--b3-theme-on-surface, #6b7280);
+  --radius: 0.625rem;
+  --radius-md: calc(var(--radius) - 2px);
+  font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
+.sy-calendar-root.dark,
+.sy-calendar-portal.dark,
+.sy-calendar-setting.dark,
+.sy-calendar-popup.dark {
+  --background: var(--b3-menu-background, #262626);
+  --foreground: var(--b3-theme-on-background, #e5e5e5);
+  --card: var(--b3-menu-background, #262626);
+  --card-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --popover: var(--b3-menu-background, #262626);
+  --popover-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --primary: var(--b3-theme-on-background, #e5e5e5);
+  --primary-foreground: var(--b3-menu-background, #171717);
+  --secondary: var(--b3-list-hover, #404040);
+  --secondary-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --muted: var(--b3-list-hover, #404040);
+  --muted-foreground: var(--b3-theme-on-surface, #a3a3a3);
+  --accent: var(--b3-list-hover, #404040);
+  --accent-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --destructive: #f87171;
+  --task-color: #fbbf24;
+  --border: var(--b3-border-color, rgba(255, 255, 255, 0.12));
+  --input: var(--b3-border-color, rgba(255, 255, 255, 0.16));
+  --ring: var(--b3-theme-on-surface, #a3a3a3);
+}
+
+@layer base {
+  .sy-calendar-root,
+  .sy-calendar-portal,
+  .sy-calendar-setting,
+  .sy-calendar-popup,
+  .sy-calendar-root *,
+  .sy-calendar-portal *,
+  .sy-calendar-setting *,
+  .sy-calendar-popup *,
+  .sy-calendar-root *::before,
+  .sy-calendar-portal *::before,
+  .sy-calendar-setting *::before,
+  .sy-calendar-popup *::before,
+  .sy-calendar-root *::after,
+  .sy-calendar-portal *::after,
+  .sy-calendar-setting *::after,
+  .sy-calendar-popup *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border);
+  }
+
+  .sy-calendar-root button,
+  .sy-calendar-portal button,
+  .sy-calendar-setting button,
+  .sy-calendar-popup button {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .sy-calendar-root input,
+  .sy-calendar-portal input,
+  .sy-calendar-setting input,
+  .sy-calendar-popup input {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .sy-calendar-root svg,
+  .sy-calendar-portal svg,
+  .sy-calendar-setting svg,
+  .sy-calendar-popup svg {
+    display: block;
+    vertical-align: middle;
+  }
+}
+
+/*
+ * Keep this outside @layer: SiYuan's unlayered `svg { fill: currentColor }`
+ * otherwise wins over any layered rule (including @layer base) and turns
+ * stroke-based lucide icons into solid blocks.
+ */
+.sy-calendar-root svg,
+.sy-calendar-portal svg,
+.sy-calendar-setting svg,
+.sy-calendar-popup svg {
+  fill: none;
+}
+
+/*
+ * Base UI wraps portalled content in a positioner with z-50. The calendar
+ * panel uses z-99999, so raise the positioner that contains our portal class
+ * instead of modifying the distributed UI component.
+ */
+body > div > .isolate.z-50:has(> .sy-calendar-portal) {
+  z-index: 100000;
+}
+
+/* Nested Select popups must sit above the settings popover that opened them. */
+.isolate.z-50:has(> [data-slot='select-content']) {
+  z-index: 100001;
+}
+
+/*
+ * Days with a daily note use a quiet disc behind the number; missing days
+ * stay plain. An amber corner dot marks an unfinished task in the note.
+ */
+.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']):not([data-today='true']) {
+  background: radial-gradient(
+    circle at center,
+    color-mix(in oklch, var(--muted) 90%, transparent) 0 13px,
+    transparent 13.5px
+  );
+  border-radius: 0;
+}
+
+.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']):not([data-today='true']):hover {
+  background: radial-gradient(circle at center, var(--muted) 0 14px, transparent 14.5px);
+}
+
+.sy-calendar-root [data-open-tasks='true']::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--task-color, #d97706);
+  box-shadow: 0 0 0 1px var(--background);
+  pointer-events: none;
+}
+
+/* Keep today visible without turning it into another filled selection. */
+.sy-calendar-root [data-today='true']:not([data-selected-single='true']) {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 28%, transparent);
+}
+
+/* Keep shadcn's week-number appearance; only align it with the full week row. */
+.sy-calendar-root .rdp-week_number {
+  display: flex !important;
+  flex: 0 0 var(--cell-size) !important;
+  align-self: center !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: var(--cell-size) !important;
+  min-width: var(--cell-size) !important;
+  height: auto !important;
+}
+
+.sy-calendar-root .rdp-week_number > div {
+  width: 100% !important;
+  height: 100% !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@layer components {
+  .sy-calendar-popup {
+    position: fixed;
+    z-index: 99999;
+    box-sizing: border-box;
+    width: 320px;
+    max-width: calc(100vw - 16px);
+    max-height: min(560px, calc(100vh - 16px));
+    overflow: auto;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--popover);
+    box-shadow:
+      0 4px 6px -1px #0000001a,
+      0 2px 4px -2px #0000001a;
+    color: var(--popover-foreground);
+    outline: none;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .sy-calendar-dock {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 12px;
+    background: var(--b3-theme-background, #ffffff);
+    font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .sy-calendar-root {
+    width: 100%;
+    color: var(--foreground);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Let DayPicker fill the narrow plugin surface without changing the Vega theme. */
+  .sy-calendar-root .rdp-root {
+    width: 100%;
+    background: transparent;
+  }
+
+  .sy-calendar-root .rdp-months,
+  .sy-calendar-root .rdp-month {
+    width: 100%;
+    gap: 0;
+  }
+
+  .sy-calendar-root .rdp-month_grid {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .sy-calendar-root .rdp-weekdays,
+  .sy-calendar-root .rdp-week {
+    display: flex;
+    width: 100%;
+  }
+
+  .sy-calendar-root .rdp-day {
+    flex: 1;
+    height: 34px;
+  }
+
+  .sy-calendar-root .rdp-day_button {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sy-calendar-root [data-existing-note='true'] {
+    font-weight: 600;
+  }
+
+  .sy-calendar-portal {
+    color: var(--popover-foreground);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}

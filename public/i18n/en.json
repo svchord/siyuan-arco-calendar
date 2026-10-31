@@ -1,0 +1,42 @@
+{
+  "openCalendar": "Open calendar",
+  "tabName": "Calendar",
+  "placeholder": "Select notebook...",
+  "today": "Today",
+  "hint": "Click a date to open or create a daily note",
+  "selectMonth": "Select month",
+  "selectYear": "Select year",
+  "loading": "Loading...",
+  "noNotebooks": "No open notebooks",
+  "msg": {
+    "begin": "[Calendar Plugin]",
+    "notNoteBook": "Failed to get the current notebook, please set it manually",
+    "createFailed": "Failed to create the daily note"
+  },
+  "position": {
+    "title": "Button entrance position",
+    "description": "Choose top-left, top-right, or the right dock.",
+    "topLeft": "Top left",
+    "topRight": "Top right",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Calendar settings",
+    "description": "Configure the entry position and calendar display."
+  },
+  "weekStart": {
+    "title": "First day of week",
+    "description": "Choose the first day of the week.",
+    "monday": "Monday",
+    "sunday": "Sunday"
+  },
+  "weekNumbers": {
+    "title": "Show week numbers",
+    "description": "Show week numbers to the left of dates."
+  },
+  "refreshHint": "Refresh notebooks and daily notes",
+  "taskMarkers": {
+    "title": "Show unfinished task markers",
+    "description": "Show an amber dot when a daily note has open task items."
+  }
+}

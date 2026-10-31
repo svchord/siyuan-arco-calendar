@@ -1,0 +1,42 @@
+{
+  "openCalendar": "Abrir calendario",
+  "tabName": "Calendario",
+  "placeholder": "Seleccionar libreta...",
+  "today": "Hoy",
+  "hint": "Haz clic en una fecha para abrir o crear una nota diaria",
+  "selectMonth": "Seleccionar mes",
+  "selectYear": "Seleccionar año",
+  "loading": "Cargando...",
+  "noNotebooks": "No hay libretas abiertas",
+  "msg": {
+    "begin": "[Complemento de calendario]",
+    "notNoteBook": "No se pudo obtener el cuaderno actual, configúrelo manualmente",
+    "createFailed": "No se pudo crear el diario"
+  },
+  "position": {
+    "title": "Posición de entrada del botón",
+    "description": "Elige arriba a la izquierda, arriba a la derecha o el panel derecho.",
+    "topLeft": "Arriba izquierda",
+    "topRight": "Arriba derecha",
+    "dock": "Muelle"
+  },
+  "settings": {
+    "title": "Ajustes del calendario",
+    "description": "Configura la posición de entrada y la visualización del calendario."
+  },
+  "weekStart": {
+    "title": "Primer día de la semana",
+    "description": "Elige el primer día de la semana.",
+    "monday": "Lunes",
+    "sunday": "Domingo"
+  },
+  "weekNumbers": {
+    "title": "Mostrar números de semana",
+    "description": "Muestra los números de semana a la izquierda."
+  },
+  "refreshHint": "Actualizar cuadernos y notas diarias",
+  "taskMarkers": {
+    "title": "Mostrar tareas pendientes",
+    "description": "Muestra un punto ámbar cuando la nota diaria tiene tareas pendientes."
+  }
+}

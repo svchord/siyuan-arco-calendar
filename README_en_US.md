@@ -2,48 +2,169 @@
 
 [简体中文](README.md) \| English
 
-Siyuan note calendar plug-in developed by relying on arco design component library
+A calendar panel plugin for SiYuan Note. Open a calendar from the top bar or dock and quickly create or jump to a daily note.
 
-<img width="1280" alt="preview" src="https://github.com/svchord/siyuan-arco-calendar/assets/61345763/6bdf09a9-b5a1-48f7-b499-340d44397787">
+<img width="1280" alt="preview" src="preview.png">
 
 ## Reference and Thanks
 
-- First implementation of BryceAndJuly in the community
-- HowcanoeWang/calendar decompilation and function expansion of the previous project
-- The WebSocket package template provided by Jiuyan
+- [BryceAndJuly](https://github.com/BryceAndJuly) for the [first community implementation](https://ld246.com/article/1662969146166)
+- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) for decompilation and feature work on the previous project
+- [Jiuyan](https://github.com/leolee9086) for the WebSocket wrapper template
 
-## Modify Color
+## Modifying Colors
 
-Insert the following code into theme.css and modify the color by yourself
+The plugin uses shadcn/Base UI CSS variables, which can be overridden in a theme or code snippet:
 
 ```css
-// The color of the dark mode is to add "[data-theme-mode='dark']" at the beginning of the next two lines
-.arco-tabs,
-.arco-trigger-popup {
-  // primary color (r,g,b)
-  --arco-primary: 53, 117, 240;
-  --primary-6: var(--arco-primary);
-  // light primary color
-  --color-primary-light-2: var(--b3-theme-primary-lightest);
+.sy-calendar-root,
+.sy-calendar-portal,
+.sy-calendar-setting,
+.sy-calendar-popup {
+  /* Primary accent and its foreground */
+  --primary: #3575f0;
+  --primary-foreground: #ffffff;
 
-  // page background color
-  --color-bg-1: var(--b3-menu-background);
-  // The background color of the drop-down selection box
-  --color-bg-2: var(--b3-menu-background);
-  // Background color of drop-down selection box && floating background color of drop-down menu options
-  --color-fill-2: var(--b3-list-hover);
-  --color-fill-3: var(--b3-list-hover);
+  /* Page and card colors */
+  --background: var(--b3-menu-background);
+  --foreground: var(--b3-theme-on-background);
+  --card: var(--b3-menu-background);
+  --card-foreground: var(--b3-theme-on-background);
 
-  // calendar background color
-  --color-bg-popup: var(--b3-menu-background);
+  /* Muted surfaces and text */
+  --muted: var(--b3-list-hover);
+  --muted-foreground: var(--b3-theme-on-surface);
 
-  // border color
-  --color-neutral-3: var(--b3-border-color);
+  /* Borders, inputs, focus */
+  --border: var(--b3-border-color);
+  --input: var(--b3-border-color);
+  --ring: var(--b3-theme-on-surface);
 
-  // text color
-  --color-text-1: var(--b3-theme-on-background);
+  /* Radius */
+  --radius: 0.625rem;
+}
+
+/* Dark-mode overrides */
+.sy-calendar-root.dark,
+.sy-calendar-portal.dark,
+.sy-calendar-setting.dark,
+.sy-calendar-popup.dark {
+  --primary: #8ab4ff;
+  --primary-foreground: #171717;
 }
 ```
+
+Main variables:
+
+| Variable                             | Purpose                                   |
+| ------------------------------------ | ----------------------------------------- |
+| `--primary` / `--primary-foreground` | Today button, selected date, accent color |
+| `--background` / `--foreground`      | Panel background and body text            |
+| `--card` / `--card-foreground`       | Panel card colors                         |
+| `--muted` / `--muted-foreground`     | Week numbers, hints, and muted surfaces   |
+| `--border` / `--input`               | Dividers, borders, and input controls     |
+| `--ring`                             | Keyboard focus ring                       |
+| `--radius`                           | Panel and control radius                  |
+
+## Features
+
+- Three entry positions: top-left, top-right, or dock
+- Existing daily notes are highlighted on the month calendar; click any date to open or create it
+- Existing notes use a soft disc; days without a note stay plain, and notes with unfinished tasks show an amber corner dot (configurable)
+- Month/year dropdowns with a refresh action on the right
+- Settings entry in the calendar panel header:
+  - Monday or Sunday as the first day of the week
+  - Optional week numbers in the calendar gutter
+- Refresh icon beside the month/year selectors to reload notebooks and daily notes
+- Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
+- Reads the notebook daily-note save path and template, including the template document icon
+- Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
+
+## Tech stack
+
+- **React 19** + TypeScript
+- **shadcn/ui** components (Card, Button, Separator, Select, Popover, Command, Calendar) built on Base UI primitives
+- **shadcn/ui Vega preset**: neutral palette, Inter font, and Vega component spacing/rounding
+- **Tailwind CSS 4**, scoped to the plugin and mapped onto SiYuan theme variables
+- **Vite 8** library build; React is bundled with the plugin instead of relying on a host global
+
+## Architecture
+
+```text
+src/
+├── index.tsx                 # SiYuan plugin lifecycle: onload / onLayoutReady / onunload
+├── api/                      # Typed kernel API plus notebook/daily-note queries
+├── components/
+│   ├── ui/                   # shadcn/ui component sources
+│   ├── calendar-app.tsx      # React root with host context
+│   ├── calendar-panel.tsx    # Card layout, header, refresh/settings entry
+│   ├── calendar-view.tsx     # Month/year navigation and day markers
+│   ├── notebook-combobox.tsx # Searchable notebook selector
+│   └── position-select.tsx   # Entry-position control
+├── hooks/                    # useNotebooks / useDailyNotes / useLocale / useIsDark
+├── lib/                      # Pure helpers, host context, i18n, storage, icons
+├── types/                    # Domain and i18n types
+└── ...
+```
+
+- React roots are mounted with `createRoot` into the top-bar popup or dock element and unmounted on popup close, dock destroy, and plugin unload.
+- Event-bus subscriptions are cleaned up in React effect cleanup functions. Notebook and daily-note changes arriving over `ws-main` refresh the UI incrementally.
+- Settings are applied and saved live from the panel popover, without a full page reload.
+
+## Data flow
+
+1. `onload` reads `arco-calendar-entry` settings and registers icons; `onLayoutReady` mounts the top bar or dock.
+2. `useNotebooks` fetches the notebook list and `local-dailynoteid` in parallel and builds lightweight notebook objects.
+3. `useDailyNotes` queries daily-note attributes for the current/previous/next month and adds unfinished-task state.
+4. `useLocale` caches the date-fns locale for the plugin session.
+5. A date click opens a mapped document, otherwise the kernel `createDailyNote` API (with its `date` parameter) creates the note; parent paths, template, icon and `custom-dailynote-*` attributes are handled atomically by the kernel.
+6. `ws-main` notebook and daily-note events refresh the corresponding data; stale responses are discarded by request sequence.
+7. A shared external store manages dark-theme observation across all plugin surfaces.
+
+Components under `src/components/ui` are the shadcn/ui `base-vega` registry distribution. Plugin-specific behavior (existing-note dot, portal layering, plugin icon) lives in app wrappers or primitive compositions rather than edits to those files.
+
+## Development
+
+Requires Node.js >= 24 and pnpm 12.
+
+```bash
+pnpm install
+pnpm type-check
+pnpm test
+pnpm build
+```
+
+`pnpm build` validates the manifest, runs the type check, builds the production bundle, and creates `package.zip`.
+
+Development (`pnpm dev` keeps watching; run `make-link` in another terminal):
+
+```bash
+pnpm dev         # watch build into dev/
+pnpm make-link   # link dev/ into the SiYuan workspace plugin directory
+```
+
+Creating a directory symlink on Windows requires permission. If `pnpm make-link` fails with `EPERM`, enable Developer Mode or run the terminal as Administrator and retry:
+
+```bash
+pnpm make-link      # Linux / macOS / Windows (Windows needs Developer Mode or Administrator)
+pnpm make-install   # all platforms: build and copy dist/ into the plugin directory (no live reload)
+```
+
+All scripts are Node.js based and do not require PowerShell. `make-link` creates a symlink directly on Linux/macOS; `make-install` uses cross-platform file copying.
+
+You can also set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip workspace discovery.
+`pnpm make-install` replaces the same-named plugin directory; re-enable the plugin in SiYuan afterwards.
+
+## Release
+
+Releases use the community-standard [release-please](https://github.com/googleapis/release-please-action):
+
+1. a push to `main` or a merged PR makes release-please create/update a release PR from Conventional Commits
+2. merging that release PR creates the `vX.Y.Z` tag and GitHub Release
+3. the workflow checks out the tag, runs `pnpm check` and the production build
+4. the generated `package.zip` is uploaded to that release
+
+release-please maintains the version and `CHANGELOG.md`; `plugin.json` is kept in sync through `extra-files` in `release-please-config.json`. The `Release` workflow can also be started manually from the Actions page.
 
 ## Changelog
 

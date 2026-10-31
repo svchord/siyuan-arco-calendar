@@ -1,0 +1,42 @@
+{
+  "openCalendar": "Ouvrir le calendrier",
+  "tabName": "Calendrier",
+  "placeholder": "Sélectionnez le bloc-notes...",
+  "today": "Aujourd'hui",
+  "hint": "Cliquez sur une date pour ouvrir ou créer une note quotidienne",
+  "selectMonth": "Sélectionner le mois",
+  "selectYear": "Sélectionner l'année",
+  "loading": "Chargement...",
+  "noNotebooks": "Aucun bloc-notes ouvert",
+  "msg": {
+    "begin": "[Plug-in de calendrier]",
+    "notNoteBook": "Impossible d'obtenir le bloc-notes actuel, veuillez le définir manuellement",
+    "createFailed": "Impossible de créer la note quotidienne"
+  },
+  "position": {
+    "title": "Position d'entrée du bouton",
+    "description": "Choisissez en haut à gauche, à droite ou dans le panneau droit.",
+    "topLeft": "En haut à gauche",
+    "topRight": "En haut à droite",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Paramètres du calendrier",
+    "description": "Configurez la position d'entrée et l'affichage du calendrier."
+  },
+  "weekStart": {
+    "title": "Premier jour de la semaine",
+    "description": "Choisissez le premier jour de la semaine.",
+    "monday": "Lundi",
+    "sunday": "Dimanche"
+  },
+  "weekNumbers": {
+    "title": "Afficher les numéros de semaine",
+    "description": "Affiche les numéros de semaine à gauche."
+  },
+  "refreshHint": "Actualiser les bloc-notes et notes quotidiennes",
+  "taskMarkers": {
+    "title": "Afficher les tâches en cours",
+    "description": "Affiche un point ambre lorsque la note quotidienne contient des tâches ouvertes."
+  }
+}

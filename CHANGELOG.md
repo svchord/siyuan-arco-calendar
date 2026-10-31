@@ -1,7 +1,35 @@
 # 版本日志 | Changelog 
 
 
-## [1.5.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.5...v1.5.0) (2024-04-12)
+## [2.0.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.5.0...v2.0.0) (2026-10-30)
+
+### 重构 | Code Refactoring
+
+* 全面移除 Vue 与 Arco Design，使用 React 19 + shadcn/ui + Tailwind CSS 4 重写全部界面
+* 采用 shadcn/ui **Vega** 预设风格（中性色、Inter 字体、Vega 组件圆角与间距），不再沿用旧 Arco 视觉
+* 重新设计面板布局：Card + Separator + 图标标题栏 + 笔记本选择器 + 底部日期状态与“今天”主按钮
+* 重组插件架构：宿主上下文、类型化 API 层、hooks、纯函数工具与 shadcn 组件目录
+* 使用 `createRoot` / `root.unmount()` 管理顶栏弹层、Dock 与设置项，补全生命周期清理
+* 更新全部依赖至最新版本，迁移至 Vite 8、TypeScript 7、ESLint/oxlint 新工具链
+* 完善跨平台开发流程：`make-link` / `make-install` 全部使用 Node.js，不再依赖 PowerShell
+* 性能优化：Inter 字体仅保留 Latin/Latin-Ext 子集，locale 配置只请求一次并缓存
+* 修复日期 key 不一致导致的重复创建问题，并补充回归测试；新增插件专属顶栏图标与居中月份导航
+* 修复宿主全局 `svg { fill: currentColor }` 覆盖 lucide 图标的问题，面板内日历图标正常显示
+* 整理数据获取时序：缓存系统配置与语言、增加笔记本请求乱序保护、共享主题监听、减少重复请求
+* 整理项目结构：拆分纯日记工具文件、移除未使用的 Tabs 组件、补充数据流文档
+* 移除 commitizen / standard-version 等旧流程依赖，改用 release-please 与 GitHub Release workflow
+* 顶部月份/年份改为下拉选择，月份切换按钮移除；刷新入口移到年份选择器右侧
+* 创建日记改用内核 `createDailyNote` API（支持任意 `date`），由内核处理父目录、模板、图标和属性，彻底移除手写嵌套创建逻辑
+* 设置入口移到日历面板右上角，支持每周起始日（周一/周日）和 ISO 周数显示，并重新整理设置项布局
+* 周数改用 shadcn 默认样式并修正垂直居中；底部增加带文字的刷新按钮
+* 已有日记改为柔和圆底标记，空缺日期保持空白；未完成任务显示琥珀色角标并可在设置中关闭
+* 顶部和底部分隔线统一为同一个 `PanelDivider` 组件
+* 修复日记父目录重复创建问题：不再手动创建父路径，改由内核每日笔记 API 幂等处理
+* `components/ui` 恢复为 shadcn `base-vega` 分发版本，插件特有行为移至业务组件与原语组合
+* 同步现代思源插件清单：BCP 47 语言文件、`displayName.default`、`minAppVersion` 3.8.5
+* 修复日记模板属性写入未等待、SQL 字符串转义、跨月日历标记等问题
+
+### [1.5.0](https://github.com/svchord/siyuan-arco-calendar/compare/v1.4.5...v1.5.0) (2024-04-12)
 
 
 ### 新增功能 | Features

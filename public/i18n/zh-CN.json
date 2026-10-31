@@ -1,0 +1,42 @@
+{
+  "openCalendar": "打开日历",
+  "tabName": "日历",
+  "placeholder": "选择笔记本...",
+  "today": "今天",
+  "hint": "点击日期打开或创建日记",
+  "selectMonth": "选择月份",
+  "selectYear": "选择年份",
+  "loading": "加载中...",
+  "noNotebooks": "没有已打开的笔记本",
+  "msg": {
+    "begin": "[日历插件]",
+    "notNoteBook": "获取当前笔记本失败，请手动设置",
+    "createFailed": "创建日记失败"
+  },
+  "position": {
+    "title": "按钮入口位置",
+    "description": "选择顶栏左侧、顶栏右侧或右侧边栏",
+    "topLeft": "顶栏左",
+    "topRight": "顶栏右",
+    "dock": "边栏"
+  },
+  "settings": {
+    "title": "日历设置",
+    "description": "调整入口位置和日历显示方式"
+  },
+  "weekStart": {
+    "title": "每周起始日",
+    "description": "设置日历每周的第一天",
+    "monday": "星期一",
+    "sunday": "星期日"
+  },
+  "weekNumbers": {
+    "title": "显示周数",
+    "description": "在日期左侧显示周数"
+  },
+  "refreshHint": "刷新笔记本和日记",
+  "taskMarkers": {
+    "title": "显示未完成任务标记",
+    "description": "日记中有未完成任务时，在日期右上角显示琥珀色圆点。"
+  }
+}
