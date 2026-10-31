@@ -10,7 +10,7 @@ import './index.css';
 const STORAGE_NAME = 'arco-calendar-entry';
 const TOP_BAR_ID = 'arco-calendar-topbar';
 const DOCK_ID = 'arco-calendar-dock';
-const PANEL_WIDTH = 320;
+const FALLBACK_WIDTH = 380;
 
 interface AnchorRect {
   left: number;
@@ -29,6 +29,7 @@ export default class ArcoCalendarPlugin extends Plugin {
   private dockId?: string;
   private dockRoots = new Map<HTMLElement, Root>();
   private cleanupPopupListeners?: () => void;
+  private popupResizeObserver?: ResizeObserver;
   private entryMounted = false;
 
   async onload() {
@@ -176,7 +177,7 @@ export default class ArcoCalendarPlugin extends Plugin {
       id: DOCK_ID,
       config: {
         position: 'RightTop',
-        size: { width: 300, height: 0 },
+        size: { width: 380, height: 0 },
         icon: CALENDAR_ICON_ID,
         title: this.i18nData.tabName,
       },
@@ -264,6 +265,13 @@ export default class ArcoCalendarPlugin extends Plugin {
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('resize', onWindowResize);
 
+    this.popupResizeObserver = new ResizeObserver(() => {
+      if (this.popupElement) {
+        this.positionPopup(this.popupElement, this.getAnchorRect());
+      }
+    });
+    this.popupResizeObserver.observe(popup);
+
     this.cleanupPopupListeners = () => {
       document.removeEventListener('pointerdown', onOutsidePointerDown, true);
       document.removeEventListener('keydown', onKeyDown);
@@ -272,8 +280,7 @@ export default class ArcoCalendarPlugin extends Plugin {
   }
 
   private positionPopup(popup: HTMLElement, anchor: AnchorRect) {
-    const width = Math.min(PANEL_WIDTH, window.innerWidth - 16);
-    popup.style.width = `${width}px`;
+    const width = popup.offsetWidth || FALLBACK_WIDTH;
     const height = popup.offsetHeight || 430;
     const preferredLeft = this.settings.position === 'top-right' ? anchor.right - width : anchor.left;
     const left = Math.max(8, Math.min(preferredLeft, window.innerWidth - width - 8));
@@ -306,6 +313,8 @@ export default class ArcoCalendarPlugin extends Plugin {
   private closeCalendar() {
     this.cleanupPopupListeners?.();
     this.cleanupPopupListeners = undefined;
+    this.popupResizeObserver?.disconnect();
+    this.popupResizeObserver = undefined;
 
     const root = this.popupRoot;
     this.popupRoot = undefined;

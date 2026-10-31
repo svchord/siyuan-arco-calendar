@@ -18,7 +18,7 @@ export interface NotebooksState {
   selectedNotebookId: string | undefined;
   loading: boolean;
   selectNotebook: (id: string) => Promise<void>;
-  refresh: () => Promise<void>;
+  refresh: () => Promise<boolean>;
 }
 
 export function useNotebooks(): NotebooksState {
@@ -30,17 +30,20 @@ export function useNotebooks(): NotebooksState {
   const requestIdRef = useRef(0);
   const persistedNotebookIdRef = useRef<string | undefined>(undefined);
 
-  const load = useCallback(async (initial = false) => {
+  const load = useCallback(async (initial = false): Promise<boolean> => {
     const requestId = ++requestIdRef.current;
     if (initial) {
       setLoading(true);
     }
     try {
       const [notebookResponse, storage] = await Promise.all([lsNotebooks(), getLocalStorage()]);
-      const openNotebooks = (notebookResponse?.notebooks ?? []).filter((notebook) => !notebook.closed);
+      if (!notebookResponse) {
+        return false;
+      }
+      const openNotebooks = notebookResponse.notebooks.filter((notebook) => !notebook.closed);
       const built = buildNotebooks(openNotebooks);
       if (!mountedRef.current || requestId !== requestIdRef.current) {
-        return;
+        return true;
       }
 
       const stored = storage?.[DAILY_NOTE_STORAGE_KEY];
@@ -50,8 +53,10 @@ export function useNotebooks(): NotebooksState {
         const preferred = current ?? persistedNotebookIdRef.current;
         return preferred && built.some((notebook) => notebook.id === preferred) ? preferred : undefined;
       });
+      return true;
     } catch {
       // Keep the previous list on a transient refresh failure.
+      return false;
     } finally {
       if (mountedRef.current && requestId === requestIdRef.current) {
         setLoading(false);

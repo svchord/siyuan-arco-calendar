@@ -10,13 +10,7 @@ import { useHost } from '@/lib/host';
 import type { WeekStart } from '@/lib/storage';
 import type { DailyNote } from '@/types/domain';
 import { cn } from '@/lib/utils';
-
-const YEAR_RADIUS = 50;
-const CURRENT_YEAR = new Date().getFullYear();
-
-function buildYears(around: number) {
-  return Array.from({ length: YEAR_RADIUS * 2 + 1 }, (_, index) => around - YEAR_RADIUS + index);
-}
+import { buildYearOptions } from '@/lib/years';
 
 function ExistingDayButton({ children, ...props }: React.ComponentProps<typeof CalendarDayButton>) {
   const hasExistingNote = props.modifiers.existing;
@@ -74,7 +68,7 @@ export function CalendarView({
       ),
     [locale.code]
   );
-  const years = React.useMemo(() => buildYears(CURRENT_YEAR), []);
+  const years = React.useMemo(() => buildYearOptions(), []);
   const selectedYear = month.getFullYear();
   const selectMonth = (value: string | null) => {
     if (value === null) return;

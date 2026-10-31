@@ -11,7 +11,9 @@
   "msg": {
     "begin": "[Complemento de calendario]",
     "notNoteBook": "No se pudo obtener el cuaderno actual, configúrelo manualmente",
-    "createFailed": "No se pudo crear el diario"
+    "createFailed": "No se pudo crear el diario",
+    "refreshSuccess": "Actualizado",
+    "refreshFailed": "Error al actualizar"
   },
   "position": {
     "title": "Posición de entrada del botón",
@@ -38,5 +40,13 @@
   "taskMarkers": {
     "title": "Mostrar tareas pendientes",
     "description": "Muestra un punto ámbar cuando la nota diaria tiene tareas pendientes."
-  }
+  },
+  "calendarView": "Calendario",
+  "heatmapView": "Mapa",
+  "heatmapHint": "Actividad de notas según el número de bloques",
+  "heatmapBlocks": "bloques",
+  "heatmapNoNote": "Sin nota diaria",
+  "heatmapOpenTasks": "Tareas pendientes",
+  "heatmapLess": "Menos",
+  "heatmapMore": "Más"
 }

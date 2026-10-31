@@ -253,9 +253,9 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
     position: fixed;
     z-index: 99999;
     box-sizing: border-box;
-    width: 320px;
+    width: min(380px, calc(100vw - 16px));
     max-width: calc(100vw - 16px);
-    max-height: min(560px, calc(100vh - 16px));
+    max-height: min(660px, calc(100vh - 16px));
     overflow: auto;
     padding: 16px;
     border: 1px solid var(--border);
@@ -268,6 +268,10 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
     outline: none;
     font-size: 14px;
     line-height: 1.5;
+  }
+
+  .sy-calendar-popup:has([data-slot='calendar-panel'][data-view='heatmap']) {
+    width: min(420px, calc(100vw - 16px));
   }
 
   .sy-calendar-dock {

@@ -11,7 +11,9 @@
   "msg": {
     "begin": "[Calendar Plugin]",
     "notNoteBook": "Failed to get the current notebook, please set it manually",
-    "createFailed": "Failed to create the daily note"
+    "createFailed": "Failed to create the daily note",
+    "refreshSuccess": "Refreshed",
+    "refreshFailed": "Refresh failed"
   },
   "position": {
     "title": "Button entrance position",
@@ -38,5 +40,13 @@
   "taskMarkers": {
     "title": "Show unfinished task markers",
     "description": "Show an amber dot when a daily note has open task items."
-  }
+  },
+  "calendarView": "Calendar",
+  "heatmapView": "Heatmap",
+  "heatmapHint": "Note activity by content-block count",
+  "heatmapBlocks": "blocks",
+  "heatmapNoNote": "No daily note",
+  "heatmapOpenTasks": "Open tasks",
+  "heatmapLess": "Less",
+  "heatmapMore": "More"
 }

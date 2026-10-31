@@ -58,6 +58,26 @@ describe('CalendarNotebook', () => {
     expect(notes[1].hasOpenTasks).toBeUndefined();
   });
 
+  it('attributes daily-note blocks to their diary date and other notes to block creation date', async () => {
+    const notebook = buildNotebook();
+    mocks.sql
+      .mockResolvedValueOnce([
+        { id: 'doc-1', ial: '{: custom-dailynote-20260930="20260930"}' },
+        { id: 'doc-2', ial: '{: custom-dailynote-20261001="20261001"}' },
+      ])
+      .mockResolvedValueOnce([{ date_key: '20260115', block_count: 2 } as unknown as BlockRow])
+      .mockResolvedValueOnce([{ root_id: 'doc-1', block_count: 4 } as unknown as BlockRow])
+      .mockResolvedValueOnce([{ id: 'task-1', root_id: 'doc-1' }]);
+
+    const activity = await notebook.getActivity(2026);
+
+    expect(activity.get('2026-01-15')).toMatchObject({ blocks: 2 });
+    expect(activity.get('2026-09-30')).toMatchObject({ blocks: 4, hasOpenTasks: true });
+    expect(activity.get('2026-10-01')).toMatchObject({ blocks: 0, hasOpenTasks: false });
+    expect(activity.size).toBe(3);
+    expect(mocks.sql.mock.calls[0][0]).toContain("box = 'box-1'");
+  });
+
   it('delegates daily-note creation to the native kernel API', async () => {
     const notebook = buildNotebook();
     mocks.createDailyNote.mockResolvedValue('native-doc');

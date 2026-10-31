@@ -11,7 +11,9 @@
   "msg": {
     "begin": "[Plug-in de calendrier]",
     "notNoteBook": "Impossible d'obtenir le bloc-notes actuel, veuillez le définir manuellement",
-    "createFailed": "Impossible de créer la note quotidienne"
+    "createFailed": "Impossible de créer la note quotidienne",
+    "refreshSuccess": "Actualisé",
+    "refreshFailed": "Échec de l’actualisation"
   },
   "position": {
     "title": "Position d'entrée du bouton",
@@ -38,5 +40,13 @@
   "taskMarkers": {
     "title": "Afficher les tâches en cours",
     "description": "Affiche un point ambre lorsque la note quotidienne contient des tâches ouvertes."
-  }
+  },
+  "calendarView": "Calendrier",
+  "heatmapView": "Carte",
+  "heatmapHint": "Activité des notes selon le nombre de blocs",
+  "heatmapBlocks": "blocs",
+  "heatmapNoNote": "Aucune note quotidienne",
+  "heatmapOpenTasks": "Tâches en cours",
+  "heatmapLess": "Moins",
+  "heatmapMore": "Plus"
 }

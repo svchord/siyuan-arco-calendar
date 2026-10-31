@@ -15,7 +15,7 @@ export interface DailyNotesState {
   month: Date;
   existMap: Map<string, DailyNote>;
   selectedDate: Date | undefined;
-  refresh: () => Promise<void>;
+  refresh: () => Promise<boolean>;
   changeMonth: (date: Date) => void;
   openDailyNote: (date: Date) => Promise<void>;
   goToToday: () => Promise<void>;
@@ -30,29 +30,31 @@ export function useDailyNotes(notebook: CalendarNotebook | undefined): DailyNote
   const pendingRef = useRef(new Set<string>());
   const previousNotebookIdRef = useRef<string | undefined>(undefined);
   const requestIdRef = useRef(0);
-  const refreshRef = useRef<() => Promise<void>>(async () => undefined);
+  const refreshRef = useRef<() => Promise<boolean>>(async () => true);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<boolean> => {
     const requestId = ++requestIdRef.current;
     if (!notebook) {
       setExistMap(new Map());
-      return;
+      return true;
     }
 
     try {
       const notes = await notebook.getExistDailyNotesAround(month);
       if (requestId !== requestIdRef.current) {
-        return;
+        return true;
       }
       const next = new Map<string, DailyNote>();
       for (const note of notes) {
         next.set(note.dateStr, note);
       }
       setExistMap(next);
+      return true;
     } catch {
       if (requestId === requestIdRef.current) {
         setExistMap(new Map());
       }
+      return false;
     }
   }, [notebook, month]);
 

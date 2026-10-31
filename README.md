@@ -2,15 +2,9 @@
 
 简体中文 \| [English](README_en_US.md)
 
-思源笔记日历面板插件：在顶栏或边栏打开日历，快速新建或跳转到某一天的日记。
+思源笔记日历面板插件：在顶栏或边栏打开日历，快速新建或跳转到某一天的日记，并用年度热力图回顾日记活跃度。
 
 <img width="1280" alt="preview" src="preview.png">
-
-## 参考与感谢
-
-- [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
-- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
-- [九炎](https://github.com/leolee9086) 大佬提供的 WebSocket 封装模板
 
 ## 修改颜色
 
@@ -75,9 +69,10 @@
 - 日历面板右上角提供设置入口：
   - 每周从星期一开始或从星期日开始
   - 在日历左侧显示周数
-- 月份/年份选择器右侧提供刷新图标，可手动同步笔记本和日记映射
+- 月份/年份选择器右侧提供刷新图标，可手动同步笔记本和日记映射，并提示刷新成功或失败
+- 顶部“日历 / 热力图”切换，年度热力图按笔记内容块数量显示活跃度：日记内容块归入日记日期，其他笔记按内容块创建日期统计，并按上下半年拆成两段以控制宽度
+- 热力图按周排列，支持周起始日设置，并可用年份选择器查看不同年份
 - 笔记本选择器支持搜索，选择结果会同步到思源的 `local-dailynoteid`
-- 自动读取笔记本的日记保存路径和模板，并保留模板文档图标
 - 跟随思源主题自动切换明暗配色，支持桌面端、移动端和浏览器端
 
 ## 技术栈
@@ -97,11 +92,13 @@ src/
 ├── components/
 │   ├── ui/                   # shadcn/ui 组件源码
 │   ├── calendar-app.tsx      # React 根组件（注入宿主上下文）
-│   ├── calendar-panel.tsx    # 卡片布局、头部、刷新/设置入口
+│   ├── calendar-panel.tsx    # 卡片布局、头部、视图切换与刷新/设置入口
 │   ├── calendar-view.tsx     # 月历、月份/年份选择与日标记
+│   ├── heatmap-view.tsx      # 年度热力图、年份选择与图例
+│   ├── panel-view-switch.tsx # 日历/热力图切换
 │   ├── notebook-combobox.tsx # 可搜索的笔记本选择器
 │   └── position-select.tsx   # 入口位置选择
-├── hooks/                    # useNotebooks / useDailyNotes / useLocale / useIsDark
+├── hooks/                    # useNotebooks / useDailyNotes / useNoteActivity / useLocale / useIsDark
 ├── lib/                      # 纯函数、宿主 Context、i18n、存储、图标
 ├── types/                    # 领域类型与 i18n 类型
 └── ...
@@ -116,12 +113,13 @@ src/
 1. `onload` 读取 `arco-calendar-entry` 设置并注册图标；`onLayoutReady` 挂载顶栏或 Dock。
 2. `useNotebooks` 并行获取笔记本列表与 `local-dailynoteid`，构建轻量笔记本对象。
 3. 笔记本确定后，`useDailyNotes` 用 SQL 查询当前月及前后月的日记属性，并补充未完成任务状态。
-4. `useLocale` 在插件会话内缓存 date-fns locale，多个组件共享。
-5. 点击日期时优先命中已有日记映射，否则调用内核的 `createDailyNote`（带 `date` 参数）创建日记；父目录、模板、图标和 `custom-dailynote-*` 属性由内核原子处理，随后更新映射。
-6. `ws-main` 的 `createnotebook` / `mount` / `unmount` 触发笔记本刷新，`removeDoc` / `createdailynote` 触发日记映射刷新。
-7. `useNotebooks` 和 `useDailyNotes` 都使用请求序号丢弃过期响应；主题监听由一个共享存储统一管理。
+4. 切换到热力图时，`useNoteActivity` 按年统计：日记内容块归入日记日期，其他笔记按内容块创建日期汇总，用于计算颜色强度。
+5. `useLocale` 在插件会话内缓存 date-fns locale，多个组件共享。
+6. 点击日期时优先命中已有日记映射，否则调用内核的 `createDailyNote`（带 `date` 参数）创建日记；父目录、模板、图标和 `custom-dailynote-*` 属性由内核原子处理，随后更新映射。
+7. `ws-main` 的 `createnotebook` / `mount` / `unmount` 触发笔记本刷新，`removeDoc` / `createdailynote` 触发日记映射刷新。
+8. `useNotebooks` 和 `useDailyNotes` 都使用请求序号丢弃过期响应；主题监听由一个共享存储统一管理。
 
-`src/components/ui` 下的组件来自 shadcn/ui `base-vega` 仓库分发版本。插件特有的行为（已有日记圆点、portal 层级、插件图标）放在业务组件或原语组合中，不直接修改这些分发文件。
+`src/components/ui` 下的组件来自 shadcn/ui `base-vega` 仓库分发版本。插件特有的行为（已有日记圆底、任务角标、portal 层级、插件图标）放在业务组件或原语组合中，不直接修改这些分发文件。
 
 ## 开发
 
@@ -169,6 +167,12 @@ pnpm make-install   # 所有平台：构建后把 dist/ 复制到插件目录（
 ## 版本日志
 
 [Changelog](./CHANGELOG.md)
+
+## 参考与感谢
+
+- [BryceAndJuly](https://github.com/BryceAndJuly) 在社区中的[首次实现](https://ld246.com/article/1662969146166)
+- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) 对上一项目的反编译以及功能拓展
+- [九炎](https://github.com/leolee9086) 大佬提供的 WebSocket 封装模板
 
 ## License
 

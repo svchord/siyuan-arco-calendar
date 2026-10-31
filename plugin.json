@@ -4,12 +4,8 @@
   "url": "https://github.com/svchord/siyuan-arco-calendar",
   "version": "2.1.0",
   "minAppVersion": "3.8.5",
-  "backends": [
-    "all"
-  ],
-  "frontends": [
-    "all"
-  ],
+  "backends": ["all"],
+  "frontends": ["all"],
   "disabledInPublish": true,
   "displayName": {
     "default": "Calendar Panel",
@@ -26,14 +22,7 @@
   "icon": "icon.png",
   "preview": "preview.png",
   "funding": {
-    "custom": [
-      "https://afdian.net/a/sevenchord"
-    ]
+    "custom": ["https://afdian.net/a/sevenchord"]
   },
-  "keywords": [
-    "calendar",
-    "日历",
-    "日记",
-    "daily"
-  ]
+  "keywords": ["calendar", "日历", "日记", "daily"]
 }

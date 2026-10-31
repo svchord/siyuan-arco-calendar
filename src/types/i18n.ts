@@ -7,12 +7,22 @@ export interface PluginI18n {
   hint: string;
   selectMonth: string;
   selectYear: string;
+  calendarView: string;
+  heatmapView: string;
+  heatmapHint: string;
+  heatmapBlocks: string;
+  heatmapNoNote: string;
+  heatmapOpenTasks: string;
+  heatmapLess: string;
+  heatmapMore: string;
   loading: string;
   noNotebooks: string;
   msg: {
     begin: string;
     notNoteBook: string;
     createFailed: string;
+    refreshSuccess: string;
+    refreshFailed: string;
   };
   position: {
     title: string;

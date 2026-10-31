@@ -11,7 +11,9 @@
   "msg": {
     "begin": "[日历插件]",
     "notNoteBook": "获取当前笔记本失败，请手动设置",
-    "createFailed": "创建日记失败"
+    "createFailed": "创建日记失败",
+    "refreshSuccess": "刷新成功",
+    "refreshFailed": "刷新失败"
   },
   "position": {
     "title": "按钮入口位置",
@@ -38,5 +40,13 @@
   "taskMarkers": {
     "title": "显示未完成任务标记",
     "description": "日记中有未完成任务时，在日期右上角显示琥珀色圆点。"
-  }
+  },
+  "calendarView": "日历",
+  "heatmapView": "热力图",
+  "heatmapHint": "按内容块数量统计笔记活跃度",
+  "heatmapBlocks": "个内容块",
+  "heatmapNoNote": "没有日记",
+  "heatmapOpenTasks": "有未完成任务",
+  "heatmapLess": "少",
+  "heatmapMore": "多"
 }

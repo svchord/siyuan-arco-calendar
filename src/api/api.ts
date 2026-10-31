@@ -88,3 +88,7 @@ export function flushTransaction() {
 export function pushErrMsg(msg: string, timeout = 7000) {
   return request('/api/notification/pushErrMsg', { msg, timeout });
 }
+
+export function pushMsg(msg: string, timeout = 2500) {
+  return request('/api/notification/pushMsg', { msg, timeout });
+}

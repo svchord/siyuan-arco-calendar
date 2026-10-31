@@ -2,15 +2,9 @@
 
 [简体中文](README.md) \| English
 
-A calendar panel plugin for SiYuan Note. Open a calendar from the top bar or dock and quickly create or jump to a daily note.
+A calendar panel plugin for SiYuan Note. Open a calendar from the top bar or dock, quickly create or jump to a daily note, and review writing activity in a yearly heatmap.
 
 <img width="1280" alt="preview" src="preview.png">
-
-## Reference and Thanks
-
-- [BryceAndJuly](https://github.com/BryceAndJuly) for the [first community implementation](https://ld246.com/article/1662969146166)
-- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) for decompilation and feature work on the previous project
-- [Jiuyan](https://github.com/leolee9086) for the WebSocket wrapper template
 
 ## Modifying Colors
 
@@ -75,9 +69,10 @@ Main variables:
 - Settings entry in the calendar panel header:
   - Monday or Sunday as the first day of the week
   - Optional week numbers in the calendar gutter
-- Refresh icon beside the month/year selectors to reload notebooks and daily notes
+- Refresh icon beside the month/year selectors to reload notebooks and daily notes, with success/failure feedback
+- Calendar / Heatmap switch; the yearly heatmap uses content-block counts across all notes: daily-note blocks use the diary date, other notes use each block's creation date, and the year is split into two half-year rows to keep the panel compact
+- Heatmap weeks follow the configured week start, with a year selector for browsing other years
 - Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
-- Reads the notebook daily-note save path and template, including the template document icon
 - Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
 
 ## Tech stack
@@ -97,11 +92,13 @@ src/
 ├── components/
 │   ├── ui/                   # shadcn/ui component sources
 │   ├── calendar-app.tsx      # React root with host context
-│   ├── calendar-panel.tsx    # Card layout, header, refresh/settings entry
+│   ├── calendar-panel.tsx    # Card layout, header, view switch, refresh/settings entry
 │   ├── calendar-view.tsx     # Month/year navigation and day markers
+│   ├── heatmap-view.tsx      # Yearly heatmap, year picker and legend
+│   ├── panel-view-switch.tsx # Calendar/heatmap switch
 │   ├── notebook-combobox.tsx # Searchable notebook selector
 │   └── position-select.tsx   # Entry-position control
-├── hooks/                    # useNotebooks / useDailyNotes / useLocale / useIsDark
+├── hooks/                    # useNotebooks / useDailyNotes / useNoteActivity / useLocale / useIsDark
 ├── lib/                      # Pure helpers, host context, i18n, storage, icons
 ├── types/                    # Domain and i18n types
 └── ...
@@ -116,10 +113,11 @@ src/
 1. `onload` reads `arco-calendar-entry` settings and registers icons; `onLayoutReady` mounts the top bar or dock.
 2. `useNotebooks` fetches the notebook list and `local-dailynoteid` in parallel and builds lightweight notebook objects.
 3. `useDailyNotes` queries daily-note attributes for the current/previous/next month and adds unfinished-task state.
-4. `useLocale` caches the date-fns locale for the plugin session.
-5. A date click opens a mapped document, otherwise the kernel `createDailyNote` API (with its `date` parameter) creates the note; parent paths, template, icon and `custom-dailynote-*` attributes are handled atomically by the kernel.
-6. `ws-main` notebook and daily-note events refresh the corresponding data; stale responses are discarded by request sequence.
-7. A shared external store manages dark-theme observation across all plugin surfaces.
+4. When the heatmap view opens, `useNoteActivity` counts blocks across all notes: daily-note blocks are attributed to the diary date, while other blocks use their creation date.
+5. `useLocale` caches the date-fns locale for the plugin session.
+6. A date click opens a mapped document, otherwise the kernel `createDailyNote` API (with its `date` parameter) creates the note; parent paths, template, icon and `custom-dailynote-*` attributes are handled atomically by the kernel.
+7. `ws-main` notebook and daily-note events refresh the corresponding data; stale responses are discarded by request sequence.
+8. A shared external store manages dark-theme observation across all plugin surfaces.
 
 Components under `src/components/ui` are the shadcn/ui `base-vega` registry distribution. Plugin-specific behavior (existing-note dot, portal layering, plugin icon) lives in app wrappers or primitive compositions rather than edits to those files.
 
@@ -169,6 +167,12 @@ release-please maintains the version and `CHANGELOG.md`; `plugin.json` is kept i
 ## Changelog
 
 [Changelog](./CHANGELOG.md)
+
+## Reference and Thanks
+
+- [BryceAndJuly](https://github.com/BryceAndJuly) for the [first community implementation](https://ld246.com/article/1662969146166)
+- [HowcanoeWang/calendar](https://github.com/HowcanoeWang/calendar) for decompilation and feature work on the previous project
+- [Jiuyan](https://github.com/leolee9086) for the WebSocket wrapper template
 
 ## License
 

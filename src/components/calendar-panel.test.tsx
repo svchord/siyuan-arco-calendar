@@ -9,6 +9,13 @@ import { CalendarPanel } from './calendar-panel';
 import { CalendarSettings } from './calendar-settings';
 import { HostContext, type HostContextValue } from '@/lib/host';
 import type { PluginI18n } from '@/types/i18n';
+import { pushErrMsg, pushMsg } from '@/api/api';
+
+vi.mock('@/api/api', () => ({
+  getSystemConf: vi.fn(async () => ({ conf: { lang: 'en' } })),
+  pushErrMsg: vi.fn(async () => null),
+  pushMsg: vi.fn(async () => null),
+}));
 
 vi.mock('@/hooks/use-notebooks', () => ({
   useNotebooks: () => ({
@@ -16,7 +23,7 @@ vi.mock('@/hooks/use-notebooks', () => ({
     selectedNotebookId: 'box-1',
     loading: false,
     selectNotebook: vi.fn(),
-    refresh: vi.fn(),
+    refresh: vi.fn(async () => true),
   }),
 }));
 
@@ -25,10 +32,17 @@ vi.mock('@/hooks/use-daily-notes', () => ({
     month: new Date(2026, 9, 1),
     existMap: new Map(),
     selectedDate: undefined,
-    refresh: vi.fn(),
+    refresh: vi.fn(async () => true),
     changeMonth: vi.fn(),
     openDailyNote: vi.fn(),
     goToToday: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/use-note-activity', () => ({
+  useNoteActivity: () => ({
+    activity: new Map(),
+    refresh: vi.fn(async () => true),
   }),
 }));
 
@@ -41,12 +55,22 @@ const i18n: PluginI18n = {
   hint: 'Click a date to open or create a daily note',
   selectMonth: 'Select month',
   selectYear: 'Select year',
+  calendarView: 'Calendar',
+  heatmapView: 'Heatmap',
+  heatmapHint: 'Note activity by content-block count',
+  heatmapBlocks: 'blocks',
+  heatmapNoNote: 'No daily note',
+  heatmapOpenTasks: 'Open tasks',
+  heatmapLess: 'Less',
+  heatmapMore: 'More',
   loading: 'Loading...',
   noNotebooks: 'No open notebooks',
   msg: {
     begin: '[Calendar Plugin]',
     notNoteBook: 'Notebook missing',
     createFailed: 'Create failed',
+    refreshSuccess: 'Refreshed',
+    refreshFailed: 'Refresh failed',
   },
   position: {
     title: 'Position',
@@ -181,12 +205,32 @@ describe('CalendarPanel', () => {
     const user = userEvent.setup();
     renderWithHost(<CalendarPanel />);
 
-    expect(screen.getByText('Calendar')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Calendar' })).toBeInTheDocument();
     expect(screen.getByText('Journal')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Refresh notebooks and daily notes' })).toBeInTheDocument();
 
     await user.click(screen.getByText('Today'));
     expect(screen.getByText('Today')).toBeInTheDocument();
+  });
+
+  it('reports a successful refresh', async () => {
+    const user = userEvent.setup();
+    renderWithHost(<CalendarPanel />);
+
+    await user.click(screen.getByRole('button', { name: 'Refresh notebooks and daily notes' }));
+
+    await waitFor(() => expect(pushMsg).toHaveBeenCalledWith('[Calendar Plugin] Refreshed'));
+    expect(pushErrMsg).not.toHaveBeenCalled();
+  });
+
+  it('switches to the yearly heatmap view', async () => {
+    const user = userEvent.setup();
+    renderWithHost(<CalendarPanel />);
+
+    await user.click(screen.getByRole('tab', { name: 'Heatmap' }));
+
+    expect(document.querySelector('[data-slot="calendar-heatmap"]')).not.toBeNull();
+    expect(document.querySelectorAll('[data-slot="calendar-heatmap"] [data-date]').length).toBeGreaterThan(300);
   });
 });
 

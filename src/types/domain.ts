@@ -16,6 +16,13 @@ export interface DailyNote {
   hasOpenTasks?: boolean;
 }
 
+export interface DayActivity {
+  dateStr: string;
+  blocks: number;
+  hasOpenTasks?: boolean;
+  id?: string;
+}
+
 export interface BlockRow {
   id: BlockId;
   box?: string;
