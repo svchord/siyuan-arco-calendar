@@ -1,6 +1,13 @@
 # 版本日志 | Changelog 
 
 
+## [2.2.1](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.2.0...siyuan-arco-calendar-v2.2.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* **release:** restore package asset upload ([ce4cf99](https://github.com/svchord/siyuan-arco-calendar/commit/ce4cf992af891499b4dd02e467396dadeccf90e2))
+
 ## [2.2.0](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.1.0...siyuan-arco-calendar-v2.2.0) (2026-10-31)
 
 
