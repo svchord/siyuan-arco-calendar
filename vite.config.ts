@@ -49,7 +49,12 @@ export default defineConfig({
     rollupOptions: {
       plugins: isWatch
         ? [
-            livereload(devDistDir),
+            livereload({
+              watch: devDistDir,
+              // Keep the default port (35729); only make the client URL explicit
+              // because SiYuan's desktop window is HTTPS while livereload is HTTP.
+              clientUrl: 'http://127.0.0.1:35729/livereload.js?snipver=1',
+            }),
             {
               name: 'watch-external',
               async buildStart() {
