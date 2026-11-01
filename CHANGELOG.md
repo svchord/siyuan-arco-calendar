@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.2...v2.2.3) (2026-11-01)
+
+
+### Bug Fixes
+
+* **docs:** 更新发布流程说明为 semantic-release ([ba5a0f8](https://github.com/svchord/siyuan-arco-calendar/commit/ba5a0f88921accfed9451ba9b62ce625b6c00de6))
+
 # 版本日志 | Changelog 
 
 
