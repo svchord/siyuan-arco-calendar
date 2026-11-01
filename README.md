@@ -157,14 +157,14 @@ pnpm make-install   # 所有平台：构建后把 dist/ 复制到插件目录（
 
 ## 发布
 
-发布流程使用社区常用的 [release-please](https://github.com/googleapis/release-please-action)：
+发布流程使用 [semantic-release](https://github.com/semantic-release/semantic-release)，全自动完成：
 
-1. push 到 `main` 或合并 PR 后，release-please 根据 Conventional Commits 创建/更新 release PR
-2. 合并 release PR 后自动创建 `vX.Y.Z` tag 和 GitHub Release
-3. workflow 检出该 tag，执行 `pnpm check` 与生产构建
-4. 将生成的 `package.zip` 上传到对应 Release
+1. 合并到 `main`（直接 push 或合并 PR）后，按 Conventional Commits 计算版本
+2. 自动更新 `package.json`、`public/plugin.json` 与 `CHANGELOG.md`
+3. 自动打 `vX.Y.Z` tag，执行 `pnpm check` 与生产构建
+4. 创建 GitHub Release 并上传 `package.zip`
 
-版本号和 `CHANGELOG.md` 由 release-please 维护，`public/plugin.json` 通过 `release-please-config.json` 的 `extra-files` 同步。也可以在 Actions 页面手动触发 `Release` workflow。
+无需手动改版本或创建 Release PR。提交信息需遵循 Conventional Commits（`feat:` / `fix:` / `chore:`…）。
 
 ## 版本日志
 

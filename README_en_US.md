@@ -157,14 +157,14 @@ You can also set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip works
 
 ## Release
 
-Releases use the community-standard [release-please](https://github.com/googleapis/release-please-action):
+Releases use [semantic-release](https://github.com/semantic-release/semantic-release) and are fully automated:
 
-1. a push to `main` or a merged PR makes release-please create/update a release PR from Conventional Commits
-2. merging that release PR creates the `vX.Y.Z` tag and GitHub Release
-3. the workflow checks out the tag, runs `pnpm check` and the production build
-4. the generated `package.zip` is uploaded to that release
+1. a push or merged PR to `main` computes the next version from Conventional Commits
+2. `package.json`, `public/plugin.json` and `CHANGELOG.md` are updated automatically
+3. the `vX.Y.Z` tag is created, then `pnpm check` and the production build run
+4. a GitHub Release is created and `package.zip` is uploaded
 
-release-please maintains the version and `CHANGELOG.md`; `public/plugin.json` is kept in sync through `extra-files` in `release-please-config.json`. The `Release` workflow can also be started manually from the Actions page.
+No manual version bump or release PR is required. Commit messages must follow Conventional Commits (`feat:` / `fix:` / `chore:`…).
 
 ## Changelog
 
