@@ -25,8 +25,7 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "make-link": "node --no-warnings ./scripts/make_dev_link.js",
-    "make-install": "pnpm run build && node --no-warnings ./scripts/make_install.js",
-    "update-version": "node --no-warnings ./scripts/update_version.js"
+    "make-install": "pnpm run build && node --no-warnings ./scripts/make_install.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
