@@ -13,9 +13,16 @@ interface NotebookComboboxProps {
   selectedNotebookId: string | undefined;
   loading: boolean;
   onSelect: (notebookId: string) => void;
+  triggerClassName?: string;
 }
 
-export function NotebookCombobox({ notebooks, selectedNotebookId, loading, onSelect }: NotebookComboboxProps) {
+export function NotebookCombobox({
+  notebooks,
+  selectedNotebookId,
+  loading,
+  onSelect,
+  triggerClassName,
+}: NotebookComboboxProps) {
   const { i18n } = useHost();
   const isDark = useIsDark();
   const [open, setOpen] = React.useState(false);
@@ -30,7 +37,8 @@ export function NotebookCombobox({ notebooks, selectedNotebookId, loading, onSel
         data-slot="notebook-combobox-trigger"
         className={cn(
           buttonVariants({ variant: 'ghost', size: 'sm' }),
-          'w-[150px] justify-between bg-muted/40 font-normal hover:bg-muted/60'
+          'w-[150px] justify-between bg-muted/40 font-normal hover:bg-muted/60',
+          triggerClassName
         )}
       >
         <span className="truncate">{loading ? i18n.loading : (selectedNotebook?.name ?? i18n.placeholder)}</span>
@@ -42,7 +50,7 @@ export function NotebookCombobox({ notebooks, selectedNotebookId, loading, onSel
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className={cn('sy-calendar-portal z-[100000] w-[220px] gap-0 overflow-hidden p-0', isDark && 'dark')}
+        className={cn('sy-calendar-portal w-[220px] gap-0 overflow-hidden p-0', isDark && 'dark')}
         data-slot="notebook-combobox-content"
       >
         <Command>

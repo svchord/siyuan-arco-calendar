@@ -1,0 +1,3 @@
+export const CALENDAR_PANEL_WIDTH = 360;
+export const CALENDAR_HEATMAP_WIDTH = 420;
+export const CALENDAR_SETTINGS_WIDTH = 400;

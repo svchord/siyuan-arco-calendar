@@ -218,6 +218,7 @@ describe('CalendarPanel', () => {
 
     expect(screen.getByRole('tab', { name: 'Calendar' })).toBeInTheDocument();
     expect(screen.getByText('Journal')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Calendar settings' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Refresh notebooks and daily notes' })).toBeInTheDocument();
 
     await user.click(screen.getByText('Today'));

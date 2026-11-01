@@ -14,8 +14,8 @@ interface CalendarSettingsProps {
 
 function SettingRow({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-5 px-3 py-3.5">
-      <div className="min-w-0">
+    <div className="flex items-center justify-between gap-3 px-3 py-3.5">
+      <div className="min-w-0 flex-1">
         <div className="text-sm font-medium text-foreground">{title}</div>
         <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
       </div>
@@ -35,7 +35,7 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
         <SettingRow title={i18n.position.title} description={i18n.position.description}>
           <PositionSelect
             value={settings.position}
-            className="w-[160px]"
+            className="w-fit min-w-[112px] max-w-[160px]"
             onChange={(position) => onChange({ position })}
           />
         </SettingRow>
@@ -49,10 +49,10 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
               }
             }}
           >
-            <SelectTrigger size="sm" className="w-[130px]" aria-label={i18n.weekStart.title}>
+            <SelectTrigger size="sm" className="w-fit min-w-[96px]" aria-label={i18n.weekStart.title}>
               <SelectValue>{settings.weekStartsOn === 1 ? i18n.weekStart.monday : i18n.weekStart.sunday}</SelectValue>
             </SelectTrigger>
-            <SelectContent className={cn('sy-calendar-portal z-[100000]', isDark && 'dark')}>
+            <SelectContent className={cn('sy-calendar-portal', isDark && 'dark')}>
               <SelectItem value="1">{i18n.weekStart.monday}</SelectItem>
               <SelectItem value="0">{i18n.weekStart.sunday}</SelectItem>
             </SelectContent>

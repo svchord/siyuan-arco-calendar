@@ -224,7 +224,7 @@ export function HeatmapView({
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {years.map((yearOption) => (
                 <SelectItem key={yearOption} value={String(yearOption)}>

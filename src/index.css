@@ -181,24 +181,11 @@
 }
 
 /*
- * Base UI wraps portalled content in a positioner with z-50. The calendar
- * panel uses z-99999, so raise the positioner that contains our portal class
- * instead of modifying the distributed UI component.
+ * Non-selected days with a daily note use a quiet disc behind the number;
+ * selected days use the selection fill instead. An amber corner dot marks an
+ * unfinished task in the note.
  */
-body > div > .isolate.z-50:has(> .sy-calendar-portal) {
-  z-index: 100000;
-}
-
-/* Nested Select popups must sit above the settings popover that opened them. */
-.isolate.z-50:has(> [data-slot='select-content']) {
-  z-index: 100001;
-}
-
-/*
- * Days with a daily note use a quiet disc behind the number; missing days
- * stay plain. An amber corner dot marks an unfinished task in the note.
- */
-.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']):not([data-today='true']) {
+.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']) {
   background: radial-gradient(
     circle at center,
     color-mix(in oklch, var(--muted) 90%, transparent) 0 13px,
@@ -207,45 +194,49 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
   border-radius: 0;
 }
 
-.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']):not([data-today='true']):hover {
+.sy-calendar-root [data-existing-note='true']:not([data-selected-single='true']):hover {
   background: radial-gradient(circle at center, var(--muted) 0 14px, transparent 14.5px);
 }
 
+/* Keep the selected day's outline even when focus moves back to the editor. */
+.sy-calendar-root [data-selected-single='true'] {
+  box-shadow:
+    0 0 0 1px var(--ring),
+    0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+}
+
+/* An amber corner dot marks an unfinished task in the note. */
 .sy-calendar-root [data-open-tasks='true']::after {
   content: '';
   position: absolute;
   top: 3px;
   right: 3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 9999px;
+  display: block;
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+  border: 1px solid var(--background);
+  border-radius: 50%;
   background: var(--task-color, #d97706);
-  box-shadow: 0 0 0 1px var(--background);
   pointer-events: none;
 }
 
 /* Keep today visible without turning it into another filled selection. */
-.sy-calendar-root [data-today='true']:not([data-selected-single='true']) {
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 28%, transparent);
+.sy-calendar-root [data-today='true']::before {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--primary);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
-/* Keep shadcn's week-number appearance; only align it with the full week row. */
-.sy-calendar-root .rdp-week_number {
-  display: flex !important;
-  flex: 0 0 var(--cell-size) !important;
-  align-self: center !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: var(--cell-size) !important;
-  min-width: var(--cell-size) !important;
-  height: auto !important;
-}
-
-.sy-calendar-root .rdp-week_number > div {
-  width: 100% !important;
-  height: 100% !important;
-  align-items: center !important;
-  justify-content: center !important;
+.sy-calendar-root [data-today='true'][data-selected-single='true']::before {
+  background: var(--primary-foreground);
 }
 
 @layer components {
@@ -253,7 +244,7 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
     position: fixed;
     z-index: 99999;
     box-sizing: border-box;
-    width: min(340px, calc(100vw - 16px));
+    width: min(var(--calendar-panel-width, 360px), calc(100vw - 16px));
     max-width: calc(100vw - 16px);
     max-height: min(660px, calc(100vh - 16px));
     overflow: auto;
@@ -271,7 +262,7 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
   }
 
   .sy-calendar-popup:has([data-slot='calendar-panel'][data-view='heatmap']) {
-    width: min(420px, calc(100vw - 16px));
+    width: min(var(--calendar-heatmap-width, 420px), calc(100vw - 16px));
   }
 
   .sy-calendar-dock {
@@ -289,44 +280,6 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
     color: var(--foreground);
     font-size: 14px;
     line-height: 1.5;
-  }
-
-  /* Let DayPicker fill the narrow plugin surface without changing the Vega theme. */
-  .sy-calendar-root .rdp-root {
-    width: 100%;
-    background: transparent;
-  }
-
-  .sy-calendar-root .rdp-months,
-  .sy-calendar-root .rdp-month {
-    width: 100%;
-    gap: 0;
-  }
-
-  .sy-calendar-root .rdp-month_grid {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-  }
-
-  .sy-calendar-root .rdp-weekdays,
-  .sy-calendar-root .rdp-week {
-    display: flex;
-    width: 100%;
-  }
-
-  .sy-calendar-root .rdp-day {
-    flex: 1;
-    height: 34px;
-  }
-
-  .sy-calendar-root .rdp-day_button {
-    width: 100%;
-    height: 100%;
-  }
-
-  .sy-calendar-root [data-existing-note='true'] {
-    font-weight: 600;
   }
 
   .sy-calendar-portal {

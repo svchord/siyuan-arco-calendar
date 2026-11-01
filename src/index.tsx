@@ -4,13 +4,13 @@ import { CalendarApp } from '@/components/calendar-app';
 import { DEFAULT_SETTINGS, isValidSettings, normalizeSettings, type PluginSettings } from '@/lib/storage';
 import { type HostContextValue } from '@/lib/host';
 import { CALENDAR_ICON_ID, CALENDAR_ICON_SVG, resolveCalendarIconId, watchForHostCalendarIcon } from '@/lib/icons';
+import { CALENDAR_HEATMAP_WIDTH, CALENDAR_PANEL_WIDTH } from '@/lib/layout';
 import type { PluginI18n } from '@/types/i18n';
 import './index.css';
 
 const STORAGE_NAME = 'arco-calendar-entry';
 const TOP_BAR_ID = 'arco-calendar-topbar';
 const DOCK_ID = 'arco-calendar-dock';
-const FALLBACK_WIDTH = 340;
 
 interface AnchorRect {
   left: number;
@@ -234,6 +234,8 @@ export default class ArcoCalendarPlugin extends Plugin {
     const anchor = this.getAnchorRect();
     const popup = document.createElement('div');
     popup.className = 'sy-calendar-popup';
+    popup.style.setProperty('--calendar-panel-width', `${CALENDAR_PANEL_WIDTH}px`);
+    popup.style.setProperty('--calendar-heatmap-width', `${CALENDAR_HEATMAP_WIDTH}px`);
     popup.dataset.name = 'Calendar';
     popup.setAttribute('role', 'dialog');
     popup.setAttribute('aria-label', this.i18nData.tabName);
@@ -296,7 +298,7 @@ export default class ArcoCalendarPlugin extends Plugin {
   }
 
   private positionPopup(popup: HTMLElement, anchor: AnchorRect) {
-    const width = popup.offsetWidth || FALLBACK_WIDTH;
+    const width = popup.offsetWidth || CALENDAR_PANEL_WIDTH;
     const height = popup.offsetHeight || 430;
     const preferredLeft = this.settings.position === 'top-right' ? anchor.right - width : anchor.left;
     const left = Math.max(8, Math.min(preferredLeft, window.innerWidth - width - 8));

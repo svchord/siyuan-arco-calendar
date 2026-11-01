@@ -28,7 +28,7 @@ export function PositionSelect({ value, onChange, className }: PositionSelectPro
               : i18n.position.dock}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className={cn('sy-calendar-portal z-[100000]', isDark && 'dark')}>
+      <SelectContent className={cn('sy-calendar-portal', isDark && 'dark')}>
         <SelectItem value="top-left">{i18n.position.topLeft}</SelectItem>
         <SelectItem value="top-right">{i18n.position.topRight}</SelectItem>
         <SelectItem value="dock">{i18n.position.dock}</SelectItem>

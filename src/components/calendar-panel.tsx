@@ -17,6 +17,7 @@ import { useLocale } from '@/hooks/use-locale';
 import { useNotebooks } from '@/hooks/use-notebooks';
 import { useHost } from '@/lib/host';
 import { formatMsg } from '@/lib/i18n';
+import { CALENDAR_SETTINGS_WIDTH } from '@/lib/layout';
 import { DEFAULT_SETTINGS, type PluginSettings } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,7 @@ export function CalendarPanel({
   const dailyNotes = useDailyNotes(notebooks.selectedNotebook);
   const [view, setView] = useState<PanelViewMode>(initialView);
   const [heatmapYear, setHeatmapYear] = useState(() => new Date().getFullYear());
+  const [focusDate, setFocusDate] = useState<Date>();
   const activity = useNoteActivity(notebooks.selectedNotebook, view === 'heatmap' ? heatmapYear : undefined);
   const [refreshing, setRefreshing] = useState(false);
   const numberFormatter = useMemo(() => new Intl.NumberFormat(locale.code), [locale.code]);
@@ -63,6 +65,9 @@ export function CalendarPanel({
 
   const changeView = (next: PanelViewMode) => {
     setView(next);
+    if (next === 'heatmap') {
+      setFocusDate(undefined);
+    }
     try {
       localStorage.setItem(VIEW_STORAGE_KEY, next);
     } catch {
@@ -119,6 +124,8 @@ export function CalendarPanel({
   const goToToday = () => {
     if (view === 'heatmap') {
       setHeatmapYear(new Date().getFullYear());
+    } else {
+      setFocusDate(new Date());
     }
     void dailyNotes.goToToday();
   };
@@ -126,13 +133,14 @@ export function CalendarPanel({
   return (
     <div className={cn('sy-calendar-root w-full', isDark && 'dark')} data-slot="calendar-panel" data-view={view}>
       <Card className="w-full gap-0 rounded-none bg-transparent p-0 shadow-none ring-0">
-        <CardHeader className="flex flex-row items-center justify-between gap-2 p-0">
+        <CardHeader className="flex flex-row items-center justify-between gap-1 p-0">
           <PanelViewSwitch view={view} onChange={changeView} />
-          <div className="flex min-w-0 items-center gap-1">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-1">
             <NotebookCombobox
               notebooks={notebooks.notebooks}
               selectedNotebookId={notebooks.selectedNotebookId}
               loading={notebooks.loading}
+              triggerClassName="min-w-0 max-w-[150px] flex-1 shrink"
               onSelect={(notebookId) => {
                 void notebooks.selectNotebook(notebookId);
               }}
@@ -152,7 +160,8 @@ export function CalendarPanel({
               <PopoverContent
                 align="end"
                 sideOffset={6}
-                className={cn('sy-calendar-portal z-[100000] w-[330px] gap-3 p-3', isDark && 'dark')}
+                style={{ width: CALENDAR_SETTINGS_WIDTH, maxWidth: 'calc(100vw - 16px)' }}
+                className={cn('sy-calendar-portal gap-3 p-3', isDark && 'dark')}
               >
                 <div className="text-sm font-semibold">{i18n.settings.title}</div>
                 <CalendarSettings settings={settings} onChange={onSettingsChange} />
@@ -168,6 +177,7 @@ export function CalendarPanel({
             <CalendarView
               month={dailyNotes.month}
               selectedDate={dailyNotes.selectedDate}
+              focusDate={focusDate}
               existMap={dailyNotes.existMap}
               locale={locale}
               weekStartsOn={settings.weekStartsOn}

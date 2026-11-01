@@ -30,6 +30,7 @@ function ExistingDayButton({ children, ...props }: React.ComponentProps<typeof C
 interface CalendarViewProps {
   month: Date;
   selectedDate: Date | undefined;
+  focusDate?: Date;
   existMap: Map<string, DailyNote>;
   locale: Locale;
   weekStartsOn?: WeekStart;
@@ -44,6 +45,7 @@ interface CalendarViewProps {
 export function CalendarView({
   month,
   selectedDate,
+  focusDate,
   existMap,
   locale,
   weekStartsOn = 1,
@@ -56,6 +58,7 @@ export function CalendarView({
 }: CalendarViewProps) {
   const { i18n } = useHost();
   const isDark = useIsDark();
+  const calendarRootRef = React.useRef<HTMLDivElement>(null);
   const existingMatcher = React.useCallback((date: Date) => existMap.has(formatDisplayDate(date)), [existMap]);
   const openTaskMatcher = React.useCallback(
     (date: Date) => showTaskMarkers && Boolean(existMap.get(formatDisplayDate(date))?.hasOpenTasks),
@@ -79,8 +82,17 @@ export function CalendarView({
     onMonthChange(new Date(Number(value), month.getMonth(), 1));
   };
 
+  React.useEffect(() => {
+    if (!focusDate) {
+      return;
+    }
+    const key = formatDisplayDate(focusDate);
+    const button = calendarRootRef.current?.querySelector<HTMLButtonElement>(`button[data-day="${key}"]`);
+    button?.focus({ preventScroll: true });
+  }, [focusDate]);
+
   return (
-    <div className="w-full" data-slot="calendar-view">
+    <div ref={calendarRootRef} className="w-full" data-slot="calendar-view">
       <div className="flex items-center justify-center gap-1 py-1">
         <div className="flex items-center gap-1 rounded-lg bg-muted/35 p-0.5">
           <Select value={String(month.getMonth())} onValueChange={selectMonth}>
@@ -95,7 +107,7 @@ export function CalendarView({
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {monthNames.map((name, index) => (
                 <SelectItem key={name} value={String(index)}>
@@ -117,7 +129,7 @@ export function CalendarView({
             <SelectContent
               alignItemWithTrigger={false}
               sideOffset={6}
-              className={cn('sy-calendar-portal z-[100000] max-h-48 min-w-[96px]', isDark && 'dark')}
+              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
             >
               {years.map((year) => (
                 <SelectItem key={year} value={String(year)}>
