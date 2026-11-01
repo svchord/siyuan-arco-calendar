@@ -32,6 +32,7 @@ const i18n: PluginI18n = {
   calendarView: 'Calendar',
   heatmapView: 'Heatmap',
   heatmapHint: 'Note activity by content-block count',
+  heatmapYearTotal: '{count} blocks this year',
   heatmapBlocks: 'blocks',
   heatmapNoNote: 'No daily note',
   heatmapLess: 'Less',
@@ -107,6 +108,20 @@ describe('useDailyNotes', () => {
     });
 
     expect(openDoc).toHaveBeenCalledWith(host.app, 'existing-doc', false);
+    expect(notebook.createDailyNote).not.toHaveBeenCalled();
+  });
+
+  it('opens a daily note by id supplied from the heatmap even outside the loaded month window', async () => {
+    const notebook = createNotebook();
+    const { result } = renderHook(() => useDailyNotes(notebook), { wrapper });
+
+    await waitFor(() => expect(notebook.getExistDailyNotesAround).toHaveBeenCalled());
+
+    await act(async () => {
+      await result.current.openDailyNote(new Date(2025, 0, 15), 'heatmap-doc');
+    });
+
+    expect(openDoc).toHaveBeenCalledWith(host.app, 'heatmap-doc', false);
     expect(notebook.createDailyNote).not.toHaveBeenCalled();
   });
 

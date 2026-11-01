@@ -44,6 +44,7 @@
   "calendarView": "Calendario",
   "heatmapView": "Mapa",
   "heatmapHint": "Actividad de notas según el número de bloques",
+  "heatmapYearTotal": "{count} bloques este año",
   "heatmapBlocks": "bloques",
   "heatmapNoNote": "Sin nota diaria",
   "heatmapLess": "Menos",

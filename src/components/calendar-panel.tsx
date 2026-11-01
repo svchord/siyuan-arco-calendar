@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, format, startOfMonth } from 'date-fns';
 import { CalendarDaysIcon, Settings2Icon } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { pushErrMsg, pushMsg } from '@/api/api';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -50,6 +50,16 @@ export function CalendarPanel({
   const [heatmapYear, setHeatmapYear] = useState(() => new Date().getFullYear());
   const activity = useNoteActivity(notebooks.selectedNotebook, view === 'heatmap' ? heatmapYear : undefined);
   const [refreshing, setRefreshing] = useState(false);
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(locale.code), [locale.code]);
+  const heatmapYearBlocks = useMemo(() => {
+    let total = 0;
+    for (const entry of activity.activity.values()) {
+      if (entry.dateStr.startsWith(`${heatmapYear}-`)) {
+        total += entry.blocks;
+      }
+    }
+    return total;
+  }, [activity.activity, heatmapYear]);
 
   const changeView = (next: PanelViewMode) => {
     setView(next);
@@ -62,7 +72,7 @@ export function CalendarPanel({
 
   const footerLabel =
     view === 'heatmap'
-      ? i18n.heatmapHint
+      ? i18n.heatmapYearTotal.replace('{count}', numberFormatter.format(heatmapYearBlocks))
       : dailyNotes.selectedDate
         ? format(dailyNotes.selectedDate, 'PPP', { locale })
         : i18n.hint;
@@ -183,14 +193,29 @@ export function CalendarPanel({
               onRefresh={() => {
                 void refreshAll();
               }}
+              onOpenDailyNote={(date, dailyNoteId) => {
+                void (async () => {
+                  await dailyNotes.openDailyNote(date, dailyNoteId);
+                  // Creating a note changes whether that day has a daily note, so
+                  // reload the heatmap activity instead of waiting for a manual refresh.
+                  if (dailyNoteId === undefined) {
+                    await activity.refresh();
+                  }
+                })();
+              }}
             />
           )}
         </CardContent>
 
         <PanelDivider />
 
-        <CardFooter className="justify-between gap-2 p-0">
-          <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{footerLabel}</span>
+        <CardFooter className="justify-between gap-2 p-0" data-slot="calendar-footer">
+          <span
+            className="min-w-0 flex-1 truncate text-xs text-muted-foreground"
+            data-slot={view === 'heatmap' ? 'heatmap-year-total' : undefined}
+          >
+            {footerLabel}
+          </span>
           <Button type="button" size="sm" onClick={goToToday} data-slot="calendar-today-button">
             <CalendarDaysIcon className="size-3.5" />
             {i18n.today}

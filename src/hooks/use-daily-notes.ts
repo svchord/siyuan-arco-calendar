@@ -17,7 +17,7 @@ export interface DailyNotesState {
   selectedDate: Date | undefined;
   refresh: () => Promise<boolean>;
   changeMonth: (date: Date) => void;
-  openDailyNote: (date: Date) => Promise<void>;
+  openDailyNote: (date: Date, knownId?: string) => Promise<void>;
   goToToday: () => Promise<void>;
 }
 
@@ -89,7 +89,7 @@ export function useDailyNotes(notebook: CalendarNotebook | undefined): DailyNote
   }, []);
 
   const openDailyNote = useCallback(
-    async (date: Date) => {
+    async (date: Date, knownId?: string) => {
       if (!notebook) {
         await pushErrMsg(formatMsg(i18n, i18n.msg.notNoteBook));
         return;
@@ -101,9 +101,9 @@ export function useDailyNotes(notebook: CalendarNotebook | undefined): DailyNote
       }
 
       setSelectedDate(date);
-      const existing = existMap.get(key);
-      if (existing) {
-        openDoc(app, existing.id, isMobile);
+      const existingId = knownId ?? existMap.get(key)?.id;
+      if (existingId) {
+        openDoc(app, existingId, isMobile);
         return;
       }
 

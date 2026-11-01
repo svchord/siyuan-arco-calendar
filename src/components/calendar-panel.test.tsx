@@ -27,6 +27,11 @@ vi.mock('@/hooks/use-notebooks', () => ({
   }),
 }));
 
+const panelMocks = vi.hoisted(() => ({
+  openDailyNote: vi.fn(async () => undefined),
+  refreshActivity: vi.fn(async () => true),
+}));
+
 vi.mock('@/hooks/use-daily-notes', () => ({
   useDailyNotes: () => ({
     month: new Date(2026, 9, 1),
@@ -34,17 +39,23 @@ vi.mock('@/hooks/use-daily-notes', () => ({
     selectedDate: undefined,
     refresh: vi.fn(async () => true),
     changeMonth: vi.fn(),
-    openDailyNote: vi.fn(),
+    openDailyNote: panelMocks.openDailyNote,
     goToToday: vi.fn(),
   }),
 }));
 
-vi.mock('@/hooks/use-note-activity', () => ({
-  useNoteActivity: () => ({
-    activity: new Map(),
-    refresh: vi.fn(async () => true),
-  }),
-}));
+vi.mock('@/hooks/use-note-activity', () => {
+  const year = new Date().getFullYear();
+  return {
+    useNoteActivity: () => ({
+      activity: new Map([
+        [`${year}-01-03`, { dateStr: `${year}-01-03`, blocks: 42 }],
+        [`${year - 1}-12-31`, { dateStr: `${year - 1}-12-31`, blocks: 100 }],
+      ]),
+      refresh: panelMocks.refreshActivity,
+    }),
+  };
+});
 
 const i18n: PluginI18n = {
   openCalendar: 'Open calendar',
@@ -58,6 +69,7 @@ const i18n: PluginI18n = {
   calendarView: 'Calendar',
   heatmapView: 'Heatmap',
   heatmapHint: 'Note activity by content-block count',
+  heatmapYearTotal: '{count} blocks this year',
   heatmapBlocks: 'blocks',
   heatmapNoNote: 'No daily note',
   heatmapLess: 'Less',
@@ -230,6 +242,28 @@ describe('CalendarPanel', () => {
 
     expect(document.querySelector('[data-slot="calendar-heatmap"]')).not.toBeNull();
     expect(document.querySelectorAll('[data-slot="calendar-heatmap"] [data-date]').length).toBeGreaterThan(300);
+
+    const total = screen.getByText('42 blocks this year');
+    expect(total).toHaveAttribute('data-slot', 'heatmap-year-total');
+    expect(total.closest('[data-slot="calendar-footer"]')).not.toBeNull();
+    expect(total.closest('[data-slot="calendar-heatmap"]')).toBeNull();
+    expect(screen.queryByText('Note activity by content-block count')).toBeNull();
+  });
+
+  it('refreshes the heatmap after creating a daily note from a cell', async () => {
+    const user = userEvent.setup();
+    renderWithHost(<CalendarPanel />);
+
+    await user.click(screen.getByRole('tab', { name: 'Heatmap' }));
+    const year = new Date().getFullYear();
+    await waitFor(() => expect(document.querySelector(`[data-date="${year}-01-03"]`)).not.toBeNull());
+    panelMocks.openDailyNote.mockClear();
+    panelMocks.refreshActivity.mockClear();
+
+    await user.click(document.querySelector(`[data-date="${year}-01-03"]`) as HTMLElement);
+
+    await waitFor(() => expect(panelMocks.openDailyNote).toHaveBeenCalled());
+    await waitFor(() => expect(panelMocks.refreshActivity).toHaveBeenCalled());
   });
 });
 

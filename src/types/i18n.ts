@@ -10,6 +10,7 @@ export interface PluginI18n {
   calendarView: string;
   heatmapView: string;
   heatmapHint: string;
+  heatmapYearTotal: string;
   heatmapBlocks: string;
   heatmapNoNote: string;
   heatmapLess: string;

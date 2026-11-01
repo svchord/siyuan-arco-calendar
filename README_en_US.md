@@ -71,7 +71,7 @@ Main variables:
   - Optional week numbers in the calendar gutter
 - Refresh icon beside the month/year selectors to reload notebooks and daily notes, with success/failure feedback
 - Calendar / Heatmap switch; the yearly heatmap uses content-block counts across all notes: daily-note blocks use the diary date, other notes use each block's creation date, and the year is split into two half-year rows to keep the panel compact
-- Heatmap weeks follow the configured week start, with a year selector for browsing other years
+- Heatmap weeks follow the configured week start, with a year selector for browsing other years; hovering a cell shows that day's block count, clicking a cell opens or creates that day's daily note, and the panel footer shows the whole-year block total
 - Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
 - Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
 

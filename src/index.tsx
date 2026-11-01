@@ -3,7 +3,7 @@ import { Plugin, getFrontend } from 'siyuan';
 import { CalendarApp } from '@/components/calendar-app';
 import { DEFAULT_SETTINGS, isValidSettings, normalizeSettings, type PluginSettings } from '@/lib/storage';
 import { type HostContextValue } from '@/lib/host';
-import { CALENDAR_ICON_ID, CALENDAR_ICON_SVG } from '@/lib/icons';
+import { CALENDAR_ICON_SVG, resolveCalendarIconId } from '@/lib/icons';
 import type { PluginI18n } from '@/types/i18n';
 import './index.css';
 
@@ -162,7 +162,7 @@ export default class ArcoCalendarPlugin extends Plugin {
   private addTopItem(direction: 'left' | 'right') {
     this.topElement = this.addTopBar({
       id: TOP_BAR_ID,
-      icon: CALENDAR_ICON_ID,
+      icon: resolveCalendarIconId(),
       title: this.i18nData.openCalendar,
       position: direction,
       callback: () => {
@@ -178,7 +178,7 @@ export default class ArcoCalendarPlugin extends Plugin {
       config: {
         position: 'RightTop',
         size: { width: 380, height: 0 },
-        icon: CALENDAR_ICON_ID,
+        icon: resolveCalendarIconId(),
         title: this.i18nData.tabName,
       },
       data: {},
