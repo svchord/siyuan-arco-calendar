@@ -253,7 +253,7 @@ body > div > .isolate.z-50:has(> .sy-calendar-portal) {
     position: fixed;
     z-index: 99999;
     box-sizing: border-box;
-    width: min(380px, calc(100vw - 16px));
+    width: min(340px, calc(100vw - 16px));
     max-width: calc(100vw - 16px);
     max-height: min(660px, calc(100vh - 16px));
     overflow: auto;

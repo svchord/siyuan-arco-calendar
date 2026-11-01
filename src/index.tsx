@@ -3,14 +3,14 @@ import { Plugin, getFrontend } from 'siyuan';
 import { CalendarApp } from '@/components/calendar-app';
 import { DEFAULT_SETTINGS, isValidSettings, normalizeSettings, type PluginSettings } from '@/lib/storage';
 import { type HostContextValue } from '@/lib/host';
-import { CALENDAR_ICON_SVG, resolveCalendarIconId } from '@/lib/icons';
+import { CALENDAR_ICON_ID, CALENDAR_ICON_SVG, resolveCalendarIconId, watchForHostCalendarIcon } from '@/lib/icons';
 import type { PluginI18n } from '@/types/i18n';
 import './index.css';
 
 const STORAGE_NAME = 'arco-calendar-entry';
 const TOP_BAR_ID = 'arco-calendar-topbar';
 const DOCK_ID = 'arco-calendar-dock';
-const FALLBACK_WIDTH = 380;
+const FALLBACK_WIDTH = 340;
 
 interface AnchorRect {
   left: number;
@@ -31,6 +31,7 @@ export default class ArcoCalendarPlugin extends Plugin {
   private cleanupPopupListeners?: () => void;
   private popupResizeObserver?: ResizeObserver;
   private entryMounted = false;
+  private topIconCleanup?: () => void;
 
   async onload() {
     this.i18nData = this.i18n as unknown as PluginI18n;
@@ -144,6 +145,8 @@ export default class ArcoCalendarPlugin extends Plugin {
 
   private disposeEntry() {
     this.entryMounted = false;
+    this.topIconCleanup?.();
+    this.topIconCleanup = undefined;
     this.closeCalendar();
     if (this.topElement) {
       this.removeTopBar(TOP_BAR_ID);
@@ -160,15 +163,28 @@ export default class ArcoCalendarPlugin extends Plugin {
   }
 
   private addTopItem(direction: 'left' | 'right') {
+    const iconId = resolveCalendarIconId();
     this.topElement = this.addTopBar({
       id: TOP_BAR_ID,
-      icon: resolveCalendarIconId(),
+      icon: iconId,
       title: this.i18nData.openCalendar,
       position: direction,
       callback: () => {
         this.toggleCalendar();
       },
     });
+
+    this.topIconCleanup?.();
+    this.topIconCleanup = undefined;
+    if (iconId === CALENDAR_ICON_ID) {
+      // The icon theme is still loading. Keep the fallback visible and switch
+      // to the host symbol as soon as it appears, without a fixed delay.
+      this.topIconCleanup = watchForHostCalendarIcon(() => {
+        const use = this.topElement?.querySelector('use');
+        use?.setAttribute('href', `#${resolveCalendarIconId()}`);
+        use?.setAttribute('xlink:href', `#${resolveCalendarIconId()}`);
+      });
+    }
   }
 
   private addDockItem() {

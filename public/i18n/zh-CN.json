@@ -44,7 +44,7 @@
   "calendarView": "日历",
   "heatmapView": "热力图",
   "heatmapHint": "按内容块数量统计笔记活跃度",
-  "heatmapYearTotal": "全年 {count} 个内容块",
+  "heatmapYearTotal": "全年合计 {count} 个内容块",
   "heatmapBlocks": "个内容块",
   "heatmapNoNote": "没有日记",
   "heatmapLess": "少",
