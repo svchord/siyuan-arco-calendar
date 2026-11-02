@@ -113,6 +113,10 @@ const i18n: PluginI18n = {
     title: 'Show unfinished task markers',
     description: 'Show an amber dot for open tasks',
   },
+  hostAccent: {
+    title: 'Use theme color',
+    description: 'Use the SiYuan accent color',
+  },
 };
 
 function createHost(): HostContextValue {
@@ -304,7 +308,13 @@ describe('CalendarSettings', () => {
     const onChange = vi.fn();
     renderWithHost(
       <CalendarSettings
-        settings={{ position: 'top-left', weekStartsOn: 1, showWeekNumbers: false, showTaskMarkers: true }}
+        settings={{
+          position: 'top-left',
+          weekStartsOn: 1,
+          showWeekNumbers: false,
+          showTaskMarkers: true,
+          useHostAccent: false,
+        }}
         onChange={onChange}
       />
     );

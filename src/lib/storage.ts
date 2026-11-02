@@ -6,6 +6,8 @@ export interface PluginSettings {
   weekStartsOn: WeekStart;
   showWeekNumbers: boolean;
   showTaskMarkers: boolean;
+  /** Use the host theme accent for emphasis surfaces instead of the Vega neutral palette. */
+  useHostAccent: boolean;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -13,6 +15,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   weekStartsOn: 1,
   showWeekNumbers: false,
   showTaskMarkers: true,
+  useHostAccent: false,
 };
 
 const POSITIONS: EntryPosition[] = ['top-left', 'top-right', 'dock'];
@@ -34,7 +37,8 @@ export function isValidSettings(value: unknown): value is PluginSettings {
     isEntryPosition(settings.position) &&
     isWeekStart(settings.weekStartsOn) &&
     typeof settings.showWeekNumbers === 'boolean' &&
-    typeof settings.showTaskMarkers === 'boolean'
+    typeof settings.showTaskMarkers === 'boolean' &&
+    typeof settings.useHostAccent === 'boolean'
   );
 }
 
@@ -50,5 +54,7 @@ export function normalizeSettings(value: unknown): PluginSettings {
       typeof settings.showWeekNumbers === 'boolean' ? settings.showWeekNumbers : DEFAULT_SETTINGS.showWeekNumbers,
     showTaskMarkers:
       typeof settings.showTaskMarkers === 'boolean' ? settings.showTaskMarkers : DEFAULT_SETTINGS.showTaskMarkers,
+    useHostAccent:
+      typeof settings.useHostAccent === 'boolean' ? settings.useHostAccent : DEFAULT_SETTINGS.useHostAccent,
   };
 }

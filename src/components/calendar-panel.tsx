@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, format, startOfMonth } from 'date-fns';
 import { CalendarDaysIcon, RefreshCwIcon, Settings2Icon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { pushErrMsg, pushMsg } from '@/api/api';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -62,6 +62,20 @@ export function CalendarPanel({
     }
     return total;
   }, [activity.activity, heatmapYear]);
+
+  // Publish the host accent as a CSS variable on <html> so every plugin surface —
+  // including the portals mounted on <body> — can opt into it. theme.css falls back
+  // to the Vega neutral palette whenever the variable is absent.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (settings.useHostAccent) {
+      root.style.setProperty('--arco-calendar-accent', 'var(--b3-theme-primary, #3575f0)');
+      root.style.setProperty('--arco-calendar-accent-foreground', 'var(--b3-theme-on-primary, #ffffff)');
+    } else {
+      root.style.removeProperty('--arco-calendar-accent');
+      root.style.removeProperty('--arco-calendar-accent-foreground');
+    }
+  }, [settings.useHostAccent]);
 
   const changeView = (next: PanelViewMode) => {
     setView(next);

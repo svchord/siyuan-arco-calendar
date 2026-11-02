@@ -39,9 +39,14 @@
   --card-foreground: var(--b3-theme-on-background, #1f2329);
   --popover: var(--b3-menu-background, #ffffff);
   --popover-foreground: var(--b3-theme-on-background, #1f2329);
-  /* Vega is monochrome: the host foreground acts as the primary accent. */
-  --primary: var(--b3-theme-on-background, #1f2329);
-  --primary-foreground: var(--b3-menu-background, #ffffff);
+  /*
+   * Emphasis surfaces (selected day, primary action, the "has a daily note" disc
+   * and the heatmap ramp). --arco-calendar-accent is set on <html> while the
+   * "use theme color" setting is on; without it these fall back to the Vega
+   * neutral palette, so both looks stay one token apart.
+   */
+  --primary: var(--arco-calendar-accent, oklch(0.205 0 0));
+  --primary-foreground: var(--arco-calendar-accent-foreground, oklch(0.985 0 0));
   --secondary: var(--b3-list-hover, #f4f5f7);
   --secondary-foreground: var(--b3-theme-on-background, #1f2329);
   --muted: var(--b3-list-hover, #f4f5f7);
@@ -68,8 +73,9 @@
   --card-foreground: var(--b3-theme-on-background, #e5e5e5);
   --popover: var(--b3-menu-background, #262626);
   --popover-foreground: var(--b3-theme-on-background, #e5e5e5);
-  --primary: var(--b3-theme-on-background, #e5e5e5);
-  --primary-foreground: var(--b3-menu-background, #171717);
+  /* Same indirection as the light block, with the Vega neutral dark counterparts. */
+  --primary: var(--arco-calendar-accent, oklch(0.922 0 0));
+  --primary-foreground: var(--arco-calendar-accent-foreground, oklch(0.205 0 0));
   --secondary: var(--b3-list-hover, #404040);
   --secondary-foreground: var(--b3-theme-on-background, #e5e5e5);
   --muted: var(--b3-list-hover, #404040);

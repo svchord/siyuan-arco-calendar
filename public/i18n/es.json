@@ -53,5 +53,9 @@
   "heatmapBlocks": "bloques",
   "heatmapNoNote": "Sin nota diaria",
   "heatmapLess": "Menos",
-  "heatmapMore": "Más"
+  "heatmapMore": "Más",
+  "hostAccent": {
+    "title": "Usar el color del tema",
+    "description": "Usa el color de acento de SiYuan para el día seleccionado, los botones y el mapa de calor. Desactívalo para usar la paleta neutra de Vega."
+  }
 }

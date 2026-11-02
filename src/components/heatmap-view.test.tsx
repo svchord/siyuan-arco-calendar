@@ -65,6 +65,10 @@ const i18n: PluginI18n = {
     title: 'Show unfinished task markers',
     description: 'Show an amber dot for open tasks',
   },
+  hostAccent: {
+    title: 'Use theme color',
+    description: 'Use the SiYuan accent color',
+  },
 };
 
 function renderWithHost(node: ReactNode) {

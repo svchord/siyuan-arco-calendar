@@ -53,5 +53,9 @@
   "heatmapBlocks": "个内容块",
   "heatmapNoNote": "没有日记",
   "heatmapLess": "少",
-  "heatmapMore": "多"
+  "heatmapMore": "多",
+  "hostAccent": {
+    "title": "使用主题色",
+    "description": "选中日期、按钮和热力图使用思源主题强调色；关闭后改用 Vega 中性配色。"
+  }
 }

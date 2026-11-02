@@ -54,4 +54,8 @@ export interface PluginI18n {
     title: string;
     description: string;
   };
+  hostAccent: {
+    title: string;
+    description: string;
+  };
 }

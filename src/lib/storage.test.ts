@@ -15,13 +15,26 @@ describe('plugin settings', () => {
         weekStartsOn: 0,
         showWeekNumbers: true,
         showTaskMarkers: false,
+        useHostAccent: false,
       })
     ).toEqual({
       position: 'top-left',
       weekStartsOn: 0,
       showWeekNumbers: true,
       showTaskMarkers: false,
+      useHostAccent: false,
     });
+  });
+
+  it('defaults the accent switch off for settings saved before it existed', () => {
+    expect(
+      normalizeSettings({
+        position: 'top-left',
+        weekStartsOn: 0,
+        showWeekNumbers: true,
+        showTaskMarkers: false,
+      }).useHostAccent
+    ).toBe(false);
   });
 
   it('migrates old settings that only contain a position', () => {

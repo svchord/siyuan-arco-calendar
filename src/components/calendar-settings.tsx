@@ -74,6 +74,14 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
             onCheckedChange={(checked) => onChange({ showTaskMarkers: checked })}
           />
         </SettingRow>
+
+        <SettingRow title={i18n.hostAccent.title} description={i18n.hostAccent.description}>
+          <Switch
+            checked={settings.useHostAccent}
+            aria-label={i18n.hostAccent.title}
+            onCheckedChange={(checked) => onChange({ useHostAccent: checked })}
+          />
+        </SettingRow>
       </div>
     </div>
   );

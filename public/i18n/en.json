@@ -53,5 +53,9 @@
   "heatmapBlocks": "blocks",
   "heatmapNoNote": "No daily note",
   "heatmapLess": "Less",
-  "heatmapMore": "More"
+  "heatmapMore": "More",
+  "hostAccent": {
+    "title": "Use theme color",
+    "description": "Use the SiYuan accent color for the selected day, buttons and heatmap. Turn off to use the neutral Vega palette."
+  }
 }
