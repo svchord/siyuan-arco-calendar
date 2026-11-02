@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Git
+
+- Do not commit, amend, or rewrite git history unless the user explicitly requests it in the current turn. Leave changes in the working tree and report them instead.
+
 ## Dev watch / LiveReload
 
 - Run only one `pnpm dev` (`vite build --watch`) per checkout. It writes `dev/` and serves LiveReload on the default port `35729`.
