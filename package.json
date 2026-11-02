@@ -24,6 +24,7 @@
     "lint": "oxlint src scripts",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
+    "inspect": "node ./scripts/cdp/inspect.mjs",
     "make-link": "node --no-warnings ./scripts/make_dev_link.js",
     "make-install": "pnpm run build && node --no-warnings ./scripts/make_install.js"
   },
@@ -61,6 +62,7 @@
     "minimist": "^1.2.8",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
+    "puppeteer-core": "^25.16.0",
     "rollup-plugin-livereload": "^2.0.5",
     "semantic-release": "^25.0.9",
     "shadcn": "^4.23.0",
