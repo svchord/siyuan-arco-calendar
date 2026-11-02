@@ -1,28 +1,36 @@
 /**
- * Inspect the actual rendered calendar UI without taking a screenshot.
+ * Inspect the actual rendered calendar UI.
  *
- *   pnpm inspect
- *   pnpm inspect '[data-slot="calendar-day"]'
- *   pnpm inspect --json
- *   pnpm inspect --rules
- *   pnpm inspect --shot
+ * Probes (what to measure):
+ *   pnpm inspect                                        # panel, footer, settings trigger
+ *   pnpm inspect '[data-slot="calendar-today-button"]'   # computed styles
+ *   pnpm inspect '...' --rules                          # matched CSS rules + sources
+ *   pnpm inspect '...' --pixels                         # per-pixel shape bands
+ *   pnpm inspect '...' --all                            # every match, not just the first
+ *   pnpm inspect '...' --json                           # structured output
  *
- * It opens SiYuan's frontend in headless Chrome (or connects to the browser
- * exposed by a running dev session), opens the calendar panel, then prints
- * computed styles. Matched CSS rules are opt-in with --rules; screenshots are
- * opt-in with --shot.
+ * Actions (drive the UI before measuring):
+ *   --do today                     select today, so the selected state is rendered
+ *   --do view:heatmap              switch to the heatmap view
+ *   --do settings                  open the settings popover
+ *   --do 'click:<selector>'        click anything
+ *   --do 'move:x,y' / wait:ms / close / open
+ *   --do can be repeated, and a comma separates actions:
+ *     --do today,wait:800
+ *
+ * Output and environment:
+ *   --shot                     full-page screenshot to ./inspect.png
+ *   --zoom N                   pixel-probe magnification (default 4; page size unaffected)
+ *   --viewport WxH[@DPR]       page viewport, e.g. 1280x764@2
+ *   --attach                   reuse the browser from a running dev session
+ *
+ * Examples:
+ *   pnpm inspect 'button[data-today="true"]' --pixels --zoom 8
+ *   pnpm inspect --do today --viewport 1280x764@2 --shot
+ *   pnpm inspect --do view:heatmap '[data-slot="calendar-heatmap"]' --rules
  */
-import { existsSync, readFileSync } from 'node:fs';
-import puppeteer from 'puppeteer-core';
-import { findChrome, findKernelPort, frontendUrl } from './siyuan.mjs';
-
-const rawArgs = process.argv.slice(2);
-const selectors = rawArgs.filter((arg) => !arg.startsWith('--'));
-const asJson = rawArgs.includes('--json');
-const includeRules = rawArgs.includes('--rules');
-const includeAll = rawArgs.includes('--all');
-const shot = rawArgs.includes('--shot');
-const attach = rawArgs.includes('--attach');
+import { createSession, parseViewport, runActions } from './session.mjs';
+import { probeEnvironment, probePixels, probeRules, probeStyles } from './probes.mjs';
 
 const DEFAULT_SELECTORS = [
   '.sy-calendar-popup',
@@ -31,216 +39,161 @@ const DEFAULT_SELECTORS = [
   '[data-slot="calendar-settings-trigger"]',
 ];
 
-const PROPS = [
-  'display',
-  'width',
-  'height',
-  'color',
-  'background-color',
-  'background-image',
-  'font-size',
-  'font-weight',
-  'line-height',
-  'padding-top',
-  'padding-left',
-  'margin-top',
-  'border-radius',
-  'box-shadow',
-  'gap',
-  'overflow',
-  'position',
-  'z-index',
-];
-
-const EMPTY_VALUES = new Set(['auto', 'none', 'normal', '0px', 'rgba(0, 0, 0, 0)']);
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function openCalendar(page) {
-  if (await page.$('[data-slot="calendar-panel"], .sy-calendar-dock')) {
-    return 'already-open';
+/** Remove every `--flag value` pair from argv, returning values and the remainder. */
+function takeOptions(args, flags) {
+  const values = {};
+  let rest = [...args];
+  for (const flag of flags) {
+    while (rest.includes(flag)) {
+      const index = rest.indexOf(flag);
+      const value = rest[index + 1];
+      if (value === undefined || value.startsWith('--')) {
+        throw new Error(flag + ' 需要一个参数');
+      }
+      (values[flag] ??= []).push(value);
+      rest = rest.filter((_, i) => i !== index && i !== index + 1);
+    }
   }
-
-  const topbar = await page.$('[data-id="arco-calendar-topbar"]');
-  if (topbar) {
-    await topbar.click();
-    await page.waitForSelector('[data-slot="calendar-panel"], .sy-calendar-dock', { timeout: 5000 });
-    return 'topbar';
-  }
-
-  const dock = await page.$('.dock__item[data-type*="arco-calendar"]');
-  if (dock) {
-    await dock.click();
-    await page.waitForSelector('.sy-calendar-dock', { timeout: 5000 });
-    return 'dock';
-  }
-
-  throw new Error('页面里找不到 arco-calendar 入口；请先在思源中启用插件或打开日历');
+  return { values, rest };
 }
 
-async function readPage(page, selector, limit) {
-  return page.evaluate(
-    (target, props, maxItems) => {
-      const elements = Array.from(document.querySelectorAll(target));
-      return {
-        count: elements.length,
-        items: elements.slice(0, maxItems).map((element) => {
-          const style = getComputedStyle(element);
-          const values = {};
-          for (const prop of props) {
-            values[prop] = style.getPropertyValue(prop);
-          }
-          return {
-            tag: element.tagName.toLowerCase(),
-            className: String(element.className || '').slice(0, 60),
-            props: values,
-          };
-        }),
-      };
-    },
-    selector,
-    PROPS,
-    limit
+function parseArgs(argv) {
+  const { values, rest } = takeOptions(argv, ['--css', '--zoom', '--viewport', '--do']);
+
+  const asJson = rest.includes('--json');
+  const includeRules = rest.includes('--rules');
+  const includeAll = rest.includes('--all');
+  const shot = rest.includes('--shot');
+  const attach = rest.includes('--attach');
+  const pixels = rest.includes('--pixels');
+
+  const actions = (values['--do'] ?? [])
+    .flatMap((value) => value.split(','))
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return {
+    selectors: rest.filter((arg) => !arg.startsWith('--')),
+    actions,
+    css: values['--css'] ?? [],
+    zoom: Number(values['--zoom']?.[0] ?? 4),
+    viewport: parseViewport(values['--viewport']?.[0]),
+    asJson,
+    includeRules,
+    includeAll,
+    shot,
+    attach,
+    pixels,
+  };
+}
+
+function formatStyles(result) {
+  const lines = [];
+  if (!result.count) return [result.selector + ' (no match)'];
+  for (const item of result.items) {
+    const values = Object.entries(item.props)
+      .map(([name, value]) => name + '=' + value)
+      .join(' ');
+    lines.push(result.selector + ' (' + result.count + 'x) <' + item.tag + '> ' + values);
+  }
+  return lines;
+}
+
+function formatRules(result) {
+  if (!result.rules?.length) return [];
+  return result.rules.map(
+    (rule) => '    [' + rule.source + '] ' + rule.selector + ' { ' + rule.properties.join('; ') + ' }'
   );
 }
 
-async function readMatchedRules(client, documentNodeId, selector, sheets) {
-  const query = await client.send('DOM.querySelector', { nodeId: documentNodeId, selector });
-  if (!query.nodeId) return [];
-
-  const matched = await client.send('CSS.getMatchedStylesForNode', { nodeId: query.nodeId });
-  const rules = [];
-  for (const match of matched.matchedCSSRules || []) {
-    const url = sheets.get(match.rule.styleSheetId) || '';
-    if (match.rule.origin === 'user-agent') continue;
-
-    let source = '(inline <style>)';
-    if (url) {
-      const themeIndex = url.indexOf('/appearance/themes/');
-      source = themeIndex >= 0 ? url.slice(themeIndex + '/appearance/themes/'.length) : url.slice(-64);
-    }
-
-    rules.push({
-      source,
-      selector: match.rule.selectorList.text,
-      properties: (match.rule.style.cssProperties || [])
-        .filter((property) => property.value !== '')
-        .slice(0, 6)
-        .map((property) => property.name + ': ' + property.value),
-    });
+function formatPixels(result) {
+  const lines = [
+    'pixels: ' + result.file + ' (' + result.analysis.width + 'x' + result.analysis.height + ' @' + result.zoom + 'x)',
+  ];
+  if (!result.analysis.bands.length) {
+    lines.push('    (no contrasting pixels found)');
+    return lines;
   }
-  return rules.slice(0, 8);
+  for (const band of result.analysis.bands) {
+    lines.push(
+      '    band y=' +
+        band.top +
+        '..' +
+        band.bottom +
+        ' h=' +
+        band.height +
+        ' w=' +
+        band.width +
+        ' aspect=' +
+        band.aspect +
+        (band.aspect === 1 ? '  <- circle' : '')
+    );
+    lines.push('      profile: ' + band.profile.join('-'));
+  }
+  return lines;
 }
 
 async function main() {
-  let browser;
-  let attached = false;
-  let opened = '';
-  if (attach && existsSync('.rc-cdp-ws')) {
-    browser = await puppeteer.connect({
-      browserWSEndpoint: readFileSync('.rc-cdp-ws', 'utf8').trim(),
-      defaultViewport: null,
-    });
-    attached = true;
-  } else {
-    const port = await findKernelPort();
-    browser = await puppeteer.launch({
-      executablePath: findChrome(),
-      headless: true,
-      defaultViewport: { width: 1600, height: 1000 },
-      args: ['--no-first-run', '--no-default-browser-check'],
-    });
-    const page = await browser.newPage();
-    await page.goto(frontendUrl(port), { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForFunction('window.siyuan && window.siyuan.config', { timeout: 30000 });
-    await sleep(1500);
-    await page.waitForFunction(
-      'document.querySelector(\'[data-id="arco-calendar-topbar"], .dock__item[data-type*="arco-calendar"]\')',
-      { timeout: 30000 }
-    );
-    opened = await openCalendar(page);
-    await sleep(700);
-  }
+  const options = parseArgs(process.argv.slice(2));
+  const session = await createSession({ viewport: options.viewport, attach: options.attach });
 
-  const pages = await browser.pages();
-  const page = pages.find((candidate) => candidate.url().includes('stage/build'));
-  if (!page) throw new Error('浏览器里没有思源页面');
-  opened = opened || (await openCalendar(page));
-  await sleep(700);
+  try {
+    if (options.actions.length) await runActions(session, options.actions);
+    for (const sheet of options.css) {
+      await runActions(session, ['css:' + sheet]);
+    }
 
-  const head = await page.evaluate(() => {
-    const config = window.siyuan?.config?.appearance;
-    const themeLink = document.getElementById('themeStyle');
-    return {
-      theme: config?.themeLight,
-      themeMode: config?.mode,
-      href: themeLink?.getAttribute('href'),
-      url: location.href,
-    };
-  });
+    const env = await probeEnvironment(session.page, session);
+    const targets = options.selectors.length ? options.selectors : DEFAULT_SELECTORS;
+    const results = [];
 
-  const client = await page.createCDPSession();
-  await client.send('DOM.enable');
-  await client.send('CSS.enable');
-  const sheets = new Map();
-  client.on('CSS.styleSheetAdded', (event) => {
-    if (event.header) sheets.set(event.header.styleSheetId, event.header.sourceURL || '');
-  });
-  await sleep(300);
-  const document = await client.send('DOM.getDocument', { depth: 1 });
-
-  const targets = selectors.length ? selectors : DEFAULT_SELECTORS;
-  const results = [];
-  for (const selector of targets) {
-    const data = await readPage(page, selector, includeAll ? 5 : 1);
-    const rules =
-      includeRules && data.count ? await readMatchedRules(client, document.root.nodeId, selector, sheets) : [];
-    const items = data.items.map((item) => ({
-      ...item,
-      props: Object.fromEntries(Object.entries(item.props).filter(([, value]) => value && !EMPTY_VALUES.has(value))),
-    }));
-    results.push(includeRules ? { selector, ...data, items, rules } : { selector, ...data, items });
-  }
-
-  const report = {
-    opened,
-    theme: head.theme,
-    mode: head.themeMode,
-    selectors: results,
-  };
-
-  if (asJson) {
-    console.log(JSON.stringify(report));
-  } else {
-    console.log('[inspect] theme=' + head.theme + ' mode=' + head.themeMode + ' opened=' + opened);
-    for (const result of results) {
-      if (!result.count) {
-        console.log('[inspect] ' + result.selector + ' (no match)');
-        continue;
+    for (const selector of targets) {
+      const result = await probeStyles(session.page, selector, options.includeAll ? 5 : 1);
+      if (options.includeRules && result.count) {
+        result.rules = await probeRules(env.client, env.document.root.nodeId, selector, env.sheets);
       }
-      for (const item of result.items) {
-        const values = Object.entries(item.props)
-          .filter(([, value]) => value && !EMPTY_VALUES.has(value))
-          .map(([name, value]) => name + '=' + value)
-          .join(' ');
-        console.log('[inspect] ' + result.selector + ' (' + result.count + 'x) <' + item.tag + '> ' + values);
-        if (includeRules && result.rules?.length) {
-          for (const rule of result.rules) {
-            console.log('    [' + rule.source + '] ' + rule.selector + ' { ' + rule.properties.join('; ') + ' }');
-          }
+      if (options.pixels && result.count) {
+        result.pixels = await probePixels(session.page, selector, {
+          zoom: options.zoom,
+          viewport: options.viewport,
+        });
+      }
+      results.push(result);
+    }
+
+    const report = {
+      opened: env.opened,
+      theme: env.theme,
+      mode: env.mode,
+      actions: options.actions,
+      viewport: options.viewport,
+      zoom: options.zoom,
+      injected: options.css,
+      selectors: results,
+    };
+
+    if (options.asJson) {
+      console.log(JSON.stringify(report));
+    } else {
+      console.log('[inspect] theme=' + env.theme + ' mode=' + env.mode + ' opened=' + env.opened);
+      if (options.actions.length) console.log('[inspect] actions=' + options.actions.join(' -> '));
+      for (const result of results) {
+        for (const line of formatStyles(result)) console.log('[inspect] ' + line);
+        if (options.includeRules) {
+          for (const line of formatRules(result)) console.log(line);
+        }
+        if (result.pixels) {
+          for (const line of formatPixels(result.pixels)) console.log('[inspect] ' + line);
         }
       }
     }
-  }
 
-  if (shot) {
-    await page.screenshot({ path: './inspect.png' });
-    console.log('[inspect] screenshot: ./inspect.png');
-  }
-
-  if (attached) {
-    await browser.disconnect();
-  } else {
-    await browser.close();
+    if (options.shot) {
+      await session.page.screenshot({ path: './inspect.png' });
+      console.log('[inspect] screenshot: ./inspect.png');
+    }
+  } finally {
+    await session.dispose();
   }
 }
 

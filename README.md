@@ -48,6 +48,8 @@
 }
 ```
 
+默认情况下 `--primary` 回退到 Vega 预设的中性色阶。开启设置中的「使用主题色」后，插件改为在 `<html>` 上发布 `--arco-calendar-accent` / `--arco-calendar-accent-foreground`，由它们接管 `--primary`，从而跟随思源主题强调色；想固定配色时覆盖上面两个变量即可。
+
 主要使用的变量：
 
 | 变量                                 | 作用                           |
@@ -64,13 +66,17 @@
 
 - 顶栏左侧、顶栏右侧或边栏 Dock 三种入口位置
 - 月历上标记已经存在的日记，点击任意日期即可打开或创建日记
-- 已有日记的日期使用柔和圆底标记，缺失日记的日期保持空白；日记内存在未完成任务时显示琥珀色角标，可在设置中关闭
+- 已有日记的日期使用主题色淡圆底标记，缺失日记的日期保持空白；日记内存在未完成任务时显示琥珀色角标
+- 今天在日期下方显示一个小圆点，选中后圆点切换为对比色，不会与选中底色混在一起
 - 顶部月份/年份下拉选择，右侧提供刷新入口
-- 日历面板右上角提供设置入口：
+- 日历面板右上角提供设置入口，包含五项设置：
+  - 入口位置（顶栏左 / 顶栏右 / 边栏）
   - 每周从星期一开始或从星期日开始
   - 在日历左侧显示周数
+  - 显示未完成任务标记
+  - 使用主题色（默认关闭，开启后选中日期、按钮、日记圆底和热力图改用思源主题强调色，关闭则使用 Vega 中性配色）
 - 月份/年份选择器右侧提供刷新图标，可手动同步笔记本和日记映射，并提示刷新成功或失败
-- 顶部“日历 / 热力图”切换，年度热力图按笔记内容块数量显示活跃度：日记内容块归入日记日期，其他笔记按内容块创建日期统计，并按上下半年拆成两段以控制宽度
+- 顶部“日历 / 热力图”切换（Vega Tabs 样式），年度热力图按笔记内容块数量显示活跃度：日记内容块归入日记日期，其他笔记按内容块创建日期统计，并按上下半年拆成两段以控制宽度
 - 热力图按周排列，支持周起始日设置，并可用年份选择器查看不同年份；悬停色块可查看当天内容块数量，点击色块可打开或创建当天日记，面板左下角显示全年内容块总数
 - 笔记本选择器支持搜索，选择结果会同步到思源的 `local-dailynoteid`
 - 跟随思源主题自动切换明暗配色，支持桌面端、移动端和浏览器端
@@ -78,8 +84,8 @@
 ## 技术栈
 
 - **React 19** + TypeScript
-- **shadcn/ui**（Card、Button、Separator、Select、Popover、Command、Calendar）与 Base UI 无障碍原语
-- **shadcn/ui Vega 预设**：中性色主题、Inter 字体、Vega 组件的圆角与间距风格
+- **shadcn/ui**（Card、Button、Separator、Tabs、Select、Popover、Command、Calendar）与 Base UI 无障碍原语
+- **shadcn/ui Vega 预设**：中性色主题、Inter 字体、Vega 组件的圆角与间距风格；可选用思源主题强调色覆盖
 - **Tailwind CSS 4**，只输出插件用到的样式，并将 `shadcn` 设计变量映射到思源主题变量
 - **Vite 8** 库模式打包，React 组件会随插件一起打包，不依赖宿主的全局 React
 
@@ -90,16 +96,19 @@ src/
 ├── index.tsx                 # SiYuan Plugin 生命周期：onload / onLayoutReady / onunload
 ├── api/                      # 类型化内核 API 与笔记本/日记查询
 ├── components/
-│   ├── ui/                   # shadcn/ui 组件源码
+│   ├── ui/                   # shadcn/ui 组件源码（含 Vega Tabs）
 │   ├── calendar-app.tsx      # React 根组件（注入宿主上下文）
 │   ├── calendar-panel.tsx    # 卡片布局、头部、视图切换与刷新/设置入口
 │   ├── calendar-view.tsx     # 月历、月份/年份选择与日标记
 │   ├── heatmap-view.tsx      # 年度热力图、年份选择与图例
-│   ├── panel-view-switch.tsx # 日历/热力图切换
+│   ├── panel-view-switch.tsx # 日历/热力图切换（基于 vendored Tabs）
 │   ├── notebook-combobox.tsx # 可搜索的笔记本选择器
 │   └── position-select.tsx   # 入口位置选择
 ├── hooks/                    # useNotebooks / useDailyNotes / useNoteActivity / useLocale / useIsDark
 ├── lib/                      # 纯函数、宿主 Context、i18n、存储、图标
+│   ├── popup-position.ts     # 弹层锚点查找与视口钳制
+│   ├── topbar-order.ts       # 顶栏入口顺序的 entryVisibility 同步
+│   └── ...
 ├── types/                    # 领域类型与 i18n 类型
 └── ...
 ```
@@ -133,6 +142,30 @@ pnpm build
 ```
 
 `pnpm build` 会依次执行清单校验、类型检查、生产构建，并在根目录生成 `package.zip`。
+
+### 检查渲染结果
+
+`pnpm inspect` 在无头 Chrome 中打开真实的思源页面与日历面板，读取实际渲染的样式，适合排查"某个颜色/间距/形状和预期不符"的问题，不需要改代码或截图比对：
+
+```bash
+# 测量
+pnpm inspect                                              # 面板、底部、设置入口的样式
+pnpm inspect '[data-slot="calendar-today-button"]'        # 指定选择器的计算样式
+pnpm inspect '...' --rules                                # 列出命中的 CSS 规则及来源
+pnpm inspect 'button[data-today="true"]' --pixels         # 逐像素分析形状（宽高比、轮廓）
+pnpm inspect '...' --all --json                           # 全部匹配项 + 结构化输出
+
+# 构造状态后再测量
+pnpm inspect '...' --do today                             # 先选中今天
+pnpm inspect '...' --do view:heatmap                      # 先切到热力图
+pnpm inspect '...' --do settings                          # 先打开设置面板
+pnpm inspect '...' --do 'click:<selector>'                # 点击任意元素
+
+# 生成资产
+pnpm inspect --do today,wait:800 --viewport 1280x764@2 --shot
+```
+
+`--do` 支持 `open` / `close` / `today` / `settings` / `view:<calendar|heatmap>` / `click:<选择器>` / `move:x,y` / `wait:毫秒`，多个动作用逗号连接。`--zoom` 只放大像素探针的截图，不会改变页面尺寸。
 
 开发调试（`pnpm dev` 会持续监听，请在另一个终端执行 `make-link`）：
 

@@ -16,6 +16,13 @@
 - Exception: when a primitive hard-codes host integration that cannot be reached through its public props (for example a Base UI portal positioner's stacking layer), a minimal local edit is allowed. Add a clear comment explaining the deviation and keep it isolated for future upstream syncs.
 - Only update this directory as a deliberate upstream sync (for example with the shadcn CLI), and audit the diff separately.
 
+## UI inspection
+
+- Answer rendered-style questions with `pnpm inspect`, not with a new script. It reports computed styles, matched CSS rules (`--rules`), painted pixels (`--pixels`), screenshots (`--shot`), and can inject CSS for A/B comparisons (`--css`).
+- Drive the UI into any state with `--do` before measuring, instead of writing a script for it: `--do today`, `--do view:heatmap`, `--do settings`, `--do 'click:<selector>'`, `--do 'move:x,y'`, `--do wait:ms`, comma-separated. Combine with `--viewport WxH[@DPR]` for asset capture, e.g. `pnpm inspect --do today --viewport 1280x764@2 --shot`.
+- The tool is split into `scripts/cdp/session.mjs` (browser + actions), `scripts/cdp/probes.mjs` (measurements) and `scripts/cdp/inspect.mjs` (CLI). Extend a layer instead of adding a script: a new capability is a new action or probe, so future scenarios stay expressible from the command line.
+- Only write a throwaway probe when the tool genuinely cannot answer: it is the last resort, not the default. Write one parameterised script and reuse it; never accumulate near-duplicates.
+
 ## Dev watch / LiveReload
 
 - Run only one `pnpm dev` (`vite build --watch`) per checkout. It writes `dev/` and serves LiveReload on the default port `35729`.
