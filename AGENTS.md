@@ -4,6 +4,13 @@
 
 - Do not commit, amend, or rewrite git history unless the user explicitly requests it in the current turn. Leave changes in the working tree and report them instead.
 
+## UI components
+
+- Treat `src/components/ui/**` as vendored shadcn/ui code. Do not edit those files to satisfy plugin-specific behavior.
+- Customize through call-site props, `className`/`classNames`, wrappers, or plugin CSS instead.
+- Exception: when a primitive hard-codes host integration that cannot be reached through its public props (for example a Base UI portal positioner's stacking layer), a minimal local edit is allowed. Add a clear comment explaining the deviation and keep it isolated for future upstream syncs.
+- Only update this directory as a deliberate upstream sync (for example with the shadcn CLI), and audit the diff separately.
+
 ## Dev watch / LiveReload
 
 - Run only one `pnpm dev` (`vite build --watch`) per checkout. It writes `dev/` and serves LiveReload on the default port `35729`.
