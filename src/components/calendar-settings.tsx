@@ -52,7 +52,7 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
             <SelectTrigger size="sm" className="w-fit min-w-[96px]" aria-label={i18n.weekStart.title}>
               <SelectValue>{settings.weekStartsOn === 1 ? i18n.weekStart.monday : i18n.weekStart.sunday}</SelectValue>
             </SelectTrigger>
-            <SelectContent className={cn('sy-calendar-portal', isDark && 'dark')}>
+            <SelectContent alignItemWithTrigger={false} className={cn('sy-calendar-portal', isDark && 'dark')}>
               <SelectItem value="1">{i18n.weekStart.monday}</SelectItem>
               <SelectItem value="0">{i18n.weekStart.sunday}</SelectItem>
             </SelectContent>

@@ -3,10 +3,15 @@ export interface PluginI18n {
   tabName: string;
   placeholder: string;
   today: string;
+  refresh: string;
   refreshHint: string;
   hint: string;
   selectMonth: string;
   selectYear: string;
+  previousMonth: string;
+  nextMonth: string;
+  previousYear: string;
+  nextYear: string;
   calendarView: string;
   heatmapView: string;
   heatmapHint: string;

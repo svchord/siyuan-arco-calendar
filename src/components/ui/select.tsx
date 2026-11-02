@@ -57,6 +57,10 @@ function SelectTrigger({
 
 function SelectContent({
   className,
+  // Plugin-local deviation from upstream shadcn: the positioner is outside the
+  // plugin DOM and must sit above both the calendar popup and the settings
+  // popover. Expose this override here because Base UI does not give callers
+  // access to the positioner element.
   positionerClassName,
   children,
   side = "bottom",

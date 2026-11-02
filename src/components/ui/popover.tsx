@@ -12,6 +12,10 @@ function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
 
 function PopoverContent({
   className,
+  // Plugin-local deviation from upstream shadcn: Base UI portals render the
+  // positioner outside the plugin DOM, and this host needs the popover layer
+  // above the calendar popup. Keep the override at the primitive boundary
+  // because the Base UI primitive does not expose this element to callers.
   positionerClassName,
   align = "center",
   alignOffset = 0,

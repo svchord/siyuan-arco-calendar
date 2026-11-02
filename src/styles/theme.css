@@ -1,0 +1,84 @@
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * shadcn/ui "Vega" preset tokens, scoped to the plugin surfaces so the host
+ * SiYuan application keeps its own typography and colour system.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+.sy-calendar-root,
+.sy-calendar-portal,
+.sy-calendar-setting,
+.sy-calendar-popup {
+  --background: var(--b3-menu-background, #ffffff);
+  --foreground: var(--b3-theme-on-background, #1f2329);
+  --card: var(--b3-menu-background, #ffffff);
+  --card-foreground: var(--b3-theme-on-background, #1f2329);
+  --popover: var(--b3-menu-background, #ffffff);
+  --popover-foreground: var(--b3-theme-on-background, #1f2329);
+  /* Vega is monochrome: the host foreground acts as the primary accent. */
+  --primary: var(--b3-theme-on-background, #1f2329);
+  --primary-foreground: var(--b3-menu-background, #ffffff);
+  --secondary: var(--b3-list-hover, #f4f5f7);
+  --secondary-foreground: var(--b3-theme-on-background, #1f2329);
+  --muted: var(--b3-list-hover, #f4f5f7);
+  --muted-foreground: var(--b3-theme-on-surface, #6b7280);
+  --accent: var(--b3-list-hover, #f4f5f7);
+  --accent-foreground: var(--b3-theme-on-background, #1f2329);
+  --destructive: #dc2626;
+  --task-color: #d97706;
+  --border: var(--b3-border-color, #e5e7eb);
+  --input: var(--b3-border-color, #e5e7eb);
+  --ring: var(--b3-theme-on-surface, #6b7280);
+  --radius: 0.625rem;
+  --radius-md: calc(var(--radius) - 2px);
+  font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
+.sy-calendar-root.dark,
+.sy-calendar-portal.dark,
+.sy-calendar-setting.dark,
+.sy-calendar-popup.dark {
+  --background: var(--b3-menu-background, #262626);
+  --foreground: var(--b3-theme-on-background, #e5e5e5);
+  --card: var(--b3-menu-background, #262626);
+  --card-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --popover: var(--b3-menu-background, #262626);
+  --popover-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --primary: var(--b3-theme-on-background, #e5e5e5);
+  --primary-foreground: var(--b3-menu-background, #171717);
+  --secondary: var(--b3-list-hover, #404040);
+  --secondary-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --muted: var(--b3-list-hover, #404040);
+  --muted-foreground: var(--b3-theme-on-surface, #a3a3a3);
+  --accent: var(--b3-list-hover, #404040);
+  --accent-foreground: var(--b3-theme-on-background, #e5e5e5);
+  --destructive: #f87171;
+  --task-color: #fbbf24;
+  --border: var(--b3-border-color, rgba(255, 255, 255, 0.12));
+  --input: var(--b3-border-color, rgba(255, 255, 255, 0.16));
+  --ring: var(--b3-theme-on-surface, #a3a3a3);
+}

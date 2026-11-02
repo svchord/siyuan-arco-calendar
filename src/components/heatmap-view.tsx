@@ -13,7 +13,7 @@ import {
   startOfYear,
   type Locale,
 } from 'date-fns';
-import { RefreshCwIcon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useIsDark } from '@/hooks/use-is-dark';
 import { useHost } from '@/lib/host';
 import { formatDisplayDate } from '@/lib/date';
@@ -88,22 +88,11 @@ interface HeatmapViewProps {
   activity: Map<string, DayActivity>;
   locale: Locale;
   weekStartsOn: WeekStart;
-  refreshing: boolean;
   onYearChange: (year: number) => void;
-  onRefresh: () => void;
   onOpenDailyNote?: (date: Date, dailyNoteId?: string) => void;
 }
 
-export function HeatmapView({
-  year,
-  activity,
-  locale,
-  weekStartsOn,
-  refreshing,
-  onYearChange,
-  onRefresh,
-  onOpenDailyNote,
-}: HeatmapViewProps) {
+export function HeatmapView({ year, activity, locale, weekStartsOn, onYearChange, onOpenDailyNote }: HeatmapViewProps) {
   const { i18n } = useHost();
   const isDark = useIsDark();
   const years = React.useMemo(() => buildYearOptions(), []);
@@ -211,42 +200,40 @@ export function HeatmapView({
   return (
     <div className="w-full" data-slot="calendar-heatmap">
       <div className="flex items-center justify-center gap-1 py-1">
-        <div className="flex items-center gap-1 rounded-lg bg-muted/35 p-0.5">
-          <Select value={String(year)} onValueChange={(value) => value && onYearChange(Number(value))}>
-            <SelectTrigger
-              size="sm"
-              aria-label={i18n.selectYear}
-              data-slot="heatmap-year-select"
-              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
-            >
-              <SelectValue>{year}</SelectValue>
-            </SelectTrigger>
-            <SelectContent
-              alignItemWithTrigger={false}
-              sideOffset={6}
-              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
-            >
-              {years.map((yearOption) => (
-                <SelectItem key={yearOption} value={String(yearOption)}>
-                  {yearOption}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={i18n.previousYear}
+          title={i18n.previousYear}
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => onYearChange(year - 1)}
+        >
+          <ChevronLeftIcon className="size-4" />
+        </Button>
+        <Select value={String(year)} onValueChange={(value) => value && onYearChange(Number(value))}>
+          <SelectTrigger size="sm" aria-label={i18n.selectYear} data-slot="heatmap-year-select" className="w-[100px]">
+            <SelectValue>{year}</SelectValue>
+          </SelectTrigger>
+          <SelectContent alignItemWithTrigger={false} className={cn('sy-calendar-portal max-h-64', isDark && 'dark')}>
+            {years.map((yearOption) => (
+              <SelectItem key={yearOption} value={String(yearOption)}>
+                {yearOption}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon-sm"
-          aria-label={i18n.refreshHint}
-          title={i18n.refreshHint}
-          disabled={refreshing}
-          data-slot="calendar-refresh-button"
-          className="size-8 rounded-lg bg-background text-muted-foreground shadow-xs hover:text-foreground"
-          onClick={onRefresh}
+          aria-label={i18n.nextYear}
+          title={i18n.nextYear}
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => onYearChange(year + 1)}
         >
-          <RefreshCwIcon className={cn('size-3.5', refreshing && 'animate-spin')} />
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 

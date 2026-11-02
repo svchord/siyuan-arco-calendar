@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { addMonths } from 'date-fns';
 import type { Locale } from 'date-fns';
-import { RefreshCwIcon } from 'lucide-react';
+import { getDefaultClassNames } from 'react-day-picker';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar, CalendarDayButton } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,11 +14,30 @@ import type { DailyNote } from '@/types/domain';
 import { cn } from '@/lib/utils';
 import { buildYearOptions } from '@/lib/years';
 
-function ExistingDayButton({ children, ...props }: React.ComponentProps<typeof CalendarDayButton>) {
+const DAY_BUTTON_MARKERS = cn(
+  'h-full',
+  // Hide DayPicker's "focus target" when it is not the keyboard-focused element.
+  'group-data-[focused=true]/day:border-transparent group-data-[focused=true]/day:ring-0',
+  // Existing daily note: quiet disc behind the day number.
+  'data-[existing-note=true]:not-data-[selected-single=true]:bg-[radial-gradient(circle_at_center,color-mix(in_oklch,var(--muted)_90%,transparent)_0_13px,transparent_13.5px)]',
+  // On hover, use the normal rounded button surface instead of the note disc.
+  'data-[existing-note=true]:hover:bg-none',
+  // Selected day: persistent outline independent of browser focus.
+  'data-[selected-single=true]:shadow-[0_0_0_1px_var(--ring),0_0_0_3px_color-mix(in_oklch,var(--ring)_50%,transparent)]',
+  'data-[selected-single=true]:hover:bg-primary',
+  // Open task: amber dot in the top-right corner.
+  'data-[open-tasks=true]:after:absolute data-[open-tasks=true]:after:top-[3px] data-[open-tasks=true]:after:right-[3px] data-[open-tasks=true]:after:block data-[open-tasks=true]:after:size-[7px] data-[open-tasks=true]:after:rounded-full data-[open-tasks=true]:after:border data-[open-tasks=true]:after:border-background data-[open-tasks=true]:after:bg-[var(--task-color)] data-[open-tasks=true]:after:content-[""]',
+  // Today: small dot below the day number, so the note disc remains visible.
+  'data-[today=true]:before:absolute data-[today=true]:before:bottom-[2px] data-[today=true]:before:left-1/2 data-[today=true]:before:size-[3px] data-[today=true]:before:-translate-x-1/2 data-[today=true]:before:rounded-full data-[today=true]:before:bg-primary data-[today=true]:before:pointer-events-none data-[today=true]:before:content-[""]',
+  'data-[today=true]:data-[selected-single=true]:before:bg-primary-foreground'
+);
+
+function ExistingDayButton({ children, className, ...props }: React.ComponentProps<typeof CalendarDayButton>) {
   const hasExistingNote = props.modifiers.existing;
   return (
     <CalendarDayButton
       {...props}
+      className={cn(className, DAY_BUTTON_MARKERS)}
       data-day={props.day.isoDate}
       data-existing-note={hasExistingNote ? 'true' : undefined}
       data-open-tasks={props.modifiers.openTasks ? 'true' : undefined}
@@ -36,8 +57,6 @@ interface CalendarViewProps {
   weekStartsOn?: WeekStart;
   showWeekNumbers?: boolean;
   showTaskMarkers?: boolean;
-  refreshing?: boolean;
-  onRefresh?: () => void;
   onMonthChange: (date: Date) => void;
   onSelectDate: (date: Date) => void;
 }
@@ -51,8 +70,6 @@ export function CalendarView({
   weekStartsOn = 1,
   showWeekNumbers = false,
   showTaskMarkers = true,
-  refreshing = false,
-  onRefresh,
   onMonthChange,
   onSelectDate,
 }: CalendarViewProps) {
@@ -73,6 +90,50 @@ export function CalendarView({
   );
   const years = React.useMemo(() => buildYearOptions(), []);
   const selectedYear = month.getFullYear();
+  const restoreFocusRef = React.useRef<HTMLButtonElement | null>(null);
+  const defaultClassNames = React.useMemo(() => getDefaultClassNames(), []);
+  const dayPickerClassNames = React.useMemo(
+    () => ({
+      root: cn('w-full bg-transparent', defaultClassNames.root),
+      months: cn('relative flex w-full flex-col gap-0 md:flex-row', defaultClassNames.months),
+      month: cn('flex w-full flex-col gap-0', defaultClassNames.month),
+      month_grid: cn('w-full table-fixed border-collapse', defaultClassNames.month_grid),
+      weekdays: cn('flex w-full', defaultClassNames.weekdays),
+      week: cn('mt-2 flex w-full', defaultClassNames.week),
+      week_number: cn(
+        'flex h-auto w-(--cell-size) min-w-(--cell-size) flex-none items-center justify-center self-center text-[0.8rem] text-muted-foreground select-none',
+        defaultClassNames.week_number
+      ),
+      day: cn(
+        'group/day relative aspect-square h-full w-full flex-1 rounded-(--cell-radius) p-0 text-center select-none [&:last-child[data-selected=true]_button]:rounded-r-(--cell-radius)',
+        showWeekNumbers
+          ? '[&:nth-child(2)[data-selected=true]_button]:rounded-l-(--cell-radius)'
+          : '[&:first-child[data-selected=true]_button]:rounded-l-(--cell-radius)',
+        defaultClassNames.day
+      ),
+      today: cn(
+        'rounded-(--cell-radius) bg-transparent text-foreground data-[selected=true]:rounded-none',
+        defaultClassNames.today
+      ),
+      month_caption: 'hidden',
+    }),
+    [defaultClassNames, showWeekNumbers]
+  );
+  const navigateMonth = (delta: number, button: HTMLButtonElement) => {
+    restoreFocusRef.current = button;
+    onMonthChange(addMonths(month, delta));
+  };
+
+  React.useEffect(() => {
+    const button = restoreFocusRef.current;
+    if (!button) {
+      return;
+    }
+    restoreFocusRef.current = null;
+    const frame = window.requestAnimationFrame(() => button.focus({ preventScroll: true }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [month]);
+
   const selectMonth = (value: string | null) => {
     if (value === null) return;
     onMonthChange(new Date(selectedYear, Number(value), 1));
@@ -94,64 +155,58 @@ export function CalendarView({
   return (
     <div ref={calendarRootRef} className="w-full" data-slot="calendar-view">
       <div className="flex items-center justify-center gap-1 py-1">
-        <div className="flex items-center gap-1 rounded-lg bg-muted/35 p-0.5">
-          <Select value={String(month.getMonth())} onValueChange={selectMonth}>
-            <SelectTrigger
-              size="sm"
-              aria-label={i18n.selectMonth}
-              data-slot="calendar-month-select"
-              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
-            >
-              <SelectValue>{monthNames[month.getMonth()]}</SelectValue>
-            </SelectTrigger>
-            <SelectContent
-              alignItemWithTrigger={false}
-              sideOffset={6}
-              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
-            >
-              {monthNames.map((name, index) => (
-                <SelectItem key={name} value={String(index)}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={i18n.previousMonth}
+          title={i18n.previousMonth}
+          className="text-muted-foreground hover:text-foreground"
+          onClick={(event) => navigateMonth(-1, event.currentTarget)}
+        >
+          <ChevronLeftIcon className="size-4" />
+        </Button>
+        <Select value={String(month.getMonth())} onValueChange={selectMonth}>
+          <SelectTrigger
+            size="sm"
+            aria-label={i18n.selectMonth}
+            data-slot="calendar-month-select"
+            className="w-[100px]"
+          >
+            <SelectValue>{monthNames[month.getMonth()]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent alignItemWithTrigger={false} className={cn('sy-calendar-portal max-h-64', isDark && 'dark')}>
+            {monthNames.map((name, index) => (
+              <SelectItem key={name} value={String(index)}>
+                {name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-          <Select value={String(selectedYear)} onValueChange={selectYear}>
-            <SelectTrigger
-              size="sm"
-              aria-label={i18n.selectYear}
-              data-slot="calendar-year-select"
-              className="h-7 w-[92px] justify-between border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-background/70"
-            >
-              <SelectValue>{selectedYear}</SelectValue>
-            </SelectTrigger>
-            <SelectContent
-              alignItemWithTrigger={false}
-              sideOffset={6}
-              className={cn('sy-calendar-portal max-h-48 min-w-[96px]', isDark && 'dark')}
-            >
-              {years.map((year) => (
-                <SelectItem key={year} value={String(year)}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={String(selectedYear)} onValueChange={selectYear}>
+          <SelectTrigger size="sm" aria-label={i18n.selectYear} data-slot="calendar-year-select" className="w-[100px]">
+            <SelectValue>{selectedYear}</SelectValue>
+          </SelectTrigger>
+          <SelectContent alignItemWithTrigger={false} className={cn('sy-calendar-portal max-h-64', isDark && 'dark')}>
+            {years.map((year) => (
+              <SelectItem key={year} value={String(year)}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon-sm"
-          aria-label={i18n.refreshHint}
-          title={i18n.refreshHint}
-          disabled={refreshing}
-          data-slot="calendar-refresh-button"
-          className="size-8 rounded-lg bg-background text-muted-foreground shadow-xs hover:text-foreground"
-          onClick={onRefresh}
+          aria-label={i18n.nextMonth}
+          title={i18n.nextMonth}
+          className="text-muted-foreground hover:text-foreground"
+          onClick={(event) => navigateMonth(1, event.currentTarget)}
         >
-          <RefreshCwIcon className={cn('size-3.5', refreshing && 'animate-spin')} />
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
       <Calendar
@@ -172,7 +227,7 @@ export function CalendarView({
         components={{ DayButton: ExistingDayButton }}
         showOutsideDays
         hideNavigation
-        classNames={{ month_caption: 'hidden' }}
+        classNames={dayPickerClassNames}
         className="w-full pt-0"
       />
     </div>

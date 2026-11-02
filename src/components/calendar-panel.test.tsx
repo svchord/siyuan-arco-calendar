@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { enUS } from 'date-fns/locale';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { App, EventBus } from 'siyuan';
 import { CalendarView } from './calendar-view';
@@ -63,9 +63,14 @@ const i18n: PluginI18n = {
   placeholder: 'Select notebook...',
   today: 'Today',
   refreshHint: 'Refresh notebooks and daily notes',
+  refresh: 'Refresh',
   hint: 'Click a date to open or create a daily note',
   selectMonth: 'Select month',
   selectYear: 'Select year',
+  previousMonth: 'Previous month',
+  nextMonth: 'Next month',
+  previousYear: 'Previous year',
+  nextYear: 'Next year',
   calendarView: 'Calendar',
   heatmapView: 'Heatmap',
   heatmapHint: 'Note activity by content-block count',
@@ -173,23 +178,48 @@ describe('CalendarView', () => {
     expect((onMonthChange.mock.calls[1][0] as Date).getFullYear()).toBe(2027);
   });
 
-  it('exposes refresh next to the month and year selectors', async () => {
+  it('navigates months with the previous and next buttons', async () => {
     const user = userEvent.setup();
-    const onRefresh = vi.fn();
+    const onMonthChange = vi.fn();
     renderWithHost(
       <CalendarView
         month={new Date(2026, 9, 1)}
         selectedDate={undefined}
         existMap={new Map()}
         locale={enUS}
-        onRefresh={onRefresh}
-        onMonthChange={vi.fn()}
+        onMonthChange={onMonthChange}
         onSelectDate={vi.fn()}
       />
     );
 
-    await user.click(screen.getByRole('button', { name: 'Refresh notebooks and daily notes' }));
-    expect(onRefresh).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Previous month' }));
+    expect(onMonthChange).toHaveBeenLastCalledWith(new Date(2026, 8, 1));
+
+    await user.click(screen.getByRole('button', { name: 'Next month' }));
+    expect(onMonthChange).toHaveBeenLastCalledWith(new Date(2026, 10, 1));
+  });
+
+  it('keeps focus on the month navigation control', async () => {
+    const user = userEvent.setup();
+    function ControlledCalendar() {
+      const [month, setMonth] = useState(new Date(2026, 9, 1));
+      return (
+        <CalendarView
+          month={month}
+          selectedDate={undefined}
+          existMap={new Map()}
+          locale={enUS}
+          onMonthChange={setMonth}
+          onSelectDate={vi.fn()}
+        />
+      );
+    }
+
+    renderWithHost(<ControlledCalendar />);
+    const next = screen.getByRole('button', { name: 'Next month' });
+    await user.click(next);
+
+    expect(document.activeElement).toBe(next);
   });
 
   it('supports Sunday-first weeks and optional week numbers', () => {

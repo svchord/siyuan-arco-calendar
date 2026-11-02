@@ -1,0 +1,67 @@
+@layer base {
+  .sy-calendar-root,
+  .sy-calendar-portal,
+  .sy-calendar-setting,
+  .sy-calendar-popup,
+  .sy-calendar-root *,
+  .sy-calendar-portal *,
+  .sy-calendar-setting *,
+  .sy-calendar-popup *,
+  .sy-calendar-root *::before,
+  .sy-calendar-portal *::before,
+  .sy-calendar-setting *::before,
+  .sy-calendar-popup *::before,
+  .sy-calendar-root *::after,
+  .sy-calendar-portal *::after,
+  .sy-calendar-setting *::after,
+  .sy-calendar-popup *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border);
+  }
+
+  .sy-calendar-root button,
+  .sy-calendar-portal button,
+  .sy-calendar-setting button,
+  .sy-calendar-popup button {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .sy-calendar-root input,
+  .sy-calendar-portal input,
+  .sy-calendar-setting input,
+  .sy-calendar-popup input {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .sy-calendar-root svg,
+  .sy-calendar-portal svg,
+  .sy-calendar-setting svg,
+  .sy-calendar-popup svg {
+    display: block;
+    vertical-align: middle;
+  }
+}
+
+/*
+ * Keep this outside @layer: SiYuan's unlayered `svg { fill: currentColor }`
+ * otherwise wins over any layered rule (including @layer base) and turns
+ * stroke-based lucide icons into solid blocks.
+ */
+.sy-calendar-root svg,
+.sy-calendar-portal svg,
+.sy-calendar-setting svg,
+.sy-calendar-popup svg {
+  fill: none;
+}

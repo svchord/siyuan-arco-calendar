@@ -15,9 +15,14 @@ const i18n: PluginI18n = {
   placeholder: 'Select notebook...',
   today: 'Today',
   refreshHint: 'Refresh notebooks and daily notes',
+  refresh: 'Refresh',
   hint: 'Click a date to open or create a daily note',
   selectMonth: 'Select month',
   selectYear: 'Select year',
+  previousMonth: 'Previous month',
+  nextMonth: 'Next month',
+  previousYear: 'Previous year',
+  nextYear: 'Next year',
   calendarView: 'Calendar',
   heatmapView: 'Heatmap',
   heatmapHint: 'Note activity by content-block count',
@@ -72,16 +77,14 @@ function renderWithHost(node: ReactNode) {
   return render(<HostContext.Provider value={host}>{node}</HostContext.Provider>);
 }
 
-function renderHeatmap(activity: Map<string, DayActivity>, onOpenDailyNote = vi.fn()) {
+function renderHeatmap(activity: Map<string, DayActivity>, onOpenDailyNote = vi.fn(), onYearChange = vi.fn()) {
   return renderWithHost(
     <HeatmapView
       year={2026}
       activity={activity}
       locale={enUS}
       weekStartsOn={1}
-      refreshing={false}
-      onYearChange={vi.fn()}
-      onRefresh={vi.fn()}
+      onYearChange={onYearChange}
       onOpenDailyNote={onOpenDailyNote}
     />
   );
@@ -98,6 +101,18 @@ describe('HeatmapView', () => {
     );
 
     expect(screen.queryByText('12 blocks this year')).toBeNull();
+  });
+
+  it('navigates years with the previous and next buttons', async () => {
+    const user = userEvent.setup();
+    const onYearChange = vi.fn();
+    renderHeatmap(new Map(), vi.fn(), onYearChange);
+
+    await user.click(screen.getByRole('button', { name: 'Previous year' }));
+    expect(onYearChange).toHaveBeenLastCalledWith(2025);
+
+    await user.click(screen.getByRole('button', { name: 'Next year' }));
+    expect(onYearChange).toHaveBeenLastCalledWith(2027);
   });
 
   it('shows the daily block count in a tooltip when hovering a heatmap cell', async () => {

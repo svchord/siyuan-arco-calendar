@@ -1,5 +1,5 @@
 import { addMonths, endOfMonth, format, startOfMonth } from 'date-fns';
-import { CalendarDaysIcon, Settings2Icon } from 'lucide-react';
+import { CalendarDaysIcon, RefreshCwIcon, Settings2Icon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { pushErrMsg, pushMsg } from '@/api/api';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -183,10 +183,6 @@ export function CalendarPanel({
               weekStartsOn={settings.weekStartsOn}
               showWeekNumbers={settings.showWeekNumbers}
               showTaskMarkers={settings.showTaskMarkers}
-              refreshing={refreshing}
-              onRefresh={() => {
-                void refreshAll();
-              }}
               onMonthChange={dailyNotes.changeMonth}
               onSelectDate={(date) => {
                 void dailyNotes.openDailyNote(date);
@@ -198,11 +194,7 @@ export function CalendarPanel({
               activity={activity.activity}
               locale={locale}
               weekStartsOn={settings.weekStartsOn}
-              refreshing={refreshing}
               onYearChange={setHeatmapYear}
-              onRefresh={() => {
-                void refreshAll();
-              }}
               onOpenDailyNote={(date, dailyNoteId) => {
                 void (async () => {
                   await dailyNotes.openDailyNote(date, dailyNoteId);
@@ -226,10 +218,27 @@ export function CalendarPanel({
           >
             {footerLabel}
           </span>
-          <Button type="button" size="sm" onClick={goToToday} data-slot="calendar-today-button">
-            <CalendarDaysIcon className="size-3.5" />
-            {i18n.today}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={i18n.refreshHint}
+              title={i18n.refreshHint}
+              disabled={refreshing}
+              data-slot="calendar-refresh-button"
+              onClick={() => {
+                void refreshAll();
+              }}
+            >
+              <RefreshCwIcon className={cn('size-3.5', refreshing && 'animate-spin')} />
+              {i18n.refresh}
+            </Button>
+            <Button type="button" size="sm" onClick={goToToday} data-slot="calendar-today-button">
+              <CalendarDaysIcon className="size-3.5" />
+              {i18n.today}
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </div>
