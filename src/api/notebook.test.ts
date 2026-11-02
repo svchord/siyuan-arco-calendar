@@ -32,10 +32,10 @@ describe('CalendarNotebook', () => {
 
   it('loads existing daily notes for the surrounding months', async () => {
     const notebook = buildNotebook();
-    const rows: BlockRow[] = [
-      { id: 'doc-1', ial: '{: custom-dailynote-20260930="20260930"}' },
-      { id: 'doc-2', ial: '{: custom-dailynote-20261001="20261001"}' },
-    ];
+    const rows = [
+      { date_key: '20260930', id: 'doc-1' },
+      { date_key: '20261001', id: 'doc-2' },
+    ] as unknown as BlockRow[];
     mocks.sql.mockResolvedValue(rows);
 
     const notes = await notebook.getExistDailyNotesAround(new Date(2026, 9, 15));
@@ -45,17 +45,17 @@ describe('CalendarNotebook', () => {
       { id: 'doc-2', dateStr: '2026-10-01' },
     ]);
     const statement = mocks.sql.mock.calls[0][0];
-    expect(statement).toContain('custom-dailynote-202609__');
-    expect(statement).toContain('custom-dailynote-202610__');
-    expect(statement).toContain('custom-dailynote-202611__');
+    expect(statement).toContain("BETWEEN 'custom-dailynote-20260901' AND 'custom-dailynote-20261130'");
+    expect(statement).toContain('substr(a.name, 18, 8)');
+    expect(statement).toContain('LIMIT 500');
   });
 
   it('marks daily notes that contain unfinished task list items', async () => {
     const notebook = buildNotebook();
-    const rows: BlockRow[] = [
-      { id: 'doc-1', ial: '{: custom-dailynote-20260930="20260930"}' },
-      { id: 'doc-2', ial: '{: custom-dailynote-20261001="20261001"}' },
-    ];
+    const rows = [
+      { date_key: '20260930', id: 'doc-1' },
+      { date_key: '20261001', id: 'doc-2' },
+    ] as unknown as BlockRow[];
     mocks.sql.mockResolvedValueOnce(rows).mockResolvedValueOnce([{ id: 'task-1', root_id: 'doc-1' }]);
 
     const notes = await notebook.getExistDailyNotesAround(new Date(2026, 9, 15));
@@ -68,11 +68,11 @@ describe('CalendarNotebook', () => {
     const notebook = buildNotebook();
     mocks.sql
       .mockResolvedValueOnce([
-        { id: 'doc-1', ial: '{: custom-dailynote-20260930="20260930"}' },
-        { id: 'doc-2', ial: '{: custom-dailynote-20261001="20261001"}' },
-      ])
-      .mockResolvedValueOnce([{ date_key: '20260115', block_count: 2 } as unknown as BlockRow])
-      .mockResolvedValueOnce([{ root_id: 'doc-1', block_count: 4 } as unknown as BlockRow]);
+        { date_key: '20260930', id: 'doc-1' },
+        { date_key: '20261001', id: 'doc-2' },
+      ] as unknown as BlockRow[])
+      .mockResolvedValueOnce([{ date_key: '20260930', block_count: 4 }] as unknown as BlockRow[])
+      .mockResolvedValueOnce([{ date_key: '20260115', block_count: 2 }] as unknown as BlockRow[]);
 
     const activity = await notebook.getActivity(2026);
 
@@ -81,6 +81,10 @@ describe('CalendarNotebook', () => {
     expect(activity.get('2026-10-01')).toMatchObject({ blocks: 0 });
     expect(activity.size).toBe(3);
     expect(mocks.sql.mock.calls[0][0]).toContain("box = 'box-1'");
+    expect(mocks.sql.mock.calls[0][0]).toContain('LIMIT 500');
+    expect(mocks.sql.mock.calls[1][0]).toContain('COUNT(c.id)');
+    expect(mocks.sql.mock.calls[1][0]).toContain('LIMIT 500');
+    expect(mocks.sql.mock.calls[2][0]).toContain('LIMIT 500');
   });
 
   it('repairs missing daily-note attributes for date-titled documents', async () => {
@@ -137,5 +141,6 @@ describe('CalendarNotebook', () => {
 
     expect(note).toEqual({ id: 'native-doc', dateStr: '2026-10-30' });
     expect(mocks.createDailyNote).toHaveBeenCalledWith('box-1', '2026-10-30');
+    expect(mocks.flushTransaction).toHaveBeenCalledTimes(1);
   });
 });

@@ -65,7 +65,7 @@ export function batchSetBlockAttrs(blockAttrs: Array<{ id: string; attrs: Record
 
 // **************************************** SQL ****************************************
 
-export function sql<T extends BlockRow = BlockRow>(stmt: string): Promise<T[] | null> {
+export function sql<T = BlockRow>(stmt: string): Promise<T[] | null> {
   return request('/api/query/sql', { stmt });
 }
 

@@ -1,14 +1,22 @@
-import {
-  escapeSqlString,
-  formatDateKey,
-  formatDisplayDate,
-  formatMonthKey,
-  monthsAround,
-  parseDateKey,
-} from '@/lib/date';
-import { parseDailyNoteRows } from '@/lib/daily-note-rows';
+import { endOfMonth } from 'date-fns';
+import { escapeSqlString, formatDateKey, formatDisplayDate, monthsAround, parseDateKey } from '@/lib/date';
 import type { BlockRow, DailyNote, DayActivity, Notebook } from '@/types/domain';
 import * as api from '@/api/api';
+
+// Heatmap queries group by calendar day, so 366 rows are enough for a year.
+const ACTIVITY_DAY_LIMIT = 500;
+// Reconcile scans a small window of date-titled documents, not every block.
+const RECONCILE_ROW_LIMIT = 1000;
+
+interface DailyDateRow {
+  date_key: string;
+  id: string;
+}
+
+interface DateCountRow {
+  date_key: string;
+  block_count: number | string;
+}
 
 /**
  * A notebook enriched with the lookups needed by the calendar. Daily-note
@@ -23,7 +31,7 @@ export class CalendarNotebook implements Notebook {
   async searchDailyNote(condition: string) {
     return (
       (await api.sql(
-        `SELECT * FROM blocks WHERE type = 'd' AND box = '${escapeSqlString(this.id)}' AND ${condition}`
+        `SELECT * FROM blocks WHERE type = 'd' AND box = '${escapeSqlString(this.id)}' AND ${condition} LIMIT ${RECONCILE_ROW_LIMIT}`
       )) ?? []
     );
   }
@@ -33,13 +41,44 @@ export class CalendarNotebook implements Notebook {
    * outside days of the calendar grid highlighted just like in-month days.
    */
   async getExistDailyNotesAround(date: Date, radius = 1): Promise<DailyNote[]> {
-    const conditions = monthsAround(date, radius).map(
-      (month) => `a.name LIKE 'custom-dailynote-${formatMonthKey(month)}__'`
-    );
-    const rows = await this.searchDailyNote(
-      `id IN (SELECT block_id FROM attributes AS a WHERE ${conditions.join(' OR ')})`
-    );
-    return this.withOpenTaskStatus(parseDailyNoteRows(rows));
+    const months = monthsAround(date, radius);
+    const startKey = formatDateKey(months[0]);
+    const endKey = formatDateKey(endOfMonth(months[months.length - 1]));
+    const rows = await api.sql<DailyDateRow>(this.dailyNoteDateQuery(startKey, endKey));
+
+    const notes: DailyNote[] = [];
+    for (const row of rows ?? []) {
+      const parsed = parseDateKey(row.date_key);
+      if (!parsed) {
+        continue;
+      }
+      notes.push({ id: row.id, dateStr: formatDisplayDate(parsed) });
+    }
+    return this.withOpenTaskStatus(notes);
+  }
+
+  /**
+   * Return one row per diary date, not one row per raw block/document. The
+   * result is bounded by calendar days (366 for a year, not by note count).
+   */
+  private dailyNoteDateQuery(startKey: string, endKey: string): string {
+    return `WITH ranked AS (
+      SELECT substr(a.name, 18, 8) AS date_key,
+             b.id AS id,
+             ROW_NUMBER() OVER (
+               PARTITION BY substr(a.name, 18, 8)
+               ORDER BY b.created DESC
+             ) AS rn
+      FROM attributes a
+      JOIN blocks b ON b.id = a.block_id AND b.type = 'd'
+      WHERE a.box = '${escapeSqlString(this.id)}'
+        AND a.name BETWEEN 'custom-dailynote-${startKey}' AND 'custom-dailynote-${endKey}'
+    )
+    SELECT date_key, id
+    FROM ranked
+    WHERE rn = 1
+    ORDER BY date_key
+    LIMIT ${ACTIVITY_DAY_LIMIT}`;
   }
 
   /**
@@ -52,7 +91,7 @@ export class CalendarNotebook implements Notebook {
     }
     const ids = notes.map((note) => `'${escapeSqlString(note.id)}'`).join(',');
     const rows = await api.sql<BlockRow>(
-      `SELECT DISTINCT root_id FROM blocks WHERE type = 'i' AND subtype = 't' AND markdown LIKE '%[ ]%' AND root_id IN (${ids})`
+      `SELECT DISTINCT root_id FROM blocks WHERE type = 'i' AND subtype = 't' AND markdown LIKE '%[ ]%' AND root_id IN (${ids}) LIMIT ${ACTIVITY_DAY_LIMIT}`
     );
     const openRootIds = new Set((rows ?? []).map((row) => row.root_id));
     return notes.map((note) => (openRootIds.has(note.id) ? { ...note, hasOpenTasks: true } : note));
@@ -61,6 +100,9 @@ export class CalendarNotebook implements Notebook {
   async createDailyNote(date: Date): Promise<DailyNote> {
     const dateStr = formatDisplayDate(date);
     const id = await api.createDailyNote(this.id, dateStr);
+    // Make sure the new document is visible to the SQL index before the heatmap
+    // refresh runs immediately after creation.
+    await api.flushTransaction();
     return { id, dateStr };
   }
 
@@ -120,43 +162,52 @@ export class CalendarNotebook implements Notebook {
   }
 
   async getActivity(year: number): Promise<Map<string, DayActivity>> {
-    const monthConditions = Array.from(
-      { length: 12 },
-      (_, index) => `a.name LIKE 'custom-dailynote-${year}${String(index + 1).padStart(2, '0')}__'`
-    );
-    const rows = await this.searchDailyNote(
-      `id IN (SELECT block_id FROM attributes AS a WHERE ${monthConditions.join(' OR ')})`
-    );
-    const notes = parseDailyNoteRows(rows);
-    const ids = notes.map((note) => `'${escapeSqlString(note.id)}'`).join(',');
-    const dailyIdsCondition = notes.length > 0 ? `root_id IN (${ids})` : '1 = 0';
-
+    const startKey = `${year}0101`;
+    const endKey = `${year}1231`;
+    const box = escapeSqlString(this.id);
+    const dailyBlockSql = `SELECT substr(a.name, 18, 8) AS date_key, COUNT(c.id) AS block_count
+      FROM attributes a
+      JOIN blocks b ON b.id = a.block_id AND b.type = 'd'
+      LEFT JOIN blocks c ON c.root_id = b.id AND c.type != 'd'
+      WHERE a.box = '${box}'
+        AND a.name BETWEEN 'custom-dailynote-${startKey}' AND 'custom-dailynote-${endKey}'
+      GROUP BY date_key
+      ORDER BY date_key
+      LIMIT ${ACTIVITY_DAY_LIMIT}`;
     const nonDailySql = `SELECT substr(created, 1, 8) AS date_key, COUNT(*) AS block_count
       FROM blocks
-      WHERE box = '${escapeSqlString(this.id)}'
+      WHERE box = '${box}'
         AND type != 'd'
         AND created >= '${year}0101000000'
         AND created < '${year + 1}0101000000'
-        AND root_id NOT IN (SELECT block_id FROM attributes WHERE name LIKE 'custom-dailynote-%')
-      GROUP BY date_key`;
+        AND root_id NOT IN (
+          SELECT block_id FROM attributes WHERE box = '${box}' AND name LIKE 'custom-dailynote-%'
+        )
+      GROUP BY date_key
+      ORDER BY date_key
+      LIMIT ${ACTIVITY_DAY_LIMIT}`;
 
-    const [nonDailyRows, dailyRows] = await Promise.all([
-      api.sql<BlockRow & { date_key: string; block_count: number }>(nonDailySql),
-      api.sql<BlockRow & { block_count: number }>(
-        `SELECT root_id, COUNT(*) AS block_count FROM blocks WHERE ${dailyIdsCondition} AND type != 'd' GROUP BY root_id`
-      ),
+    const [dailyRows, dailyBlockRows, nonDailyRows] = await Promise.all([
+      api.sql<DailyDateRow>(this.dailyNoteDateQuery(startKey, endKey)),
+      api.sql<DateCountRow>(dailyBlockSql),
+      api.sql<DateCountRow>(nonDailySql),
     ]);
 
-    const dailyBlockCounts = new Map((dailyRows ?? []).map((row) => [row.root_id, Number(row.block_count)]));
+    const dailyBlockCounts = new Map((dailyBlockRows ?? []).map((row) => [row.date_key, Number(row.block_count)]));
     const result = new Map<string, DayActivity>();
 
     // Daily-note blocks always belong to the note's diary date, even if a block
     // was created later than the day it belongs to.
-    for (const note of notes) {
-      result.set(note.dateStr, {
-        id: note.id,
-        dateStr: note.dateStr,
-        blocks: dailyBlockCounts.get(note.id) ?? 0,
+    for (const row of dailyRows ?? []) {
+      const date = parseDateKey(row.date_key);
+      if (!date) {
+        continue;
+      }
+      const dateStr = formatDisplayDate(date);
+      result.set(dateStr, {
+        id: row.id,
+        dateStr,
+        blocks: dailyBlockCounts.get(row.date_key) ?? 0,
       });
     }
 
