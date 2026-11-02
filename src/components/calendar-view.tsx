@@ -18,14 +18,11 @@ const DAY_BUTTON_MARKERS = cn(
   'h-full',
   // Hide DayPicker's "focus target" when it is not the keyboard-focused element.
   'group-data-[focused=true]/day:border-transparent group-data-[focused=true]/day:ring-0',
-  // Existing daily note: quiet disc behind the day number. Tinted from the theme
-  // accent rather than the neutral --muted wash so it belongs to the same colour
-  // family as the selected chip, but at a much lower alpha: it marks "there is a
-  // note here" and must stay clearly quieter than the selected day.
+  // Existing daily note: quiet disc behind the day number, tinted from the theme
+  // accent at low alpha so it stays clearly quieter than the selected chip.
   'data-[existing-note=true]:not-data-[selected-single=true]:bg-[radial-gradient(circle_at_center,color-mix(in_oklch,var(--primary)_10%,transparent)_0_13px,transparent_13.5px)]',
-  // The number picks up the accent too, so the disc and its text read as one unit.
-  // Light mode keeps the pure accent; dark mode mixes it toward --foreground
-  // because the accent alone only reached 3.54:1 on a dark surface.
+  // The number picks up the accent too. Dark mode mixes it toward --foreground
+  // because the accent alone only reached 3.54:1 contrast on a dark surface.
   'data-[existing-note=true]:not-data-[selected-single=true]:text-primary',
   'dark:data-[existing-note=true]:not-data-[selected-single=true]:text-[color-mix(in_oklch,var(--primary)_70%,var(--foreground))]',
   // Keep the same colour on hover in dark mode too: ghost's

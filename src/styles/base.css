@@ -1,27 +1,16 @@
 /*
- * Scoped stand-in for Tailwind's preflight.
+ * Scoped stand-in for Tailwind's preflight. The plugin renders inside SiYuan's
+ * page, so a global preflight would reset the host's UI too; every rule here is
+ * limited to the plugin subtree instead.
  *
- * The plugin renders inside SiYuan's page, so it cannot import preflight: that
- * would reset the host's own UI as well. Every rule here is therefore limited to
- * the plugin's own subtree (`.sy-calendar-root`, `-portal`, `-setting`, `-popup`
- * plus their descendants), which keeps the host untouched.
+ * This file is load-bearing, not boilerplate. Without it SiYuan's styles leak in:
+ * box-sizing stays content-box (so `w-full` + padding + border overflow),
+ * <button> keeps its 2px outset border and grey background, `border-*` utilities
+ * render nothing (Tailwind only sets border-width and needs `border-style: solid`),
+ * <input> keeps a white background, and lucide icons fill solid.
  *
- * This file is load-bearing, not boilerplate. Verified by rendering the same
- * element inside the plugin scope and outside it: without these rules SiYuan's
- * styles leak in and
- *   - box-sizing stays content-box, so `w-full` + padding + border overflow,
- *   - <button> keeps a 2px outset border, a grey background and 1px padding, so
- *     every ghost button renders as a raised grey slab,
- *   - `border-*` utilities produce nothing, because Tailwind only sets
- *     border-width and relies on a preflight `border-style: solid`,
- *   - <input> keeps a white background and inset border,
- *   - lucide icons fill in solid, because the host sets `svg { fill: currentColor }`.
- *
- * Keep the layer split below in mind when editing:
- *   - `@layer base` rules beat the host's own *layered* styles but lose to its
- *     *unlayered* ones (SiYuan ships a lot of those),
- *   - anything that must beat an unlayered host rule has to live outside the
- *     layer, which is why the svg and font rules sit at the bottom of this file.
+ * Layer note: `@layer base` beats the host's *layered* styles but loses to its
+ * *unlayered* ones, which is why the svg and font overrides live outside the layer.
  */
 @layer base {
   .sy-calendar-root,
@@ -84,9 +73,8 @@
 }
 
 /*
- * Keep this outside @layer: SiYuan's unlayered `svg { fill: currentColor }`
- * otherwise wins over any layered rule (including @layer base) and turns
- * stroke-based lucide icons into solid blocks.
+ * Must stay outside @layer: SiYuan's unlayered `svg { fill: currentColor }` beats
+ * any layered rule and would turn stroke-based lucide icons into solid blocks.
  */
 .sy-calendar-root svg,
 .sy-calendar-portal svg,
@@ -96,15 +84,12 @@
 }
 
 /*
- * Keep this outside @layer too, for the same reason as the svg rule above: SiYuan
- * ships an unlayered `button, input, select, textarea { font-size: 100% }` and
- * `button, input { line-height: normal }`. A layered reset cannot beat those, and
- * the old `font: inherit` shorthand expanded to font-size, so every `text-*`
- * utility inside the plugin was silently ignored on buttons (text-xs declared
- * 12px but rendered 14px).
- * `revert-layer` drops the declaration from this unlayered context, letting the
- * host value apply as the inherited default while the utilities layer still wins
- * wherever a `text-*` class is present.
+ * Also outside @layer, for the same reason: SiYuan ships an unlayered
+ * `button, input, select, textarea { font-size: 100% }` and
+ * `button, input { line-height: normal }`. `revert-layer` steps aside from this
+ * unlayered context so the utilities layer can win wherever a `text-*` class is
+ * present. Do not reintroduce the `font` shorthand here: it expands to font-size
+ * and silently defeats every `text-*` utility on controls.
  */
 .sy-calendar-root button,
 .sy-calendar-portal button,
@@ -119,10 +104,9 @@
 }
 
 /*
- * `revert-layer` above also discards the host's `font-size: 100%`, so controls
- * without a `text-*` utility fall back to the UA default (13.3333px) instead of
- * inheriting the panel's 14px. Restore inheritance for exactly that case by
- * re-declaring `inherit` in the base layer, which utilities still outrank.
+ * `revert-layer` above also drops the host's `font-size: 100%`, so controls with
+ * no `text-*` class would fall back to the UA default (13.3333px) instead of the
+ * panel's 14px. Re-declare inheritance in the base layer, which utilities outrank.
  */
 @layer base {
   .sy-calendar-root button,

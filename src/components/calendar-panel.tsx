@@ -10,6 +10,7 @@ import { CalendarView } from '@/components/calendar-view';
 import { HeatmapView } from '@/components/heatmap-view';
 import { NotebookCombobox } from '@/components/notebook-combobox';
 import { PanelViewSwitch, type PanelViewMode } from '@/components/panel-view-switch';
+import { Separator } from '@/components/ui/separator';
 import { useNoteActivity } from '@/hooks/use-note-activity';
 import { useDailyNotes } from '@/hooks/use-daily-notes';
 import { useIsDark } from '@/hooks/use-is-dark';
@@ -32,7 +33,7 @@ function initialView(): PanelViewMode {
 }
 
 function PanelDivider() {
-  return <div role="separator" aria-orientation="horizontal" className="my-3 h-px w-full shrink-0 bg-border/70" />;
+  return <Separator className="my-3 bg-border/70" />;
 }
 
 export function CalendarPanel({

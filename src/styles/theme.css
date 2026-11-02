@@ -41,9 +41,10 @@
   --popover-foreground: var(--b3-theme-on-background, #1f2329);
   /*
    * Emphasis surfaces (selected day, primary action, the "has a daily note" disc
-   * and the heatmap ramp). --arco-calendar-accent is set on <html> while the
-   * "use theme color" setting is on; without it these fall back to the Vega
-   * neutral palette, so both looks stay one token apart.
+   * and the heatmap ramp).
+   * The "use theme color" setting publishes --arco-calendar-accent on <html>; when
+   * it is absent these fall back to the Vega neutral palette. The two modes are
+   * distinct colour schemes (host accent vs neutral), not a shade apart.
    */
   --primary: var(--arco-calendar-accent, oklch(0.205 0 0));
   --primary-foreground: var(--arco-calendar-accent-foreground, oklch(0.985 0 0));

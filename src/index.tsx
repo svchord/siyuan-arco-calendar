@@ -1,34 +1,18 @@
 import { createRoot, type Root } from 'react-dom/client';
 import { Plugin, getFrontend } from 'siyuan';
-import { request } from '@/api/api';
 import { CalendarApp } from '@/components/calendar-app';
 import { DEFAULT_SETTINGS, isValidSettings, normalizeSettings, type PluginSettings } from '@/lib/storage';
 import { type HostContextValue } from '@/lib/host';
 import { CALENDAR_ICON_ID, CALENDAR_ICON_SVG, resolveCalendarIconId, watchForHostCalendarIcon } from '@/lib/icons';
 import { CALENDAR_HEATMAP_WIDTH, CALENDAR_PANEL_WIDTH } from '@/lib/layout';
+import { getAnchorRect, positionPopup, type AnchorRect } from '@/lib/popup-position';
+import { syncTopBarOrder } from '@/lib/topbar-order';
 import type { PluginI18n } from '@/types/i18n';
 import './index.css';
 
 const STORAGE_NAME = 'arco-calendar-entry';
 const TOP_BAR_ID = 'arco-calendar-topbar';
 const DOCK_ID = 'arco-calendar-dock';
-
-interface EntryVisibilityProfile {
-  id: string;
-  orders?: Record<string, string[]>;
-}
-
-interface EntryVisibility {
-  active: string;
-  profiles: EntryVisibilityProfile[];
-  [key: string]: unknown;
-}
-
-interface AnchorRect {
-  left: number;
-  right: number;
-  bottom: number;
-}
 
 export default class ArcoCalendarPlugin extends Plugin {
   private host!: HostContextValue;
@@ -140,7 +124,7 @@ export default class ArcoCalendarPlugin extends Plugin {
     if (this.popupElement) {
       requestAnimationFrame(() => {
         if (this.popupElement) {
-          this.positionPopup(this.popupElement, this.getAnchorRect());
+          this.placePopup(this.popupElement, getAnchorRect(this.topElement));
         }
       });
     }
@@ -198,54 +182,9 @@ export default class ArcoCalendarPlugin extends Plugin {
       });
     }
 
-    void this.syncTopBarOrder(direction).catch(() => {
+    void syncTopBarOrder(this.topElement?.dataset.topbarEntry, direction).catch(() => {
       // Keep the current host order if the visibility API is unavailable.
     });
-  }
-
-  /**
-   * The host re-sorts topbar entries by entryVisibility. addTopBar only changes
-   * data-location, so a position switch also needs this one entry moved in the
-   * persisted order. Other plugins and dock orders are left untouched.
-   */
-  private async syncTopBarOrder(direction: 'left' | 'right') {
-    const entryKey = this.topElement?.dataset.topbarEntry;
-    if (!entryKey) {
-      return;
-    }
-
-    const appearance = (
-      window.siyuan?.config as unknown as {
-        appearance?: { entryVisibility?: EntryVisibility };
-      }
-    )?.appearance;
-    const entryVisibility = appearance?.entryVisibility;
-    if (!entryVisibility) {
-      return;
-    }
-    const profile = entryVisibility.profiles.find((item) => item.id === entryVisibility.active);
-    const currentOrder = profile?.orders?.topBar;
-    if (!profile || !currentOrder) {
-      return;
-    }
-
-    const nextOrder = currentOrder.filter((key) => key !== entryKey);
-    const dragIndex = nextOrder.indexOf('drag');
-    if (dragIndex === -1) {
-      return;
-    }
-    nextOrder.splice(direction === 'left' ? dragIndex : dragIndex + 1, 0, entryKey);
-    if (nextOrder.every((key, index) => key === currentOrder[index])) {
-      return;
-    }
-
-    const nextEntryVisibility = {
-      ...entryVisibility,
-      profiles: entryVisibility.profiles.map((item) =>
-        item.id === profile.id ? { ...item, orders: { ...item.orders, topBar: nextOrder } } : item
-      ),
-    };
-    await request('/api/setting/setEntryVisibility', nextEntryVisibility);
   }
 
   private addDockItem() {
@@ -292,7 +231,7 @@ export default class ArcoCalendarPlugin extends Plugin {
       return;
     }
 
-    const anchor = this.getAnchorRect();
+    const anchor = getAnchorRect(this.topElement);
     const popup = document.createElement('div');
     popup.className = 'sy-calendar-popup';
     popup.style.setProperty('--calendar-panel-width', `${CALENDAR_PANEL_WIDTH}px`);
@@ -313,7 +252,7 @@ export default class ArcoCalendarPlugin extends Plugin {
     // Wait for React to render before measuring the panel height.
     requestAnimationFrame(() => {
       if (this.popupElement === popup) {
-        this.positionPopup(popup, anchor);
+        this.placePopup(popup, anchor);
         popup.focus({ preventScroll: true });
       }
     });
@@ -346,7 +285,7 @@ export default class ArcoCalendarPlugin extends Plugin {
 
     this.popupResizeObserver = new ResizeObserver(() => {
       if (this.popupElement) {
-        this.positionPopup(this.popupElement, this.getAnchorRect());
+        this.placePopup(this.popupElement, getAnchorRect(this.topElement));
       }
     });
     this.popupResizeObserver.observe(popup);
@@ -358,35 +297,8 @@ export default class ArcoCalendarPlugin extends Plugin {
     };
   }
 
-  private positionPopup(popup: HTMLElement, anchor: AnchorRect) {
-    const width = popup.offsetWidth || CALENDAR_PANEL_WIDTH;
-    const height = popup.offsetHeight || 430;
-    const preferredLeft = this.settings.position === 'top-right' ? anchor.right - width : anchor.left;
-    const left = Math.max(8, Math.min(preferredLeft, window.innerWidth - width - 8));
-    const top = Math.max(8, Math.min(anchor.bottom + 4, window.innerHeight - height - 8));
-    popup.style.left = `${left}px`;
-    popup.style.top = `${top}px`;
-    popup.style.visibility = 'visible';
-  }
-
-  private getAnchorRect(): AnchorRect {
-    let rect: DOMRect | undefined = this.topElement?.getBoundingClientRect();
-    if (!rect || rect.width === 0) {
-      const moreButton = document.querySelector('#barMore');
-      if (moreButton) {
-        rect = moreButton.getBoundingClientRect();
-      }
-    }
-    if (!rect || rect.width === 0) {
-      const pluginsButton = document.querySelector('#barPlugins');
-      if (pluginsButton) {
-        rect = pluginsButton.getBoundingClientRect();
-      }
-    }
-    if (!rect || rect.width === 0) {
-      return { left: window.innerWidth - 44, right: window.innerWidth - 12, bottom: 36 };
-    }
-    return { left: rect.left, right: rect.right, bottom: rect.bottom };
+  private placePopup(popup: HTMLElement, anchor: AnchorRect) {
+    positionPopup(popup, anchor, this.settings.position === 'top-right');
   }
 
   private closeCalendar() {
