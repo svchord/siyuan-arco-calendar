@@ -252,7 +252,10 @@ export function CalendarView({
         showOutsideDays
         hideNavigation
         classNames={dayPickerClassNames}
-        className="w-full pt-0"
+        // Cancel the vendored `p-3` on the vertical axis: the panel supplies its
+        // own 12px spacing around this block, and leaving the bottom padding in
+        // made the gap under the grid twice the gap above the nav row.
+        className="w-full py-0"
       />
     </div>
   );
