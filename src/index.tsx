@@ -1,5 +1,6 @@
 import { createRoot, type Root } from 'react-dom/client';
 import { Plugin, getFrontend } from 'siyuan';
+import { request } from '@/api/api';
 import { CalendarApp } from '@/components/calendar-app';
 import { DEFAULT_SETTINGS, isValidSettings, normalizeSettings, type PluginSettings } from '@/lib/storage';
 import { type HostContextValue } from '@/lib/host';
@@ -11,6 +12,17 @@ import './index.css';
 const STORAGE_NAME = 'arco-calendar-entry';
 const TOP_BAR_ID = 'arco-calendar-topbar';
 const DOCK_ID = 'arco-calendar-dock';
+
+interface EntryVisibilityProfile {
+  id: string;
+  orders?: Record<string, string[]>;
+}
+
+interface EntryVisibility {
+  active: string;
+  profiles: EntryVisibilityProfile[];
+  [key: string]: unknown;
+}
 
 interface AnchorRect {
   left: number;
@@ -66,9 +78,9 @@ export default class ArcoCalendarPlugin extends Plugin {
     if (previousPosition !== this.settings.position && this.entryMounted) {
       this.disposeEntry();
       this.mountEntry();
-    } else {
-      this.renderEntries();
+      return;
     }
+    this.renderEntries();
   }
 
   async onunload() {
@@ -104,9 +116,9 @@ export default class ArcoCalendarPlugin extends Plugin {
     if (previousPosition !== next.position && this.entryMounted) {
       this.disposeEntry();
       this.mountEntry();
-    } else {
-      this.renderEntries();
+      return;
     }
+    this.renderEntries();
   }
 
   private readonly handleSettingsChange = (patch: Partial<PluginSettings>) => {
@@ -185,6 +197,55 @@ export default class ArcoCalendarPlugin extends Plugin {
         use?.setAttribute('xlink:href', `#${resolveCalendarIconId()}`);
       });
     }
+
+    void this.syncTopBarOrder(direction).catch(() => {
+      // Keep the current host order if the visibility API is unavailable.
+    });
+  }
+
+  /**
+   * The host re-sorts topbar entries by entryVisibility. addTopBar only changes
+   * data-location, so a position switch also needs this one entry moved in the
+   * persisted order. Other plugins and dock orders are left untouched.
+   */
+  private async syncTopBarOrder(direction: 'left' | 'right') {
+    const entryKey = this.topElement?.dataset.topbarEntry;
+    if (!entryKey) {
+      return;
+    }
+
+    const appearance = (
+      window.siyuan?.config as unknown as {
+        appearance?: { entryVisibility?: EntryVisibility };
+      }
+    )?.appearance;
+    const entryVisibility = appearance?.entryVisibility;
+    if (!entryVisibility) {
+      return;
+    }
+    const profile = entryVisibility.profiles.find((item) => item.id === entryVisibility.active);
+    const currentOrder = profile?.orders?.topBar;
+    if (!profile || !currentOrder) {
+      return;
+    }
+
+    const nextOrder = currentOrder.filter((key) => key !== entryKey);
+    const dragIndex = nextOrder.indexOf('drag');
+    if (dragIndex === -1) {
+      return;
+    }
+    nextOrder.splice(direction === 'left' ? dragIndex : dragIndex + 1, 0, entryKey);
+    if (nextOrder.every((key, index) => key === currentOrder[index])) {
+      return;
+    }
+
+    const nextEntryVisibility = {
+      ...entryVisibility,
+      profiles: entryVisibility.profiles.map((item) =>
+        item.id === profile.id ? { ...item, orders: { ...item.orders, topBar: nextOrder } } : item
+      ),
+    };
+    await request('/api/setting/setEntryVisibility', nextEntryVisibility);
   }
 
   private addDockItem() {
