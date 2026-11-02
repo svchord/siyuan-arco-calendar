@@ -1,3 +1,15 @@
+## [2.3.1](https://github.com/svchord/siyuan-arco-calendar/compare/v2.3.0...v2.3.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* sync topbar entry order on position change ([cb2b468](https://github.com/svchord/siyuan-arco-calendar/commit/cb2b4689e5626cea90e996696ab116800f1b9f99))
+
+
+### Performance Improvements
+
+* aggregate calendar activity queries by date ([e1936f1](https://github.com/svchord/siyuan-arco-calendar/commit/e1936f1f0a7c4d662a93a60ff5f8306e96dd58f2))
+
 # [2.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.3...v2.3.0) (2026-11-02)
 
 
