@@ -1,3 +1,17 @@
+# [2.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.3...v2.3.0) (2026-11-02)
+
+
+### Bug Fixes
+
+* restore desktop livereload over HTTPS ([892f439](https://github.com/svchord/siyuan-arco-calendar/commit/892f4392b7c16083b20e220b5188407b9427f0a3))
+
+
+### Features
+
+* improve yearly heatmap interactions ([312615b](https://github.com/svchord/siyuan-arco-calendar/commit/312615beee6fc2a4d2b49d3e0c069632628d2dc3))
+* polish calendar panel layout and day states ([0acb514](https://github.com/svchord/siyuan-arco-calendar/commit/0acb514ff158d1ae3ad90bcf01ca6319428d0c34))
+* refine calendar panel and top-bar icon ([c120e30](https://github.com/svchord/siyuan-arco-calendar/commit/c120e3041549eb8ff1d6427b32a875c51f1f9d84))
+
 ## [2.2.3](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.2...v2.2.3) (2026-11-01)
 
 
