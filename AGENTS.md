@@ -4,6 +4,11 @@
 
 - Do not commit, amend, or rewrite git history unless the user explicitly requests it in the current turn. Leave changes in the working tree and report them instead.
 
+## Comments
+
+- Keep comments concise and necessary: state the non-obvious reason and nothing more. Omit them when the code already explains itself.
+- Explain why, not what, and never narrate history ("previously…", "was changed to…"); git carries that. A long rationale belongs in a doc or the commit message.
+
 ## UI components
 
 - Treat `src/components/ui/**` as vendored shadcn/ui code. Do not edit those files to satisfy plugin-specific behavior.

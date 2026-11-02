@@ -52,7 +52,11 @@ const DAY_BUTTON_MARKERS = cn(
   // Today: small dot below the day number, so the note disc remains visible.
   // On the selected (solid accent) chip the dot switches to the on-accent colour,
   // otherwise it would disappear into the same-accent fill.
-  'data-[today=true]:before:absolute data-[today=true]:before:bottom-[2px] data-[today=true]:before:left-1/2 data-[today=true]:before:size-[3px] data-[today=true]:before:-translate-x-1/2 data-[today=true]:before:rounded-full data-[today=true]:before:bg-primary data-[today=true]:before:pointer-events-none data-[today=true]:before:content-[""]',
+  // Geometry note: the grid cell is fractional (38.5625px), so the dot's arcs land
+  // on sub-pixel boundaries and rasterise with a flattened cap, reading as a
+  // squashed blob on a light background. A 4px dot sitting 1px off the cell edge
+  // keeps its profile even, and clears the digit above it.
+  'data-[today=true]:before:absolute data-[today=true]:before:bottom-[1px] data-[today=true]:before:left-1/2 data-[today=true]:before:size-[4px] data-[today=true]:before:-translate-x-1/2 data-[today=true]:before:rounded-full data-[today=true]:before:bg-primary data-[today=true]:before:pointer-events-none data-[today=true]:before:content-[""]',
   'data-[today=true]:data-[selected-single=true]:before:bg-primary-foreground'
 );
 
