@@ -33,6 +33,15 @@ export function monthsAround(month: Date, radius = 1): Date[] {
   return Array.from({ length: radius * 2 + 1 }, (_, index) => addMonths(firstDay, index - radius));
 }
 
+/**
+ * Escape a value for interpolation into a single-quoted SQL literal.
+ *
+ * SiYuan exposes raw SQL through the kernel, so this is the only guard available.
+ * It only doubles single quotes, which is sufficient for identifiers such as
+ * notebook and block IDs, but it is NOT a general-purpose sanitiser: never pass
+ * user-authored text (note titles, search input) through it. Build those queries
+ * from known-safe identifiers instead.
+ */
 export function escapeSqlString(value: string): string {
   return value.replaceAll("'", "''");
 }

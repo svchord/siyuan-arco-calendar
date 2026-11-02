@@ -1,5 +1,20 @@
 import { CALENDAR_PANEL_WIDTH } from '@/lib/layout';
 
+/**
+ * Placement for the calendar popup.
+ *
+ * SiYuan offers no general-purpose floating-layer API to plugins: `addFloatLayer`
+ * renders its own ref/backlink preview cards (it requires `refDefs` and owns the
+ * markup), and `IPosition` only types `Protyle.showMenu`. The panel therefore has
+ * to place itself, which is what this module does.
+ *
+ * Three things the host does not do for us:
+ *   - the topbar entry can be collapsed into the "more"/"plugins" overflow menus,
+ *     so the anchor needs fallbacks,
+ *   - the panel must stay inside the viewport on small windows,
+ *   - when the entry sits on the right, the panel aligns to its right edge.
+ */
+
 /** Viewport rect the popup is anchored to (the topbar entry or its fallback). */
 export interface AnchorRect {
   left: number;
