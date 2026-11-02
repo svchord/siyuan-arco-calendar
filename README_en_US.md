@@ -68,67 +68,22 @@ By default `--primary` falls back to the Vega neutral palette. With the "use the
 - Existing daily notes are highlighted on the month calendar; click any date to open or create it
 - Existing notes use a soft accent-tinted disc; days without a note stay plain, and notes with unfinished tasks show an amber corner dot
 - Today carries a small dot under the date, which switches to the contrast colour once selected so it never blends into the chip
-- Month/year dropdowns with a refresh action on the right
-- Settings entry in the calendar panel header, with five options:
-  - Entry position (top-left / top-right / dock)
-  - Monday or Sunday as the first day of the week
-  - Optional week numbers in the calendar gutter
-  - Show unfinished-task markers
-  - Use theme color (off by default; when on, the selected date, buttons, note disc and heatmap follow the SiYuan accent, otherwise the Vega neutral palette is used)
-- Refresh icon beside the month/year selectors to reload notebooks and daily notes, with success/failure feedback
-- Calendar / Heatmap switch (Vega Tabs styling); the yearly heatmap uses content-block counts across all notes: daily-note blocks use the diary date, other notes use each block's creation date, and the year is split into two half-year rows to keep the panel compact
-- Heatmap weeks follow the configured week start, with a year selector for browsing other years; hovering a cell shows that day's block count, clicking a cell opens or creates that day's daily note, and the panel footer shows the whole-year block total
+- Month/year dropdowns with a refresh action, plus a settings entry in the panel header
+- Settings: entry position, week start, week numbers, unfinished-task markers, and use-theme-color
+- "Use theme color" switches the selected date, buttons, note disc and heatmap to the SiYuan accent; with it off the Vega neutral palette is used
+- Calendar / Heatmap switch; the yearly heatmap counts content blocks across all notes, attributing daily-note blocks to the diary date and other blocks to their creation date
+- Heatmap weeks follow the configured week start, with a year selector; hovering a cell shows that day's block count, clicking opens or creates that day's daily note, and the footer shows the yearly total
 - Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
 - Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
 
 ## Tech stack
 
 - **React 19** + TypeScript
-- **shadcn/ui** components (Card, Button, Separator, Tabs, Select, Popover, Command, Calendar) built on Base UI primitives
-- **shadcn/ui Vega preset**: neutral palette, Inter font, and Vega component spacing/rounding, with an optional SiYuan accent override
+- **shadcn/ui** (Vega preset) with Base UI primitives
 - **Tailwind CSS 4**, scoped to the plugin and mapped onto SiYuan theme variables
 - **Vite 8** library build; React is bundled with the plugin instead of relying on a host global
 
-## Architecture
-
-```text
-src/
-├── index.tsx                 # SiYuan plugin lifecycle: onload / onLayoutReady / onunload
-├── api/                      # Typed kernel API plus notebook/daily-note queries
-├── components/
-│   ├── ui/                   # shadcn/ui component sources (including Vega Tabs)
-│   ├── calendar-app.tsx      # React root with host context
-│   ├── calendar-panel.tsx    # Card layout, header, view switch, refresh/settings entry
-│   ├── calendar-view.tsx     # Month/year navigation and day markers
-│   ├── heatmap-view.tsx      # Yearly heatmap, year picker and legend
-│   ├── panel-view-switch.tsx # Calendar/heatmap switch, built on the vendored Tabs
-│   ├── notebook-combobox.tsx # Searchable notebook selector
-│   └── position-select.tsx   # Entry-position control
-├── hooks/                    # useNotebooks / useDailyNotes / useNoteActivity / useLocale / useIsDark
-├── lib/                      # Pure helpers, host context, i18n, storage, icons
-│   ├── popup-position.ts     # Popup anchor lookup and viewport clamping
-│   ├── topbar-order.ts       # entryVisibility sync for the top-bar entry
-│   └── ...
-├── types/                    # Domain and i18n types
-└── ...
-```
-
-- React roots are mounted with `createRoot` into the top-bar popup or dock element and unmounted on popup close, dock destroy, and plugin unload.
-- Event-bus subscriptions are cleaned up in React effect cleanup functions. Notebook and daily-note changes arriving over `ws-main` refresh the UI incrementally.
-- Settings are applied and saved live from the panel popover, without a full page reload.
-
-## Data flow
-
-1. `onload` reads `arco-calendar-entry` settings and registers icons; `onLayoutReady` mounts the top bar or dock.
-2. `useNotebooks` fetches the notebook list and `local-dailynoteid` in parallel and builds lightweight notebook objects.
-3. `useDailyNotes` queries daily-note attributes for the current/previous/next month and adds unfinished-task state.
-4. When the heatmap view opens, `useNoteActivity` counts blocks across all notes: daily-note blocks are attributed to the diary date, while other blocks use their creation date.
-5. `useLocale` caches the date-fns locale for the plugin session.
-6. A date click opens a mapped document, otherwise the kernel `createDailyNote` API (with its `date` parameter) creates the note; parent paths, template, icon and `custom-dailynote-*` attributes are handled atomically by the kernel.
-7. `ws-main` notebook and daily-note events refresh the corresponding data; stale responses are discarded by request sequence.
-8. A shared external store manages dark-theme observation across all plugin surfaces.
-
-Components under `src/components/ui` are the shadcn/ui `base-vega` registry distribution. Plugin-specific behavior (existing-note dot, portal layering, plugin icon) lives in app wrappers or primitive compositions rather than edits to those files.
+Components under `src/components/ui` come from the shadcn/ui `base-vega` distribution. Plugin-specific behavior lives in app components rather than edits to those files.
 
 ## Development
 
@@ -143,29 +98,7 @@ pnpm build
 
 `pnpm build` validates the manifest, runs the type check, builds the production bundle, and creates `package.zip`.
 
-### Inspecting the rendered UI
-
-`pnpm inspect` opens the real SiYuan page and calendar panel in headless Chrome and reports what actually rendered, which is how styling questions ("this colour/spacing/shape looks wrong") get answered without editing code or comparing screenshots by eye:
-
-```bash
-# Measure
-pnpm inspect                                              # panel, footer, settings trigger
-pnpm inspect '[data-slot="calendar-today-button"]'        # computed styles for a selector
-pnpm inspect '...' --rules                                # matched CSS rules and their sources
-pnpm inspect 'button[data-today="true"]' --pixels         # per-pixel shape analysis (aspect, profile)
-pnpm inspect '...' --all --json                           # every match, structured output
-
-# Drive the UI, then measure
-pnpm inspect '...' --do today                             # select today first
-pnpm inspect '...' --do view:heatmap                      # switch to the heatmap first
-pnpm inspect '...' --do settings                          # open the settings popover first
-pnpm inspect '...' --do 'click:<selector>'                # click any element
-
-# Capture assets
-pnpm inspect --do today,wait:800 --viewport 1280x764@2 --shot
-```
-
-`--do` accepts `open` / `close` / `today` / `settings` / `view:<calendar|heatmap>` / `click:<selector>` / `move:x,y` / `wait:<ms>`, comma-separated. `--zoom` only magnifies the pixel probe's screenshot and never resizes the page.
+For styling questions (colour, spacing, shape), `pnpm inspect` opens the real panel in headless Chrome and reports what actually rendered. Usage is documented at the top of [scripts/cdp/inspect.mjs](./scripts/cdp/inspect.mjs).
 
 Development (`pnpm dev` keeps watching; run `make-link` in another terminal):
 
