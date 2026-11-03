@@ -31,7 +31,12 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
 
   return (
     <div className={cn('sy-calendar-setting w-full', isDark && 'dark')} data-slot="calendar-settings">
-      <p className="text-xs leading-5 text-muted-foreground">{i18n.settings.description}</p>
+      {/* 13px = the card's 1px border + the rows' 12px padding, so the heading
+          lines up with the row text instead of the card outline. */}
+      <div className="px-[13px]">
+        <div className="text-sm font-semibold text-foreground">{i18n.settings.title}</div>
+        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{i18n.settings.description}</p>
+      </div>
       <div className="mt-3 divide-y divide-border/70 overflow-hidden rounded-lg border border-border/70 bg-background/40">
         <SettingRow title={i18n.position.title} description={i18n.position.description}>
           <PositionSelect

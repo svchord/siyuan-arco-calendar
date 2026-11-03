@@ -177,9 +177,8 @@ export function CalendarPanel({
                 align="end"
                 sideOffset={6}
                 style={{ width: CALENDAR_SETTINGS_WIDTH, maxWidth: 'calc(100vw - 16px)' }}
-                className={cn('sy-calendar-portal gap-3 p-3', isDark && 'dark')}
+                className={cn('sy-calendar-portal px-4 pt-5 pb-4', isDark && 'dark')}
               >
-                <div className="text-sm font-semibold">{i18n.settings.title}</div>
                 <CalendarSettings settings={settings} onChange={onSettingsChange} />
               </PopoverContent>
             </Popover>

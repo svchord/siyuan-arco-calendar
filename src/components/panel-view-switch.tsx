@@ -7,7 +7,7 @@ export type PanelViewMode = 'calendar' | 'heatmap';
  * Tab labels are curated to fit this budget: measured across all 22 SiYuan
  * locales the widest is ja "ヒートマップ" at 84px. The cap is layout insurance
  * only — an over-budget label ellipsises instead of squeezing the notebook
- * selector. Re-measure with the procedure in docs/i18n-text-overflow.md.
+ * selector. Re-measure when a locale is added or a label is reworded.
  */
 const TAB_LABEL = 'block max-w-[5.5rem] truncate';
 
