@@ -1,3 +1,20 @@
+# [2.4.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.3.1...v2.4.0) (2026-11-03)
+
+
+### Bug Fixes
+
+* **calendar:** draw the note marker as an element and switch it instantly ([34f57f5](https://github.com/svchord/siyuan-arco-calendar/commit/34f57f5b1772137135f13490c032fe252504a4e5))
+* **calendar:** keep the today dot circular and document the comment rule ([99a4ae1](https://github.com/svchord/siyuan-arco-calendar/commit/99a4ae1b90b3c78c12a7e6694d2121e517f2a3e8))
+* **layout:** even spacing between the day grid and the panel dividers ([12db555](https://github.com/svchord/siyuan-arco-calendar/commit/12db5557ed7361e85cd81a5ab880879fb71d428d))
+* **styles:** restore text-* utilities on plugin buttons and inputs ([ff5d26e](https://github.com/svchord/siyuan-arco-calendar/commit/ff5d26e765c07349062461659a99d38a7d440c6b))
+
+
+### Features
+
+* **i18n:** support all 22 SiYuan locales ([80cb39e](https://github.com/svchord/siyuan-arco-calendar/commit/80cb39e73f90b6e7187c36276360394a379afcaa))
+* **theme:** add a switch for using the host theme accent ([808d8d5](https://github.com/svchord/siyuan-arco-calendar/commit/808d8d53905854f7482c1afd97bde6828923d4ab))
+* **ui:** replace the hand-rolled view switch with vendored Vega Tabs ([762328c](https://github.com/svchord/siyuan-arco-calendar/commit/762328c371d6bd4a4c6b1725040c48a545ced5e4))
+
 ## [2.3.1](https://github.com/svchord/siyuan-arco-calendar/compare/v2.3.0...v2.3.1) (2026-11-02)
 
 
