@@ -1,0 +1,61 @@
+{
+  "openCalendar": "カレンダーを開く",
+  "tabName": "カレンダー",
+  "placeholder": "ノートブックを選択...",
+  "today": "今日",
+  "refresh": "再読み込み",
+  "hint": "日付をクリックしてデイリーノートを開くか作成します",
+  "selectMonth": "月を選択",
+  "selectYear": "年を選択",
+  "previousMonth": "前月",
+  "nextMonth": "翌月",
+  "previousYear": "前年",
+  "nextYear": "翌年",
+  "loading": "読み込み中...",
+  "noNotebooks": "開いているノートブックがありません",
+  "msg": {
+    "begin": "[カレンダープラグイン]",
+    "notNoteBook": "現在のノートブックを取得できませんでした。手動で設定してください",
+    "createFailed": "デイリーノートの作成に失敗しました",
+    "refreshSuccess": "更新しました",
+    "refreshFailed": "更新に失敗しました"
+  },
+  "position": {
+    "title": "ボタンの表示位置",
+    "description": "左上、右上、または右ドックから選択します。",
+    "topLeft": "左上",
+    "topRight": "右上",
+    "dock": "ドック"
+  },
+  "settings": {
+    "title": "カレンダー設定",
+    "description": "表示位置とカレンダーの表示方法を設定します。"
+  },
+  "weekStart": {
+    "title": "週の開始日",
+    "description": "週の最初の曜日を選択します。",
+    "monday": "月曜日",
+    "sunday": "日曜日"
+  },
+  "weekNumbers": {
+    "title": "週番号を表示",
+    "description": "日付の左に週番号を表示します。"
+  },
+  "refreshHint": "ノートブックとデイリーノートを再読み込み",
+  "taskMarkers": {
+    "title": "未完了タスクのマーカーを表示",
+    "description": "デイリーノートに未完了のタスクがあると、琥珀色の点を表示します。"
+  },
+  "calendarView": "カレンダー",
+  "heatmapView": "ヒートマップ",
+  "heatmapHint": "ブロック数によるノートのアクティビティ",
+  "heatmapYearTotal": "今年の合計 {count} ブロック",
+  "heatmapBlocks": "ブロック",
+  "heatmapNoNote": "デイリーノートなし",
+  "heatmapLess": "少",
+  "heatmapMore": "多",
+  "hostAccent": {
+    "title": "テーマカラーを使用",
+    "description": "選択した日付、ボタン、ヒートマップに SiYuan のアクセントカラーを使用します。オフにすると Vega のニュートラル配色になります。"
+  }
+}

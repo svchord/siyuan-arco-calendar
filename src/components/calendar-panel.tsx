@@ -10,6 +10,7 @@ import { CalendarView } from '@/components/calendar-view';
 import { HeatmapView } from '@/components/heatmap-view';
 import { NotebookCombobox } from '@/components/notebook-combobox';
 import { PanelViewSwitch, type PanelViewMode } from '@/components/panel-view-switch';
+import { TruncatedText } from '@/components/truncated-text';
 import { Separator } from '@/components/ui/separator';
 import { useNoteActivity } from '@/hooks/use-note-activity';
 import { useDailyNotes } from '@/hooks/use-daily-notes';
@@ -227,12 +228,11 @@ export function CalendarPanel({
         <PanelDivider />
 
         <CardFooter className="justify-between gap-2 p-0" data-slot="calendar-footer">
-          <span
-            className="min-w-0 flex-1 truncate text-xs text-muted-foreground"
+          <TruncatedText
+            text={footerLabel}
+            className="min-w-0 flex-1 text-xs text-muted-foreground"
             data-slot={view === 'heatmap' ? 'heatmap-year-total' : undefined}
-          >
-            {footerLabel}
-          </span>
+          />
           <div className="flex items-center gap-1">
             <Button
               type="button"

@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Apri calendario",
+  "tabName": "Calendario",
+  "placeholder": "Seleziona taccuino...",
+  "today": "Oggi",
+  "refresh": "Aggiorna",
+  "hint": "Fai clic su una data per aprire o creare una nota giornaliera",
+  "selectMonth": "Seleziona mese",
+  "selectYear": "Seleziona anno",
+  "previousMonth": "Mese precedente",
+  "nextMonth": "Mese successivo",
+  "previousYear": "Anno precedente",
+  "nextYear": "Anno successivo",
+  "loading": "Caricamento...",
+  "noNotebooks": "Nessun taccuino aperto",
+  "msg": {
+    "begin": "[Plugin Calendario]",
+    "notNoteBook": "Impossibile ottenere il taccuino corrente, impostalo manualmente",
+    "createFailed": "Impossibile creare la nota giornaliera",
+    "refreshSuccess": "Aggiornato",
+    "refreshFailed": "Aggiornamento non riuscito"
+  },
+  "position": {
+    "title": "Posizione del pulsante",
+    "description": "Scegli in alto a sinistra, in alto a destra o nel dock destro.",
+    "topLeft": "In alto a sinistra",
+    "topRight": "In alto a destra",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Impostazioni calendario",
+    "description": "Configura la posizione di ingresso e la visualizzazione del calendario."
+  },
+  "weekStart": {
+    "title": "Primo giorno della settimana",
+    "description": "Scegli il primo giorno della settimana.",
+    "monday": "Lunedì",
+    "sunday": "Domenica"
+  },
+  "weekNumbers": {
+    "title": "Mostra numeri di settimana",
+    "description": "Mostra i numeri di settimana a sinistra delle date."
+  },
+  "refreshHint": "Aggiorna taccuini e note giornaliere",
+  "taskMarkers": {
+    "title": "Mostra indicatori attività aperte",
+    "description": "Mostra un punto ambra quando la nota giornaliera ha attività aperte."
+  },
+  "calendarView": "Calendario",
+  "heatmapView": "Mappa",
+  "heatmapHint": "Attività delle note per numero di blocchi",
+  "heatmapYearTotal": "{count} blocchi quest'anno",
+  "heatmapBlocks": "blocchi",
+  "heatmapNoNote": "Nessuna nota giornaliera",
+  "heatmapLess": "Meno",
+  "heatmapMore": "Più",
+  "hostAccent": {
+    "title": "Usa il colore del tema",
+    "description": "Usa il colore d'accento di SiYuan per il giorno selezionato, i pulsanti e la mappa. Disattiva per la palette neutra Vega."
+  }
+}

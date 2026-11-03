@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Otwórz kalendarz",
+  "tabName": "Kalendarz",
+  "placeholder": "Wybierz notatnik...",
+  "today": "Dzisiaj",
+  "refresh": "Odśwież",
+  "hint": "Kliknij datę, aby otworzyć lub utworzyć notatkę dzienną",
+  "selectMonth": "Wybierz miesiąc",
+  "selectYear": "Wybierz rok",
+  "previousMonth": "Poprzedni miesiąc",
+  "nextMonth": "Następny miesiąc",
+  "previousYear": "Poprzedni rok",
+  "nextYear": "Następny rok",
+  "loading": "Ładowanie...",
+  "noNotebooks": "Brak otwartych notatników",
+  "msg": {
+    "begin": "[Wtyczka kalendarza]",
+    "notNoteBook": "Nie udało się pobrać bieżącego notatnika, ustaw go ręcznie",
+    "createFailed": "Nie udało się utworzyć notatki dziennej",
+    "refreshSuccess": "Odświeżono",
+    "refreshFailed": "Odświeżanie nie powiodło się"
+  },
+  "position": {
+    "title": "Pozycja przycisku",
+    "description": "Wybierz lewy górny, prawy górny róg lub prawy dok.",
+    "topLeft": "Lewy górny",
+    "topRight": "Prawy górny",
+    "dock": "Dok"
+  },
+  "settings": {
+    "title": "Ustawienia kalendarza",
+    "description": "Skonfiguruj pozycję wejścia i wyświetlanie kalendarza."
+  },
+  "weekStart": {
+    "title": "Pierwszy dzień tygodnia",
+    "description": "Wybierz pierwszy dzień tygodnia.",
+    "monday": "Poniedziałek",
+    "sunday": "Niedziela"
+  },
+  "weekNumbers": {
+    "title": "Pokaż numery tygodni",
+    "description": "Pokazuj numery tygodni po lewej stronie dat."
+  },
+  "refreshHint": "Odśwież notatniki i notatki dzienne",
+  "taskMarkers": {
+    "title": "Pokaż znaczniki otwartych zadań",
+    "description": "Pokazuj bursztynową kropkę, gdy notatka dzienna ma otwarte zadania."
+  },
+  "calendarView": "Kalendarz",
+  "heatmapView": "Mapa",
+  "heatmapHint": "Aktywność notatek według liczby bloków",
+  "heatmapYearTotal": "{count} bloków w tym roku",
+  "heatmapBlocks": "bloków",
+  "heatmapNoNote": "Brak notatki dziennej",
+  "heatmapLess": "Mniej",
+  "heatmapMore": "Więcej",
+  "hostAccent": {
+    "title": "Użyj koloru motywu",
+    "description": "Użyj koloru akcentu SiYuan dla wybranego dnia, przycisków i mapy. Wyłącz, aby użyć neutralnej palety Vega."
+  }
+}

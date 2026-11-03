@@ -1,0 +1,61 @@
+{
+  "openCalendar": "달력 열기",
+  "tabName": "달력",
+  "placeholder": "노트북 선택...",
+  "today": "오늘",
+  "refresh": "새로 고침",
+  "hint": "날짜를 클릭하여 데일리 노트를 열거나 만드세요",
+  "selectMonth": "월 선택",
+  "selectYear": "연도 선택",
+  "previousMonth": "이전 달",
+  "nextMonth": "다음 달",
+  "previousYear": "이전 해",
+  "nextYear": "다음 해",
+  "loading": "불러오는 중...",
+  "noNotebooks": "열린 노트북이 없습니다",
+  "msg": {
+    "begin": "[달력 플러그인]",
+    "notNoteBook": "현재 노트북을 가져오지 못했습니다. 직접 설정하세요",
+    "createFailed": "데일리 노트를 만들지 못했습니다",
+    "refreshSuccess": "새로 고쳤습니다",
+    "refreshFailed": "새로 고침에 실패했습니다"
+  },
+  "position": {
+    "title": "버튼 진입 위치",
+    "description": "왼쪽 위, 오른쪽 위 또는 오른쪽 도크에서 선택하세요.",
+    "topLeft": "왼쪽 위",
+    "topRight": "오른쪽 위",
+    "dock": "도크"
+  },
+  "settings": {
+    "title": "달력 설정",
+    "description": "진입 위치와 달력 표시 방식을 설정합니다."
+  },
+  "weekStart": {
+    "title": "한 주의 시작 요일",
+    "description": "한 주의 첫 요일을 선택하세요.",
+    "monday": "월요일",
+    "sunday": "일요일"
+  },
+  "weekNumbers": {
+    "title": "주 번호 표시",
+    "description": "날짜 왼쪽에 주 번호를 표시합니다."
+  },
+  "refreshHint": "노트북과 데일리 노트 새로 고침",
+  "taskMarkers": {
+    "title": "미완료 작업 표시",
+    "description": "데일리 노트에 열린 작업이 있으면 호박색 점을 표시합니다."
+  },
+  "calendarView": "달력",
+  "heatmapView": "히트맵",
+  "heatmapHint": "블록 수에 따른 노트 활동",
+  "heatmapYearTotal": "올해 {count}개 블록",
+  "heatmapBlocks": "블록",
+  "heatmapNoNote": "데일리 노트 없음",
+  "heatmapLess": "적음",
+  "heatmapMore": "많음",
+  "hostAccent": {
+    "title": "테마 색상 사용",
+    "description": "선택한 날짜, 버튼, 히트맵에 SiYuan 강조 색상을 사용합니다. 끄면 Vega 중립 팔레트를 사용합니다."
+  }
+}

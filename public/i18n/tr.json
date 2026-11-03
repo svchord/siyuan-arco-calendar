@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Takvimi aç",
+  "tabName": "Takvim",
+  "placeholder": "Not defteri seçin...",
+  "today": "Bugün",
+  "refresh": "Yenile",
+  "hint": "Günlük notu açmak veya oluşturmak için bir tarihe tıklayın",
+  "selectMonth": "Ay seç",
+  "selectYear": "Yıl seç",
+  "previousMonth": "Önceki ay",
+  "nextMonth": "Sonraki ay",
+  "previousYear": "Önceki yıl",
+  "nextYear": "Sonraki yıl",
+  "loading": "Yükleniyor...",
+  "noNotebooks": "Açık not defteri yok",
+  "msg": {
+    "begin": "[Takvim eklentisi]",
+    "notNoteBook": "Geçerli not defteri alınamadı, lütfen elle ayarlayın",
+    "createFailed": "Günlük not oluşturulamadı",
+    "refreshSuccess": "Yenilendi",
+    "refreshFailed": "Yenileme başarısız"
+  },
+  "position": {
+    "title": "Düğme giriş konumu",
+    "description": "Sol üst, sağ üst veya sağ yuvayı seçin.",
+    "topLeft": "Sol üst",
+    "topRight": "Sağ üst",
+    "dock": "Yuva"
+  },
+  "settings": {
+    "title": "Takvim ayarları",
+    "description": "Giriş konumunu ve takvim görünümünü yapılandırın."
+  },
+  "weekStart": {
+    "title": "Haftanın ilk günü",
+    "description": "Haftanın ilk gününü seçin.",
+    "monday": "Pazartesi",
+    "sunday": "Pazar"
+  },
+  "weekNumbers": {
+    "title": "Hafta numaralarını göster",
+    "description": "Hafta numaralarını tarihlerin solunda gösterir."
+  },
+  "refreshHint": "Not defterlerini ve günlük notları yenile",
+  "taskMarkers": {
+    "title": "Açık görev işaretlerini göster",
+    "description": "Günlük notta açık görevler varsa kehribar rengi nokta gösterir."
+  },
+  "calendarView": "Takvim",
+  "heatmapView": "Isı haritası",
+  "heatmapHint": "Blok sayısına göre not etkinliği",
+  "heatmapYearTotal": "Bu yıl {count} blok",
+  "heatmapBlocks": "blok",
+  "heatmapNoNote": "Günlük not yok",
+  "heatmapLess": "Az",
+  "heatmapMore": "Çok",
+  "hostAccent": {
+    "title": "Tema rengini kullan",
+    "description": "Seçili gün, düğmeler ve ısı haritası için SiYuan vurgu rengini kullanır. Kapatırsanız nötr Vega paleti kullanılır."
+  }
+}

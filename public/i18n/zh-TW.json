@@ -1,0 +1,61 @@
+{
+  "openCalendar": "開啟日曆",
+  "tabName": "日曆",
+  "placeholder": "選擇筆記本...",
+  "today": "今天",
+  "refresh": "重新整理",
+  "hint": "點擊日期以開啟或建立日記",
+  "selectMonth": "選擇月份",
+  "selectYear": "選擇年份",
+  "previousMonth": "上個月",
+  "nextMonth": "下個月",
+  "previousYear": "上一年",
+  "nextYear": "下一年",
+  "loading": "載入中...",
+  "noNotebooks": "沒有已開啟的筆記本",
+  "msg": {
+    "begin": "[日曆外掛]",
+    "notNoteBook": "取得目前筆記本失敗，請手動設定",
+    "createFailed": "建立日記失敗",
+    "refreshSuccess": "重新整理成功",
+    "refreshFailed": "重新整理失敗"
+  },
+  "position": {
+    "title": "按鈕入口位置",
+    "description": "選擇頂欄左側、頂欄右側或右側邊欄",
+    "topLeft": "頂欄左",
+    "topRight": "頂欄右",
+    "dock": "邊欄"
+  },
+  "settings": {
+    "title": "日曆設定",
+    "description": "調整入口位置和日曆顯示方式"
+  },
+  "weekStart": {
+    "title": "每週起始日",
+    "description": "設定日曆每週的第一天",
+    "monday": "星期一",
+    "sunday": "星期日"
+  },
+  "weekNumbers": {
+    "title": "顯示週數",
+    "description": "在日期左側顯示週數"
+  },
+  "refreshHint": "重新整理筆記本和日記",
+  "taskMarkers": {
+    "title": "顯示未完成任務標記",
+    "description": "日記中有未完成任務時，在日期右上角顯示琥珀色圓點。"
+  },
+  "calendarView": "日曆",
+  "heatmapView": "熱力圖",
+  "heatmapHint": "依內容區塊數量統計筆記活躍度",
+  "heatmapYearTotal": "全年合計 {count} 個內容區塊",
+  "heatmapBlocks": "個內容區塊",
+  "heatmapNoNote": "沒有日記",
+  "heatmapLess": "少",
+  "heatmapMore": "多",
+  "hostAccent": {
+    "title": "使用主題色",
+    "description": "選取日期、按鈕和熱力圖使用思源主題強調色；關閉後改用 Vega 中性配色。"
+  }
+}

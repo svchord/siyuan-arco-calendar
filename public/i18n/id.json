@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Buka kalender",
+  "tabName": "Kalender",
+  "placeholder": "Pilih buku catatan...",
+  "today": "Hari ini",
+  "refresh": "Segarkan",
+  "hint": "Klik tanggal untuk membuka atau membuat catatan harian",
+  "selectMonth": "Pilih bulan",
+  "selectYear": "Pilih tahun",
+  "previousMonth": "Bulan sebelumnya",
+  "nextMonth": "Bulan berikutnya",
+  "previousYear": "Tahun sebelumnya",
+  "nextYear": "Tahun berikutnya",
+  "loading": "Memuat...",
+  "noNotebooks": "Tidak ada buku catatan yang terbuka",
+  "msg": {
+    "begin": "[Plugin Kalender]",
+    "notNoteBook": "Gagal mendapatkan buku catatan saat ini, atur secara manual",
+    "createFailed": "Gagal membuat catatan harian",
+    "refreshSuccess": "Disegarkan",
+    "refreshFailed": "Gagal menyegarkan"
+  },
+  "position": {
+    "title": "Posisi tombol masuk",
+    "description": "Pilih kiri atas, kanan atas, atau dok kanan.",
+    "topLeft": "Kiri atas",
+    "topRight": "Kanan atas",
+    "dock": "Dok"
+  },
+  "settings": {
+    "title": "Pengaturan kalender",
+    "description": "Atur posisi masuk dan tampilan kalender."
+  },
+  "weekStart": {
+    "title": "Hari pertama dalam seminggu",
+    "description": "Pilih hari pertama dalam seminggu.",
+    "monday": "Senin",
+    "sunday": "Minggu"
+  },
+  "weekNumbers": {
+    "title": "Tampilkan nomor minggu",
+    "description": "Tampilkan nomor minggu di sebelah kiri tanggal."
+  },
+  "refreshHint": "Segarkan buku catatan dan catatan harian",
+  "taskMarkers": {
+    "title": "Tampilkan penanda tugas belum selesai",
+    "description": "Tampilkan titik kuning saat catatan harian memiliki tugas terbuka."
+  },
+  "calendarView": "Kalender",
+  "heatmapView": "Peta panas",
+  "heatmapHint": "Aktivitas catatan berdasarkan jumlah blok",
+  "heatmapYearTotal": "{count} blok tahun ini",
+  "heatmapBlocks": "blok",
+  "heatmapNoNote": "Tidak ada catatan harian",
+  "heatmapLess": "Sedikit",
+  "heatmapMore": "Banyak",
+  "hostAccent": {
+    "title": "Gunakan warna tema",
+    "description": "Gunakan warna aksen SiYuan untuk hari terpilih, tombol, dan peta panas. Matikan untuk memakai palet netral Vega."
+  }
+}

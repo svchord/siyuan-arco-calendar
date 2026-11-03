@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Otvoriť kalendár",
+  "tabName": "Kalendár",
+  "placeholder": "Vyberte zápisník...",
+  "today": "Dnes",
+  "refresh": "Obnoviť",
+  "hint": "Kliknutím na dátum otvoríte alebo vytvoríte denný záznam",
+  "selectMonth": "Vybrať mesiac",
+  "selectYear": "Vybrať rok",
+  "previousMonth": "Predchádzajúci mesiac",
+  "nextMonth": "Nasledujúci mesiac",
+  "previousYear": "Predchádzajúci rok",
+  "nextYear": "Nasledujúci rok",
+  "loading": "Načítava sa...",
+  "noNotebooks": "Žiadne otvorené zápisníky",
+  "msg": {
+    "begin": "[Doplnok kalendára]",
+    "notNoteBook": "Nepodarilo sa získať aktuálny zápisník, nastavte ho ručne",
+    "createFailed": "Denný záznam sa nepodarilo vytvoriť",
+    "refreshSuccess": "Obnovené",
+    "refreshFailed": "Obnovenie zlyhalo"
+  },
+  "position": {
+    "title": "Poloha tlačidla",
+    "description": "Vyberte vľavo hore, vpravo hore alebo pravý dok.",
+    "topLeft": "Vľavo hore",
+    "topRight": "Vpravo hore",
+    "dock": "Dok"
+  },
+  "settings": {
+    "title": "Nastavenia kalendára",
+    "description": "Nastavte polohu vstupu a zobrazenie kalendára."
+  },
+  "weekStart": {
+    "title": "Prvý deň týždňa",
+    "description": "Vyberte prvý deň týždňa.",
+    "monday": "Pondelok",
+    "sunday": "Nedeľa"
+  },
+  "weekNumbers": {
+    "title": "Zobraziť čísla týždňov",
+    "description": "Zobrazí čísla týždňov naľavo od dátumov."
+  },
+  "refreshHint": "Obnoviť zápisníky a denné záznamy",
+  "taskMarkers": {
+    "title": "Zobraziť značky otvorených úloh",
+    "description": "Zobrazí jantárovú bodku, ak má denný záznam otvorené úlohy."
+  },
+  "calendarView": "Kalendár",
+  "heatmapView": "Heatmapa",
+  "heatmapHint": "Aktivita záznamov podľa počtu blokov",
+  "heatmapYearTotal": "{count} blokov tento rok",
+  "heatmapBlocks": "blokov",
+  "heatmapNoNote": "Žiadny denný záznam",
+  "heatmapLess": "Menej",
+  "heatmapMore": "Viac",
+  "hostAccent": {
+    "title": "Použiť farbu témy",
+    "description": "Použije akcentovú farbu SiYuan pre vybraný deň, tlačidlá a heatmapu. Vypnutím sa použije neutrálna paleta Vega."
+  }
+}

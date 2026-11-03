@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Abrir calendário",
+  "tabName": "Calendário",
+  "placeholder": "Selecionar caderno...",
+  "today": "Hoje",
+  "refresh": "Atualizar",
+  "hint": "Clique em uma data para abrir ou criar uma nota diária",
+  "selectMonth": "Selecionar mês",
+  "selectYear": "Selecionar ano",
+  "previousMonth": "Mês anterior",
+  "nextMonth": "Próximo mês",
+  "previousYear": "Ano anterior",
+  "nextYear": "Próximo ano",
+  "loading": "Carregando...",
+  "noNotebooks": "Nenhum caderno aberto",
+  "msg": {
+    "begin": "[Plugin de Calendário]",
+    "notNoteBook": "Não foi possível obter o caderno atual, defina-o manualmente",
+    "createFailed": "Falha ao criar a nota diária",
+    "refreshSuccess": "Atualizado",
+    "refreshFailed": "Falha ao atualizar"
+  },
+  "position": {
+    "title": "Posição do botão de entrada",
+    "description": "Escolha canto superior esquerdo, superior direito ou o dock direito.",
+    "topLeft": "Superior esquerdo",
+    "topRight": "Superior direito",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Configurações do calendário",
+    "description": "Configure a posição de entrada e a exibição do calendário."
+  },
+  "weekStart": {
+    "title": "Primeiro dia da semana",
+    "description": "Escolha o primeiro dia da semana.",
+    "monday": "Segunda-feira",
+    "sunday": "Domingo"
+  },
+  "weekNumbers": {
+    "title": "Mostrar números das semanas",
+    "description": "Mostrar os números das semanas à esquerda das datas."
+  },
+  "refreshHint": "Atualizar cadernos e notas diárias",
+  "taskMarkers": {
+    "title": "Mostrar marcadores de tarefas abertas",
+    "description": "Mostra um ponto âmbar quando a nota diária tem tarefas abertas."
+  },
+  "calendarView": "Calendário",
+  "heatmapView": "Mapa",
+  "heatmapHint": "Atividade das notas por número de blocos",
+  "heatmapYearTotal": "{count} blocos neste ano",
+  "heatmapBlocks": "blocos",
+  "heatmapNoNote": "Sem nota diária",
+  "heatmapLess": "Menos",
+  "heatmapMore": "Mais",
+  "hostAccent": {
+    "title": "Usar a cor do tema",
+    "description": "Usa a cor de destaque do SiYuan no dia selecionado, nos botões e no mapa. Desative para usar a paleta neutra Vega."
+  }
+}

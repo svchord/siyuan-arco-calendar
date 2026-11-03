@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Kalender openen",
+  "tabName": "Kalender",
+  "placeholder": "Notitieboek selecteren...",
+  "today": "Vandaag",
+  "refresh": "Vernieuwen",
+  "hint": "Klik op een datum om een dagnotitie te openen of aan te maken",
+  "selectMonth": "Maand selecteren",
+  "selectYear": "Jaar selecteren",
+  "previousMonth": "Vorige maand",
+  "nextMonth": "Volgende maand",
+  "previousYear": "Vorig jaar",
+  "nextYear": "Volgend jaar",
+  "loading": "Laden...",
+  "noNotebooks": "Geen geopende notitieboeken",
+  "msg": {
+    "begin": "[Kalenderplug-in]",
+    "notNoteBook": "Kan het huidige notitieboek niet ophalen, stel het handmatig in",
+    "createFailed": "Kan de dagnotitie niet aanmaken",
+    "refreshSuccess": "Vernieuwd",
+    "refreshFailed": "Vernieuwen mislukt"
+  },
+  "position": {
+    "title": "Positie van de knop",
+    "description": "Kies linksboven, rechtsboven of het rechterdock.",
+    "topLeft": "Linksboven",
+    "topRight": "Rechtsboven",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Kalenderinstellingen",
+    "description": "Stel de ingangspositie en de kalenderweergave in."
+  },
+  "weekStart": {
+    "title": "Eerste dag van de week",
+    "description": "Kies de eerste dag van de week.",
+    "monday": "Maandag",
+    "sunday": "Zondag"
+  },
+  "weekNumbers": {
+    "title": "Weeknummers tonen",
+    "description": "Toon weeknummers links van de datums."
+  },
+  "refreshHint": "Notitieboeken en dagnotities vernieuwen",
+  "taskMarkers": {
+    "title": "Markering voor open taken tonen",
+    "description": "Toon een amberkleurige stip wanneer de dagnotitie open taken heeft."
+  },
+  "calendarView": "Kalender",
+  "heatmapView": "Heatmap",
+  "heatmapHint": "Notitieactiviteit op basis van aantal blokken",
+  "heatmapYearTotal": "{count} blokken dit jaar",
+  "heatmapBlocks": "blokken",
+  "heatmapNoNote": "Geen dagnotitie",
+  "heatmapLess": "Minder",
+  "heatmapMore": "Meer",
+  "hostAccent": {
+    "title": "Themakleur gebruiken",
+    "description": "Gebruik de accentkleur van SiYuan voor de geselecteerde dag, knoppen en heatmap. Schakel uit voor het neutrale Vega-palet."
+  }
+}

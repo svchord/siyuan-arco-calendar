@@ -1,0 +1,61 @@
+{
+  "openCalendar": "Kalender öffnen",
+  "tabName": "Kalender",
+  "placeholder": "Notizbuch auswählen...",
+  "today": "Heute",
+  "refresh": "Aktualisieren",
+  "hint": "Klicken Sie auf ein Datum, um eine Tagesnotiz zu öffnen oder zu erstellen",
+  "selectMonth": "Monat auswählen",
+  "selectYear": "Jahr auswählen",
+  "previousMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat",
+  "previousYear": "Vorheriges Jahr",
+  "nextYear": "Nächstes Jahr",
+  "loading": "Wird geladen...",
+  "noNotebooks": "Keine geöffneten Notizbücher",
+  "msg": {
+    "begin": "[Kalender-Plugin]",
+    "notNoteBook": "Das aktuelle Notizbuch konnte nicht ermittelt werden, bitte manuell festlegen",
+    "createFailed": "Tagesnotiz konnte nicht erstellt werden",
+    "refreshSuccess": "Aktualisiert",
+    "refreshFailed": "Aktualisierung fehlgeschlagen"
+  },
+  "position": {
+    "title": "Position des Einstiegs",
+    "description": "Oben links, oben rechts oder im rechten Dock wählen.",
+    "topLeft": "Oben links",
+    "topRight": "Oben rechts",
+    "dock": "Dock"
+  },
+  "settings": {
+    "title": "Kalendereinstellungen",
+    "description": "Einstiegsposition und Kalenderanzeige konfigurieren."
+  },
+  "weekStart": {
+    "title": "Erster Wochentag",
+    "description": "Den ersten Tag der Woche festlegen.",
+    "monday": "Montag",
+    "sunday": "Sonntag"
+  },
+  "weekNumbers": {
+    "title": "Kalenderwochen anzeigen",
+    "description": "Kalenderwochen links neben den Daten anzeigen."
+  },
+  "refreshHint": "Notizbücher und Tagesnotizen aktualisieren",
+  "taskMarkers": {
+    "title": "Offene Aufgaben markieren",
+    "description": "Zeigt einen bernsteinfarbenen Punkt, wenn die Tagesnotiz offene Aufgaben enthält."
+  },
+  "calendarView": "Kalender",
+  "heatmapView": "Heatmap",
+  "heatmapHint": "Notizaktivität nach Anzahl der Blöcke",
+  "heatmapYearTotal": "{count} Blöcke dieses Jahr",
+  "heatmapBlocks": "Blöcke",
+  "heatmapNoNote": "Keine Tagesnotiz",
+  "heatmapLess": "Weniger",
+  "heatmapMore": "Mehr",
+  "hostAccent": {
+    "title": "Themenfarbe verwenden",
+    "description": "Verwendet die Akzentfarbe von SiYuan für den ausgewählten Tag, Schaltflächen und Heatmap. Deaktivieren, um die neutrale Vega-Palette zu verwenden."
+  }
+}

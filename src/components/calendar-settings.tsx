@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { PositionSelect } from '@/components/position-select';
+import { TruncatedText } from '@/components/truncated-text';
 import { useIsDark } from '@/hooks/use-is-dark';
 import { useHost } from '@/lib/host';
 import type { PluginSettings, WeekStart } from '@/lib/storage';
@@ -16,7 +17,7 @@ function SettingRow({ title, description, children }: { title: string; descripti
   return (
     <div className="flex items-center justify-between gap-3 px-3 py-3.5">
       <div className="min-w-0 flex-1">
-        <div className="text-sm font-medium text-foreground">{title}</div>
+        <TruncatedText text={title} className="text-sm font-medium text-foreground" />
         <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
       </div>
       <div className="shrink-0">{children}</div>
@@ -35,7 +36,7 @@ export function CalendarSettings({ settings, onChange }: CalendarSettingsProps) 
         <SettingRow title={i18n.position.title} description={i18n.position.description}>
           <PositionSelect
             value={settings.position}
-            className="w-fit min-w-[112px] max-w-[160px]"
+            className="w-fit min-w-[112px] max-w-[12em]"
             onChange={(position) => onChange({ position })}
           />
         </SettingRow>

@@ -1,0 +1,61 @@
+{
+  "openCalendar": "פתיחת לוח שנה",
+  "tabName": "לוח שנה",
+  "placeholder": "בחירת מחברת...",
+  "today": "היום",
+  "refresh": "רענון",
+  "hint": "לחצו על תאריך כדי לפתוח או ליצור הערה יומית",
+  "selectMonth": "בחירת חודש",
+  "selectYear": "בחירת שנה",
+  "previousMonth": "חודש קודם",
+  "nextMonth": "חודש הבא",
+  "previousYear": "שנה קודמת",
+  "nextYear": "שנה הבאה",
+  "loading": "טוען...",
+  "noNotebooks": "אין מחברות פתוחות",
+  "msg": {
+    "begin": "[תוסף לוח השנה]",
+    "notNoteBook": "לא ניתן לקבל את המחברת הנוכחית, יש להגדיר אותה ידנית",
+    "createFailed": "יצירת ההערה היומית נכשלה",
+    "refreshSuccess": "רענון הושלם",
+    "refreshFailed": "הרענון נכשל"
+  },
+  "position": {
+    "title": "מיקום כפתור הכניסה",
+    "description": "בחרו למעלה משמאל, למעלה מימין או ברציף הימני.",
+    "topLeft": "למעלה משמאל",
+    "topRight": "למעלה מימין",
+    "dock": "רציף"
+  },
+  "settings": {
+    "title": "הגדרות לוח השנה",
+    "description": "קביעת מיקום הכניסה ואופן הצגת לוח השנה."
+  },
+  "weekStart": {
+    "title": "היום הראשון בשבוע",
+    "description": "בחירת היום הראשון בשבוע.",
+    "monday": "יום שני",
+    "sunday": "יום ראשון"
+  },
+  "weekNumbers": {
+    "title": "הצגת מספרי שבועות",
+    "description": "הצגת מספרי השבועות משמאל לתאריכים."
+  },
+  "refreshHint": "רענון מחברות והערות יומיות",
+  "taskMarkers": {
+    "title": "הצגת סימוני משימות פתוחות",
+    "description": "הצגת נקודה ענברית כאשר בהערה היומית יש משימות פתוחות."
+  },
+  "calendarView": "לוח שנה",
+  "heatmapView": "מפת חום",
+  "heatmapHint": "פעילות הערות לפי מספר בלוקים",
+  "heatmapYearTotal": "{count} בלוקים השנה",
+  "heatmapBlocks": "בלוקים",
+  "heatmapNoNote": "אין הערה יומית",
+  "heatmapLess": "פחות",
+  "heatmapMore": "יותר",
+  "hostAccent": {
+    "title": "שימוש בצבע הערכה",
+    "description": "שימוש בצבע ההדגשה של SiYuan ליום הנבחר, לכפתורים ולמפת החום. כיבוי יעבור לפלטת Vega הניטרלית."
+  }
+}
