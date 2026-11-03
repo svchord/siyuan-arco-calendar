@@ -10,6 +10,9 @@ const STYLE_PROPS = [
   'color',
   'background-color',
   'background-image',
+  'background-size',
+  'background-position',
+  'background-repeat',
   'font-size',
   'font-weight',
   'line-height',
@@ -17,14 +20,23 @@ const STYLE_PROPS = [
   'padding-left',
   'margin-top',
   'border-radius',
+  'corner-shape',
   'box-shadow',
   'gap',
   'overflow',
   'position',
   'z-index',
+  'transform',
+  'scale',
+  'opacity',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
 ];
 
 const EMPTY_VALUES = new Set(['auto', 'none', 'normal', '0px', 'rgba(0, 0, 0, 0)']);
+/** Properties where `none` is meaningful and must not be filtered out. */
+const KEEP_NONE = new Set(['display', 'visibility', 'opacity']);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Computed styles for up to `limit` matches of `selector`. */
@@ -42,7 +54,7 @@ export async function probeStyles(page, selector, limit = 1) {
           }
           return {
             tag: element.tagName.toLowerCase(),
-            className: String(element.className || '').slice(0, 60),
+            className: String(element.className || ''),
             props: values,
           };
         }),
@@ -58,7 +70,9 @@ export async function probeStyles(page, selector, limit = 1) {
     count: data.count,
     items: data.items.map((item) => ({
       ...item,
-      props: Object.fromEntries(Object.entries(item.props).filter(([, value]) => value && !EMPTY_VALUES.has(value))),
+      props: Object.fromEntries(
+        Object.entries(item.props).filter(([name, value]) => value && (KEEP_NONE.has(name) || !EMPTY_VALUES.has(value)))
+      ),
     })),
   };
 }

@@ -158,6 +158,22 @@ export async function runActions(session, actions = []) {
         log.push('click -> ' + argument);
         break;
 
+      case 'hover': {
+        // Hover a matched element by moving the pointer to its centre; this drives
+        // real :hover rules, which CSS injection cannot reproduce.
+        const point = await page.evaluate((selector) => {
+          const el = document.querySelector(selector);
+          if (!el) return null;
+          const box = el.getBoundingClientRect();
+          return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+        }, argument);
+        if (!point) throw new Error('找不到要悬停的元素：' + argument);
+        await page.mouse.move(point.x, point.y);
+        await sleep(400);
+        log.push('hover -> ' + argument);
+        break;
+      }
+
       case 'move': {
         const [x, y] = argument.split(',').map(Number);
         await page.mouse.move(x, y);
@@ -184,7 +200,7 @@ export async function runActions(session, actions = []) {
         break;
 
       default:
-        throw new Error('未知动作：' + verb + '（可用：open/close/today/settings/view/click/move/wait/css）');
+        throw new Error('未知动作：' + verb + '（可用：open/close/today/settings/view/click/hover/move/wait/css）');
     }
   }
 

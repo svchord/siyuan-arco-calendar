@@ -16,11 +16,10 @@ import { buildYearOptions } from '@/lib/years';
 
 const DAY_BUTTON_MARKERS = cn(
   'h-full',
+  // Named so the note marker can react to this button's hover.
+  'group/note',
   // Hide DayPicker's "focus target" when it is not the keyboard-focused element.
   'group-data-[focused=true]/day:border-transparent group-data-[focused=true]/day:ring-0',
-  // Existing daily note: quiet disc behind the day number, tinted from the theme
-  // accent at low alpha so it stays clearly quieter than the selected chip.
-  'data-[existing-note=true]:not-data-[selected-single=true]:bg-[radial-gradient(circle_at_center,color-mix(in_oklch,var(--primary)_10%,transparent)_0_13px,transparent_13.5px)]',
   // The number picks up the accent too. Dark mode mixes it toward --foreground
   // because the accent alone only reached 3.54:1 contrast on a dark surface.
   'data-[existing-note=true]:not-data-[selected-single=true]:text-primary',
@@ -33,8 +32,10 @@ const DAY_BUTTON_MARKERS = cn(
   // because ghost also ships `dark:hover:bg-muted/50` at the same specificity.
   'hover:bg-primary/10',
   'dark:hover:bg-primary/10',
-  // On hover, use the normal rounded button surface instead of the note disc.
-  'data-[existing-note=true]:hover:bg-none',
+  // A note day draws its marker as the only surface, so the cell wash is suppressed
+  // rather than layered underneath it.
+  'data-[existing-note=true]:not-data-[selected-single=true]:hover:bg-transparent',
+  'dark:data-[existing-note=true]:not-data-[selected-single=true]:hover:bg-transparent',
   // Selected day: solid theme fill with a halo derived from the same accent, so
   // the outline tracks the chip colour instead of the neutral --ring tone.
   'data-[selected-single=true]:bg-primary',
@@ -71,6 +72,18 @@ function ExistingDayButton({ children, className, ...props }: React.ComponentPro
       data-open-tasks={props.modifiers.openTasks ? 'true' : undefined}
       data-today={props.modifiers.today ? 'true' : undefined}
     >
+      {/* Note marker: a disc at rest that becomes the cell's rounded square while
+          hovered. It is a real element rather than a background-image so its own
+          radius and size can change; the switch is instant by design, hence the
+          explicit `transition-none` (the Button base ships `transition-all` with a
+          0s duration, which would animate the shape if that duration ever changed).
+          A div avoids the vendored `[&>span]:opacity-70` rule. */}
+      {hasExistingNote ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 size-[26px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 transition-none group-hover/note:size-full group-hover/note:rounded-[8px] group-data-[selected-single=true]/note:hidden"
+        />
+      ) : null}
       {children}
     </CalendarDayButton>
   );
