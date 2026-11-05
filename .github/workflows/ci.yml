@@ -34,3 +34,6 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Verify artifacts (syt verify)
+        run: pnpm run verify

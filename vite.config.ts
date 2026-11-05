@@ -3,79 +3,18 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-import minimist from 'minimist';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import livereload from 'rollup-plugin-livereload';
-import zipPack from 'vite-plugin-zip-pack';
-import fg from 'fast-glob';
+import { siyuanPlugin } from 'siyuan-devkit';
 
-const args = minimist(process.argv.slice(2));
-const isWatch = args.watch || args.w || false;
-const devDistDir = './dev';
-const distDir = isWatch ? devDistDir : './dist';
-
-console.log('isWatch=>', isWatch);
-console.log('distDir=>', distDir);
-
+// 产物目录、产物名、public/ 监听、元数据搬运、校验、打包，以及 minify
+//（watch 不压缩、生产用默认压缩器）都由 siyuanPlugin() 负责。
+// 这里只剩项目偏好：React、Tailwind、别名。
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    viteStaticCopy({
-      targets: [{ src: 'README*.md', dest: './' }],
-    }),
-  ],
+  plugins: [react(), tailwindcss(), ...siyuanPlugin({ entry: 'src/index.tsx' })],
   resolve: {
     alias: { '@': resolve(import.meta.dirname, 'src') },
   },
-
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(isWatch ? 'development' : 'production'),
-    'process.env.DEV_MODE': JSON.stringify(`${isWatch}`),
-  },
-
   build: {
-    outDir: distDir,
-    emptyOutDir: false,
     sourcemap: false,
-    minify: !isWatch,
     target: 'es2022',
-    lib: {
-      entry: resolve(import.meta.dirname, 'src/index.tsx'),
-      fileName: 'index',
-      cssFileName: 'index',
-      formats: ['cjs'],
-    },
-    rollupOptions: {
-      plugins: isWatch
-        ? [
-            livereload({
-              watch: devDistDir,
-              // Keep the default port (35729); only make the client URL explicit
-              // because SiYuan's desktop window is HTTPS while livereload is HTTP.
-              clientUrl: 'http://127.0.0.1:35729/livereload.js?snipver=1',
-            }),
-            {
-              name: 'watch-external',
-              async buildStart() {
-                const files = await fg(['public/**', 'README*.md']);
-                for (const file of files) {
-                  this.addWatchFile(file);
-                }
-              },
-            },
-          ]
-        : [zipPack({ inDir: './dist', outDir: './', outFileName: 'package.zip' })],
-      external: ['siyuan', 'process'],
-      output: {
-        entryFileNames: '[name].js',
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name?.endsWith('.css')) {
-            return 'index.css';
-          }
-          return assetInfo.name ?? 'asset';
-        },
-      },
-    },
   },
 });
