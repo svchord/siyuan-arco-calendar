@@ -98,28 +98,43 @@ pnpm build
 
 `pnpm build` 会依次执行清单校验、类型检查、生产构建，并在根目录生成 `package.zip`。
 
-开发调试（`pnpm dev` 会持续监听，请在另一个终端执行 `make-link`）：
+开发调试：
 
 ```bash
-pnpm dev         # 监听构建到 dev/
-pnpm make-link   # 将 dev/ 链接到思源工作空间的插件目录
+pnpm dev   # 监听构建到 dev/，并链接到思源插件目录
 ```
 
-Windows 上创建目录符号链接需要权限；如果没有权限，`pnpm make-link` 会自动弹出 UAC，仅对创建链接这一步请求管理员权限：
+`pnpm dev` 由 devkit 的 Vite 插件驱动：启动时把 `dev/` 链接到思源工作空间的插件目录，
+不需要额外的链接或安装命令。
 
-```bash
-pnpm make-link      # Linux / macOS / Windows（Windows 无权限时会自动请求 UAC）
-pnpm make-install   # 所有平台：构建后把 dist/ 复制到插件目录（无热更新）
-```
+`pnpm dev` 产物一变就广播 `/api/ui/reloadUI` 整页刷新：思源重新走启动流程，
+`index.js` 与 `index.css` 一并拿到磁盘真值。本体窗口也会一起刷新，会丢光标/滚动/
+打开面板——这是明确接受的代价。
 
-如果取消 UAC，也可以使用 `pnpm make-install`。
+默认**不**起常驻测量页（`auditBrowser: false`），省内存。需要 agent 用
+`syt measure --attach` 复用常驻页时，在 `siyuanPlugin({ auditBrowser: true })`
+下跑 `pnpm dev`；开启后刷新期间由读租约挡住测量。`--attach` 连不上会直接报错，
+不会静默新开浏览器。
 
-所有开发脚本以 Node.js 实现；Windows 的自动提权步骤会调用系统 PowerShell。
+Windows 上创建目录符号链接需要权限。插件目录必须是真符号链接（思源的 Go 运行时
+不认 junction），所以缺少权限时 devkit 会请求一次 UAC；拒绝会直接结束会话并报错，
+不会退化成复制。
 
 也可以在终端中设置 `SIYUAN_PLUGIN_DIR` 指向 `<工作空间>/data/plugins`，跳过自动查找工作空间。
-`pnpm make-install` 会覆盖同名插件目录；安装后在思源中重新启用插件即可。
 
-排查渲染样式（颜色、间距、形状）时，`pnpm inspect` 会在无头 Chrome 中打开真实面板并报告实际渲染结果，用法见 [scripts/cdp/inspect.mjs](./scripts/cdp/inspect.mjs) 顶部注释。
+排查渲染样式（颜色、间距、形状）时，用 devkit 提供的测量与截图命令：
+
+```bash
+pnpm measure tokens --rc-text-primary --rc-bg-page   # 令牌计算值
+pnpm measure styles .dock__item --props border-radius # 元素计算样式
+pnpm measure count .dock__item                       # 选择器命中数
+pnpm shot                                            # 无头截取桌面端/移动端截图
+```
+
+交互与布局要用真实事件驱动（`--do hover:...` / `--setup contextmenu:...`）。
+菜单项等元素在打开前不在 DOM 里，必须先 `--setup`（例如
+`pnpm measure styles .b3-menu__item --setup contextmenu:.b3-list-item`）；
+`pnpm measure --help` 列出全部子命令。
 
 ## 发布
 

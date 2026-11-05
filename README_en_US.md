@@ -98,28 +98,47 @@ pnpm build
 
 `pnpm build` validates the manifest, runs the type check, builds the production bundle, and creates `package.zip`.
 
-For styling questions (colour, spacing, shape), `pnpm inspect` opens the real panel in headless Chrome and reports what actually rendered. Usage is documented at the top of [scripts/cdp/inspect.mjs](./scripts/cdp/inspect.mjs).
-
-Development (`pnpm dev` keeps watching; run `make-link` in another terminal):
+Development:
 
 ```bash
-pnpm dev         # watch build into dev/
-pnpm make-link   # link dev/ into the SiYuan workspace plugin directory
+pnpm dev   # watch-build into dev/ and link it into the SiYuan plugin directory
 ```
 
-Creating a directory symlink on Windows requires permission. When unavailable, `pnpm make-link` automatically requests UAC elevation for that link-creation step only:
+`pnpm dev` is driven by the devkit Vite plugin: it links `dev/` into the SiYuan workspace
+plugin directory when the session starts. No separate link or install command is needed.
 
-```bash
-pnpm make-link      # Linux / macOS / Windows (requests UAC when needed)
-pnpm make-install   # all platforms: build and copy dist/ into the plugin directory (no live reload)
-```
+Any artifact change broadcasts `/api/ui/reloadUI` — a full-page refresh: SiYuan re-runs
+its startup sequence, so both `index.js` and `index.css` pick up the new files from disk.
+Your own SiYuan window refreshes too, losing cursor/scroll/open panels; that is an explicit
+tradeoff.
 
-If you cancel the UAC prompt, use `pnpm make-install` instead.
+Resident measurement pages are **off by default** (`auditBrowser: false`) to save memory.
+To let an agent reuse them via `syt measure --attach`, run `pnpm dev` with
+`siyuanPlugin({ auditBrowser: true })`; a read lease then blocks measurement while a
+refresh is in flight. If `--attach` cannot connect it reports an error instead of silently
+opening a new browser.
 
-Development scripts are Node.js based; the optional Windows elevation step invokes system PowerShell.
+Creating a directory symlink on Windows requires permission. A plugin directory must be a
+real symlink (SiYuan's Go runtime does not accept a junction), so devkit requests UAC
+elevation once when the privilege is missing; refusing it ends the session with an error
+instead of falling back to a copy.
 
 You can also set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip workspace discovery.
-`pnpm make-install` replaces the same-named plugin directory; re-enable the plugin in SiYuan afterwards.
+
+For styling questions (colour, spacing, shape), use the measurement and screenshot commands
+from devkit:
+
+```bash
+pnpm measure tokens --rc-text-primary --rc-bg-page   # computed token values
+pnpm measure styles .dock__item --props border-radius # computed element styles
+pnpm measure count .dock__item                       # selector hit counts
+pnpm shot                                            # headless desktop/mobile screenshots
+```
+
+Interaction and layout states need real events (`--do hover:...` / `--setup contextmenu:...`).
+Elements such as menu items are absent from the DOM until opened, so `--setup` them first
+(e.g. `pnpm measure styles .b3-menu__item --setup contextmenu:.b3-list-item`);
+`pnpm measure --help` lists every subcommand.
 
 ## Release
 
