@@ -20,7 +20,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # 只跑发布平台：打包在 release.yml 里同样用 ubuntu，Windows 特有的
+        # symlink/UAC/fsutil 路径只在 watch 模式执行，CI 的构建永远走不到。
+        os: [ubuntu-latest]
         # 下限取 package.json 的 engines，上限取当前 LTS，避免只在开发机上验证。
         node: [24, 26]
     steps:
