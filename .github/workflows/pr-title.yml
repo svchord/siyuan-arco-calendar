@@ -1,0 +1,30 @@
+name: PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  conventional:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # 只读 PR 标题，不 checkout 任何代码。release-please 靠 squash 后的 PR 标题
+      # 算版本，标题不规范会让这个 PR 静默地不产生版本。
+      - name: Check PR title
+        shell: bash
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR title: $TITLE"
+          if ! echo "$TITLE" | grep -Eq '^(feat|fix|perf|refactor|style|docs|test|build|ci|chore|revert)(\([a-zA-Z0-9._/-]+\))?!?: .+'; then
+            echo "::error::PR 标题不符合 Conventional Commits 规范：$TITLE"
+            echo "示例：fix: 修正跨月视图的日期错位"
+            echo "示例：feat(settings): 支持自定义每周起始日"
+            echo "示例：feat!: 移除旧的设置项（破坏性变更）"
+            exit 1
+          fi

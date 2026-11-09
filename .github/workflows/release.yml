@@ -2,51 +2,93 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to rebuild package.zip for
+        required: false
+        type: string
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+# 顶层清空，权限按 job 显式授予。
+permissions: {}
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
-  release:
+  release-please:
+    name: Release PR
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # 建 release commit / tag / GitHub Release
+      pull-requests: write # 开 Release PR
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # 每次 push 到 main 都会跑：有已合并的 Release PR 就建 tag + Release，
+      # 否则开或更新 Release PR。Release PR 只改版本号与 CHANGELOG。
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v5
         with:
-          fetch-depth: 0
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          # Release PR 由 GITHUB_TOKEN 创建时不会触发 CI，合并前看不到检查结果。
+          # 配置了 PAT 就用它，让 Release PR 也能跑 CI；没有则退回默认行为。
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+  # 打包与上传必须发生在 tag 之后，所以独立成 job 依赖上面的输出。
+  # 只在「这次 push 刚好合并了 Release PR」或手动指定 tag 时执行。
+  package:
+    name: Package
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch' && inputs.tag != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # 上传 package.zip 到 Release
+    env:
+      TAG_NAME: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
+    steps:
+      # 按该版本的 tag 检出，而不是检出触发分支：产物必须由这个版本的源码构建。
+      - name: Checkout release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG_NAME }}
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.14.0
-          run_install: false
+        uses: pnpm/action-setup@v6
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
-          registry-url: 'https://registry.npmjs.org'
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check
+      # 发布前再跑一遍完整校验，避免把红着的代码发出去。
+      - name: Check (format + lint + type + test)
         run: pnpm run check
 
-      - name: Semantic Release
+      # 生产构建会校验清单并把 package.zip 写到项目根。
+      - name: Build package.zip
+        run: pnpm run build
+
+      # Release 由 release-please 以 draft 建好，先补资产再转正：
+      # 集市按 Release 拉 package.zip，先公开会短暂暴露一个没有产物的版本。
+      - name: Upload package.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GIT_AUTHOR_NAME: github-actions[bot]
-          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-          GIT_COMMITTER_NAME: github-actions[bot]
-          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-        run: pnpm exec semantic-release
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$TAG_NAME" package.zip --clobber
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "$TAG_NAME" --draft=false

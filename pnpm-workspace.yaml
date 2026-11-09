@@ -1,3 +1,5 @@
 minimumReleaseAgeExclude:
   - lucide-react@1.65.0
   - cn@0.5.1
+  - vite-plugin-siyuan@0.1.0
+  - siyuan-devtools@0.1.0

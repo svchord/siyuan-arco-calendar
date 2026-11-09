@@ -1,4 +1,6 @@
-# [2.4.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.3.1...v2.4.0) (2026-11-03)
+# Changelog
+
+## [2.4.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.3.1...v2.4.0) (2026-11-03)
 
 
 ### Bug Fixes
@@ -27,7 +29,7 @@
 
 * aggregate calendar activity queries by date ([e1936f1](https://github.com/svchord/siyuan-arco-calendar/commit/e1936f1f0a7c4d662a93a60ff5f8306e96dd58f2))
 
-# [2.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.3...v2.3.0) (2026-11-02)
+## [2.3.0](https://github.com/svchord/siyuan-arco-calendar/compare/v2.2.3...v2.3.0) (2026-11-02)
 
 
 ### Bug Fixes
@@ -48,7 +50,6 @@
 
 * **docs:** 更新发布流程说明为 semantic-release ([ba5a0f8](https://github.com/svchord/siyuan-arco-calendar/commit/ba5a0f88921accfed9451ba9b62ce625b6c00de6))
 
-# 版本日志 | Changelog 
 
 
 ## [2.2.2](https://github.com/svchord/siyuan-arco-calendar/compare/siyuan-arco-calendar-v2.2.1...siyuan-arco-calendar-v2.2.2) (2026-10-31)

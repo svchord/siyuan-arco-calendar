@@ -6,6 +6,26 @@ A calendar panel plugin for SiYuan Note. Open a calendar from the top bar or doc
 
 <img width="1280" alt="preview" src="public/preview.png">
 
+## Features
+
+- Three entry positions: top-left, top-right, or dock
+- Existing daily notes are highlighted on the month calendar; click any date to open or create it
+- Existing notes use a soft accent-tinted disc; days without a note stay plain, and notes with unfinished tasks show an amber corner dot
+- Today carries a small dot under the date, which switches to the contrast colour once selected so it never blends into the chip
+- Month/year dropdowns with a refresh action, plus a settings entry in the panel header
+- Settings: entry position, week start, week numbers, unfinished-task markers, and use-theme-color
+- "Use theme color" switches the selected date, buttons, note disc and heatmap to the SiYuan accent; with it off the Vega neutral palette is used
+- Calendar / Heatmap switch; the yearly heatmap counts content blocks across all notes, attributing daily-note blocks to the diary date and other blocks to their creation date
+- Heatmap weeks follow the configured week start, with a year selector; hovering a cell shows that day's block count, clicking opens or creates that day's daily note, and the footer shows the yearly total
+- Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
+- Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
+
+## Install
+
+Install "Calendar Panel" from the SiYuan marketplace, or download `package.zip` from [Releases](https://github.com/svchord/siyuan-arco-calendar/releases), extract it into `<workspace>/data/plugins/`, and enable it in SiYuan.
+
+Requires SiYuan 3.8.5 or newer.
+
 ## Modifying Colors
 
 The plugin uses shadcn/Base UI CSS variables, which can be overridden in a theme or code snippet:
@@ -48,6 +68,8 @@ The plugin uses shadcn/Base UI CSS variables, which can be overridden in a theme
 }
 ```
 
+By default `--primary` falls back to the Vega neutral palette. With the "use theme color" setting enabled, the plugin publishes `--arco-calendar-accent` / `--arco-calendar-accent-foreground` on `<html>` and those take over `--primary`, so emphasis surfaces follow the SiYuan accent. Override the two variables above to pin a fixed palette instead.
+
 Main variables:
 
 | Variable                             | Purpose                                   |
@@ -60,96 +82,36 @@ Main variables:
 | `--ring`                             | Keyboard focus ring                       |
 | `--radius`                           | Panel and control radius                  |
 
-By default `--primary` falls back to the Vega neutral palette. With the "use theme color" setting enabled, the plugin publishes `--arco-calendar-accent` / `--arco-calendar-accent-foreground` on `<html>` and those take over `--primary`, so emphasis surfaces follow the SiYuan accent. Override the two variables above to pin a fixed palette instead.
-
-## Features
-
-- Three entry positions: top-left, top-right, or dock
-- Existing daily notes are highlighted on the month calendar; click any date to open or create it
-- Existing notes use a soft accent-tinted disc; days without a note stay plain, and notes with unfinished tasks show an amber corner dot
-- Today carries a small dot under the date, which switches to the contrast colour once selected so it never blends into the chip
-- Month/year dropdowns with a refresh action, plus a settings entry in the panel header
-- Settings: entry position, week start, week numbers, unfinished-task markers, and use-theme-color
-- "Use theme color" switches the selected date, buttons, note disc and heatmap to the SiYuan accent; with it off the Vega neutral palette is used
-- Calendar / Heatmap switch; the yearly heatmap counts content blocks across all notes, attributing daily-note blocks to the diary date and other blocks to their creation date
-- Heatmap weeks follow the configured week start, with a year selector; hovering a cell shows that day's block count, clicking opens or creates that day's daily note, and the footer shows the yearly total
-- Searchable notebook selector, synchronized with SiYuan's `local-dailynoteid`
-- Automatically follows the active SiYuan theme; works on desktop, mobile, and browser frontends
-
-## Tech stack
-
-- **React 19** + TypeScript
-- **shadcn/ui** (Vega preset) with Base UI primitives
-- **Tailwind CSS 4**, scoped to the plugin and mapped onto SiYuan theme variables
-- **Vite 8** library build; React is bundled with the plugin instead of relying on a host global
-
-Components under `src/components/ui` come from the shadcn/ui `base-vega` distribution. Plugin-specific behavior lives in app components rather than edits to those files.
-
 ## Development
 
-Requires Node.js >= 24 and pnpm 12.
+Requires Node.js >= 24.15 and pnpm 12.
 
 ```bash
 pnpm install
-pnpm type-check
-pnpm test
-pnpm build
+pnpm dev     # watch-build, linked into the SiYuan plugin directory with hot refresh
+pnpm check   # format + lint + types + tests
+pnpm build   # production build, produces package.zip
 ```
 
-`pnpm build` validates the manifest, runs the type check, builds the production bundle, and creates `package.zip`.
+Linking the plugin directory needs administrator rights on Windows; the build requests UAC once when they are missing and aborts with an error if refused.
+Set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip workspace discovery.
 
-Development:
-
-```bash
-pnpm dev   # watch-build into dev/ and link it into the SiYuan plugin directory
-```
-
-`pnpm dev` is driven by the devkit Vite plugin: it links `dev/` into the SiYuan workspace
-plugin directory when the session starts. No separate link or install command is needed.
-
-Any artifact change broadcasts `/api/ui/reloadUI` — a full-page refresh: SiYuan re-runs
-its startup sequence, so both `index.js` and `index.css` pick up the new files from disk.
-Your own SiYuan window refreshes too, losing cursor/scroll/open panels; that is an explicit
-tradeoff.
-
-Resident measurement pages are **off by default** (`auditBrowser: false`) to save memory.
-To let an agent reuse them via `syt measure --attach`, run `pnpm dev` with
-`siyuanPlugin({ auditBrowser: true })`; a read lease then blocks measurement while a
-refresh is in flight. If `--attach` cannot connect it reports an error instead of silently
-opening a new browser.
-
-Creating a directory symlink on Windows requires permission. A plugin directory must be a
-real symlink (SiYuan's Go runtime does not accept a junction), so devkit requests UAC
-elevation once when the privilege is missing; refusing it ends the session with an error
-instead of falling back to a copy.
-
-You can also set `SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins` to skip workspace discovery.
-
-For styling questions (colour, spacing, shape), use the measurement and screenshot commands
-from devkit:
-
-```bash
-pnpm measure tokens --rc-text-primary --rc-bg-page   # computed token values
-pnpm measure styles .dock__item --props border-radius # computed element styles
-pnpm measure count .dock__item                       # selector hit counts
-pnpm shot                                            # headless desktop/mobile screenshots
-```
-
-Interaction and layout states need real events (`--do hover:...` / `--setup contextmenu:...`).
-Elements such as menu items are absent from the DOM until opened, so `--setup` them first
-(e.g. `pnpm measure styles .b3-menu__item --setup contextmenu:.b3-list-item`);
-`pnpm measure --help` lists every subcommand.
+Verify style and interaction changes in a real SiYuan window. Components under `src/components/ui` come from the shadcn/ui `base-vega` distribution; plugin-specific behavior lives in app components rather than edits to those files.
 
 ## Release
 
-Releases use [semantic-release](https://github.com/semantic-release/semantic-release) and are fully automated:
+Releases are versioned by [release-please](https://github.com/googleapis/release-please); the version is never bumped by hand:
 
-1. a push or merged PR to `main` computes the next version from Conventional Commits
-2. `package.json`, `public/plugin.json` and `CHANGELOG.md` are updated automatically
-3. the `vX.Y.Z` tag is created, then `pnpm check` and the production build run
-4. a GitHub Release is created and `package.zip` is uploaded
+```
+a normal PR lands on main
+  └─ release-please opens/updates a Release PR "chore(main): release x.y.z"
+       └─ merge that PR
+            └─ tag, GitHub Release and CHANGELOG.md are generated
+                 └─ package.zip is built and uploaded
+```
 
-No manual version bump or release PR is required. Commit messages must follow Conventional Commits (`feat:` / `fix:` / `chore:`…).
+PR titles must follow Conventional Commits (`feat:` / `fix:` / `chore:`…); CI checks them, and merges are always **Squash and merge**.
+The `version` in `package.json` and `public/plugin.json` is maintained by the Release PR — do not edit it by hand.
 
 ## Changelog
 

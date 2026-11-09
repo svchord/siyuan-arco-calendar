@@ -30,3 +30,5 @@ coverage
 *.sw?
 
 package.zip
+/shots
+.playwright-cli

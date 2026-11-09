@@ -1,39 +1,49 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: Check (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        # 下限取 package.json 的 engines，上限取当前 LTS，避免只在开发机上验证。
+        node: [24, 26]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
+      # 版本由 package.json 的 packageManager 字段决定，这里不重复声明。
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.14.0
-          run_install: false
+        uses: pnpm/action-setup@v6
 
+      # 不设 registry-url：CI 不发布，设了只会让 setup-node 生成带空 token 的 .npmrc。
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
+          node-version: ${{ matrix.node }}
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Check (manifest + format + type + test)
+      - name: Check (format + lint + type + test)
         run: pnpm run check
 
-      - name: Build
+      # 生产构建会校验产物清单并打包 package.zip，校验不通过则构建失败。
+      - name: Build and verify artifacts
         run: pnpm run build
-
-      - name: Verify artifacts (syt verify)
-        run: pnpm run verify
