@@ -1,0 +1,12 @@
+# 逐条检查本次 push 覆盖的提交：远端已有该 ref 时只查新增部分，
+# 新分支（remote sha 全 0）直接放行，避免首次 push 卡住。
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$remote_sha" = "0000000000000000000000000000000000000000" ] && continue
+  # 改写历史（force push）时 old..new 不再是新增提交集合，会把全历史都算进来。
+  # 这种更新是显式操作，跳过检查而不是误报一堆旧提交。
+  if ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+    echo "commitlint: $remote_ref 是非快进更新，跳过提交信息检查"
+    continue
+  fi
+  pnpm exec commitlint --from "$remote_sha" --to "$local_sha" --verbose || exit 1
+done

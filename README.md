@@ -113,6 +113,11 @@ Windows 上链接插件目录需要管理员权限，缺少权限时构建会请
 PR 标题需遵循 Conventional Commits（`feat:` / `fix:` / `chore:`…），CI 会检查；合并方式固定为 **Squash and merge**。
 `package.json` 与 `public/plugin.json` 的 `version` 由 Release PR 更新，不要手动改。
 
+本地提交信息同样受约束：`pnpm install` 会通过 `prepare` 安装 husky 钩子，
+`commit-msg` 用 commitlint 校验单条消息，`pre-push` 校验本次推送新增的提交，
+规则见 `commitlint.config.js`。绕过钩子（`git commit --no-verify`）产生的提交会在 push 时被拦下；
+确实需要绕过时用 `git push --no-verify`，并自行确认该提交不会进入 CHANGELOG。
+
 ## 版本日志
 
 [Changelog](./CHANGELOG.md)

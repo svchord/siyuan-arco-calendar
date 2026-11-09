@@ -113,6 +113,11 @@ a normal PR lands on main
 PR titles must follow Conventional Commits (`feat:` / `fix:` / `chore:`…); CI checks them, and merges are always **Squash and merge**.
 The `version` in `package.json` and `public/plugin.json` is maintained by the Release PR — do not edit it by hand.
 
+Local commits are checked too: `pnpm install` installs husky hooks via `prepare`, `commit-msg` lints a single
+message and `pre-push` lints the commits a push adds, both against `commitlint.config.js`. Commits made with
+`git commit --no-verify` are rejected at push time; if you really need to skip it, use `git push --no-verify`
+and confirm the commit never reaches the CHANGELOG.
+
 ## Changelog
 
 [Changelog](./CHANGELOG.md)
